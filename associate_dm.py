@@ -35,29 +35,43 @@ def get_DMIDs(f):
     allDMVelocities = f['PartType1/Velocities']
     return allDMIDs, allDMPositions, allDMVelocities
 
-def find_DM_shells(f,pDM,cm):
+def find_DM_shells(pDM,cm, massDMParticle, boxSize= 1775.):
     """
     This function will calculate the amount of DM inside spherical shells around a position x, y, z
     Parameters: 
         f (h5py): snapshot
-        pDM (list): list of 3D positions of each DM particle in snapshot
+        pDM (array): array of 3D positions of each DM particle in snapshot
         cm (array or list): 3 element array containing x, y, z position from which to calculate the shells. 
     """
     
-    tempPosDM = dx_wrap(pDM-cm,boxSize)			
-    tempAxis = 20. #draw a 20 kpc sphere around the object
+    #tempPosDM = dx_wrap(pDM-cm,boxSize)			
+    tempAxis = 20. #draw a 20 kpc sphere around the object to search within
     nearidx, = np.where(dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)<=tempAxis**2)
     shell_width = 0.5 # steps of 0.5 kpc
-    if len(nearidx)==0: 
+    if len(nearidx)==0: #if no DM 
         mDM_shells = np.zeros(int(tempAxis/shell_width))
-
+        shells = []
+    else:
+        mDM_shells = []
+        shells = []
+        shell = shell_width
+        tempPosDM = pDM[nearidx] #This was changed from shrinker
+        while shell < tempAxis: #calculate enclosed mass inside sphere 
+            DM_encl =np.where(dist2(tempPosDM[:,0]-cm[0],tempPosDM[:,1]-cm[1],tempPosDM[:,2]-cm[2],boxSize)<=shell**2)
+            #The line below could eventually be used for an ellipsoidal search
+            #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
+            mDM_encl =  np.sum(DM_encl)*massDMParticle 
+            mDM_shells.append(mDM_encl)
+            shells.append(shell)
+            shell =+ shell_width
+    return np.array(shells), np.array(mDM_shells)
 
 def files_and_groups(filename, snapnum, newstars, group="Stars"):
     print('opening files')
     gofilename = str(filename)
     gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
     snap, fof = open_hdf5(gofilename, foffilename)
-    boxsize, redshift, massDMParticle = get_headerprops(snap)
+    boxSize, redshift, massDMParticle = get_headerprops(snap)
     print('redshift is '+str(redshift))
     cat = set_subfind_catalog(fof)
     prim, sec = set_config(fof)
@@ -89,7 +103,10 @@ def files_and_groups(filename, snapnum, newstars, group="Stars"):
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
-    print(halo100_pos[0])
+    "dividing into shells and finding the DM"
+    shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, boxSize = boxSize)
+    print(shells)
+    print(mDM)
     objs['prim'] = prim
     objs['sec'] = sec
     print("done")
