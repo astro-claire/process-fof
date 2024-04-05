@@ -57,8 +57,8 @@ def find_DM_shells(pDM,cm, massDMParticle, boxSize= 1775.):
         shell = shell_width
         tempPosDM = pDM[nearidx] #This was changed from shrinker
         while shell < tempAxis: #calculate enclosed mass inside sphere 
-            DM_encl =np.where(dist2(tempPosDM[:,0]-cm[0],tempPosDM[:,1]-cm[1],tempPosDM[:,2]-cm[2],boxSize)<=shell**2)
-            #The line below could eventually be used for an ellipsoidal search
+            DM_encl, = np.where(dist2(tempPosDM[:,0]-cm[0],tempPosDM[:,1]-cm[1],tempPosDM[:,2]-cm[2],boxSize)<=shell**2)
+            #The line below could eventually be used for an ellipsoidal search --note some things about tempPos DM have been changed. So would need to update
             #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
             mDM_encl =  np.sum(DM_encl)*massDMParticle 
             mDM_shells.append(mDM_encl)
