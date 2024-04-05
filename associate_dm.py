@@ -7,8 +7,7 @@ import numpy as np
 from sys import argv
 import pickle
 import fof_process
-	prim, sec = set_config(fof)
-from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config
+from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_gasIDs, get_starIDs,get_starIDgroups, get_gasIDgroups
 
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
@@ -22,7 +21,15 @@ def dist2(dx,dy,dz,box):
 	#Calculates distance taking into account periodic boundary conditions
 	return dx_wrap(dx,box)**2 + dx_wrap(dy,box)**2 + dx_wrap(dz,box)**2
 
-
+def get_DMIDs(f):
+	"""
+	Get particle IDs (groupordered snap)
+	"""
+	allDMIDs = f['PartType1/ParticleIDs']
+	allDMPositions = f['PartType1/Coordinates']
+    allDMVelocities = f['PartType1/Velocities']
+	
+	return allDMIDs, allDMPositions, allDMVelocities
 
 def files_and_groups(filename, snapnum, newstars, group="Stars")
     	print('opening files')
@@ -75,6 +82,4 @@ if __name__=="__main__":
 	script, gofilename, snapnum = argv
 	with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
 		newstars = pickle.load(f,encoding = "latin1")
-    
-	#objs = calc_all_stellarprops(str(gofilename), snapnum, newstars, group="Gas", SFR=True, r200 =False)
-	print(objs['gasMass'][0:10]*10.**10/0.71)
+    objs = files_and_groups(gofilename, snapnum, newstars, group="Stars")
