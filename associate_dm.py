@@ -22,64 +22,67 @@ def dist2(dx,dy,dz,box):
 	return dx_wrap(dx,box)**2 + dx_wrap(dy,box)**2 + dx_wrap(dz,box)**2
 
 def get_DMIDs(f):
-	"""
-	Get particle IDs (groupordered snap)
-	"""
-	allDMIDs = f['PartType1/ParticleIDs']
-	allDMPositions = f['PartType1/Coordinates']
+    """
+    Get particle IDs (groupordered snap)
+    """
+    allDMIDs = f['PartType1/ParticleIDs']
+    allDMPositions = f['PartType1/Coordinates']
     allDMVelocities = f['PartType1/Velocities']
-	
-	return allDMIDs, allDMPositions, allDMVelocities
+    return allDMIDs, allDMPositions, allDMVelocities
 
-def files_and_groups(filename, snapnum, newstars, group="Stars")
-    	print('opening files')
-	gofilename = str(filename)
-	gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
-	snap, fof = open_hdf5(gofilename, foffilename)
-	boxsize, redshift, massDMParticle = get_headerprops(snap)
-	print('redshift is '+str(redshift))
-	cat = set_subfind_catalog(fof)
-	prim, sec = set_config(fof)
-	print("I detected that the FOF has "+str(prim)+" primary and "+str(sec)+" secondary.")
-	print("getting fof groups")
-	if group == "Stars":
-		print("used groups of 100 or more stars")
-		halo100_indices=get_starGroups(cat)
-	elif group == "Gas":
-		print("used groups of 100 or more gas")
-		halo100_indices=get_gasGroups(cat)
-	elif group == "DM":
-		print("No need to add DM to a DM primary! Exiting now.")
-		break
-	objs = {}
-	if prim == "stars" or prim == "stars+gas" or sec == "stars" or sec == "stars+gas":
-		print("have stars, getting the star groups")
-		allStarIDs, allStarMasses,allStarPositions = get_starIDs(snap)
-		startAllStars, endAllStars = get_starIDgroups(cat,halo100_indices)
-		print(" ")
-	else: 
-		print("Warning: no stars found. I will not be including them!")
-	if prim == "gas" or prim == "stars+gas" or sec =="gas" or sec =="stars+gas":
-		print("have gas, getting the gas groups")
-		allGasIDs, allGasMasses, allGasPositions = get_gasIDs(snap)
-		startAllGas, endAllGas = get_gasIDgroups(cat,halo100_indices)
-	else:
-		print("Warning: no gas found. I will not be including them!")
-	objs['prim'] = prim
-	objs['sec'] = sec
-	print("done")
-	return objs
+
+
+def files_and_groups(filename, snapnum, newstars, group="Stars"):
+    print('opening files')
+    gofilename = str(filename)
+    gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
+    snap, fof = open_hdf5(gofilename, foffilename)
+    boxsize, redshift, massDMParticle = get_headerprops(snap)
+    print('redshift is '+str(redshift))
+    cat = set_subfind_catalog(fof)
+    prim, sec = set_config(fof)
+    print("I detected that the FOF has "+str(prim)+" primary and "+str(sec)+" secondary.")
+    print("getting fof groups")
+    if group == "Stars":
+        print("used groups of 100 or more stars")
+        halo100_indices=get_starGroups(cat)
+    elif group == "Gas":
+        print("used groups of 100 or more gas")
+        halo100_indices=get_gasGroups(cat)
+    elif group == "DM":
+        print("No need to add DM to a DM primary! Exiting now.")
+    objs = {}
+    if prim == "stars" or prim == "stars+gas" or sec == "stars" or sec == "stars+gas":
+        print("have stars, getting the star groups")
+        allStarIDs, allStarMasses,allStarPositions = get_starIDs(snap)
+        startAllStars, endAllStars = get_starIDgroups(cat,halo100_indices)
+        print(" ")
+    else: 
+        print("Warning: no stars found. I will not be including them!")
+    if prim == "gas" or prim == "stars+gas" or sec =="gas" or sec =="stars+gas":
+        print("have gas, getting the gas groups")
+        allGasIDs, allGasMasses, allGasPositions = get_gasIDs(snap)
+        startAllGas, endAllGas = get_gasIDgroups(cat,halo100_indices)
+    else:
+        print("Warning: no gas found. I will not be including them!")
+    print("Now getting all DM particles and their 6D vectors")
+    allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
+    objs['prim'] = prim
+    objs['sec'] = sec
+    print("done")
+    return objs
 
 if __name__=="__main__":
-	"""
-	Routine if running as a script
+    """
+    Routine if running as a script
 
-	Arguments: 
-		gofilename path to directory containing groupordered file + fof table
-		# foffilename 
-		snapnum (float)
-	"""
-	script, gofilename, snapnum = argv
-	with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
-		newstars = pickle.load(f,encoding = "latin1")
+    Arguments: 
+        gofilename path to directory containing groupordered file + fof table
+        # foffilename 
+        snapnum (float)
+    """
+    script, gofilename, snapnum = argv
+    with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
+        newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, newstars, group="Stars")
+    print("Done!")
