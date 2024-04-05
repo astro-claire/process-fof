@@ -21,6 +21,11 @@ def dist2(dx,dy,dz,box):
 	#Calculates distance taking into account periodic boundary conditions
 	return dx_wrap(dx,box)**2 + dx_wrap(dy,box)**2 + dx_wrap(dz,box)**2
 
+def get_GroupPos(cat, halo100_indices):
+    """
+    Return Group COM"""
+    return np.array(cat.GroupPos)[halo100_indices]
+
 def get_DMIDs(f):
     """
     Get particle IDs (groupordered snap)
@@ -30,6 +35,21 @@ def get_DMIDs(f):
     allDMVelocities = f['PartType1/Velocities']
     return allDMIDs, allDMPositions, allDMVelocities
 
+def find_DM_shells(f,pDM,cm):
+    """
+    This function will calculate the amount of DM inside spherical shells around a position x, y, z
+    Parameters: 
+        f (h5py): snapshot
+        pDM (list): list of 3D positions of each DM particle in snapshot
+        cm (array or list): 3 element array containing x, y, z position from which to calculate the shells. 
+    """
+    
+    tempPosDM = dx_wrap(pDM-cm,boxSize)			
+    tempAxis = 20. #draw a 20 kpc sphere around the object
+    nearidx, = np.where(dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)<=tempAxis**2)
+    shell_width = 0.5 # steps of 0.5 kpc
+    if len(nearidx)==0: 
+        mDM_shells = np.zeros(int(tempAxis/shell_width))
 
 
 def files_and_groups(filename, snapnum, newstars, group="Stars"):
@@ -67,6 +87,9 @@ def files_and_groups(filename, snapnum, newstars, group="Stars"):
         print("Warning: no gas found. I will not be including them!")
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
+    print("Getting group COM!")
+    halo100_pos = get_GroupPos(cat, halo100_indices)
+    print(halo100_pos[0])
     objs['prim'] = prim
     objs['sec'] = sec
     print("done")
