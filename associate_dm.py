@@ -24,7 +24,7 @@ def dist2(dx,dy,dz,box):
 def get_GroupPos(cat, halo100_indices):
     """
     Return Group COM"""
-    return np.array(cat.GroupPos)[halo100_indices]
+    return cat.GroupPos[halo100_indices]
 
 def get_DMIDs(f):
     """
@@ -104,9 +104,11 @@ def files_and_groups(filename, snapnum, newstars, group="Stars"):
         print("Warning: no gas found. I will not be including them!")
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
+    print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
+    # print(cat.GroupPos[halo100_indices])
     halo100_pos = get_GroupPos(cat, halo100_indices)
-    "dividing into shells and finding the DM"
+    print("dividing into shells and finding the DM")
     shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, boxSize = boxSize)
     print(shells)
     print(mDM)
