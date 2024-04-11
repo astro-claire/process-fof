@@ -50,6 +50,7 @@ def find_DM_shells(pDM,cm, massDMParticle, boxSize= 1775.):
     print("found the near idx")
     shell_width = 0.5 # steps of 0.5 kpc
     if len(nearidx)==0: #if no DM 
+        print("NoDM!")
         mDM_shells = np.zeros(int(tempAxis/shell_width))
         shells = []
     else:
@@ -70,6 +71,24 @@ def find_DM_shells(pDM,cm, massDMParticle, boxSize= 1775.):
             shells.append(shell)
             shell =+ shell_width
     return np.array(shells), np.array(mDM_shells)
+
+def get_all_DM(allDMPositions,halo100_pos,massDMParticle, boxSize):
+    """
+    adds the dm shells to all the objects 
+    """
+    all_shells = []
+    mDMs = []
+    shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, boxSize = boxSize)
+    all_shells.append(shells)
+    mDMs.append(mDM)
+    #print the first object so I can see if this worked
+    print(shells)
+    print(mDM)
+    for i in halo100_pos[1:-1]:
+        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, boxSize = boxSize)
+        all_shells.append(shells)
+        mDMs.append(mDM)
+    return all_shells, mDMs
 
 def files_and_groups(filename, snapnum, newstars, group="Stars"):
     print('opening files')
@@ -108,15 +127,17 @@ def files_and_groups(filename, snapnum, newstars, group="Stars"):
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
-    # print(cat.GroupPos[halo100_indices])
     halo100_pos = get_GroupPos(cat, halo100_indices)
     print("dividing into shells and finding the DM")
-    shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, boxSize = boxSize)
-    print(shells)
-    print(mDM)
+    #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, boxSize = boxSize)
+    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, boxSize)
+    objs['shells']=np.array(all_shells)
+    objs['mDM_shells']=np.array(mDMs)
     objs['prim'] = prim
     objs['sec'] = sec
     print("done")
+    with open(gofilename+"/testdm.dat",'wb') as f:
+        pickle.dump(objs, f)
     return objs
 
 if __name__=="__main__":
