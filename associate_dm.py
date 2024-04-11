@@ -60,6 +60,9 @@ def find_DM_shells(pDM,cm, massDMParticle, boxSize= 1775.):
             DM_encl, = np.where(dist2(tempPosDM[:,0]-cm[0],tempPosDM[:,1]-cm[1],tempPosDM[:,2]-cm[2],boxSize)<=shell**2)
             #The line below could eventually be used for an ellipsoidal search --note some things about tempPos DM have been changed. So would need to update
             #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
+            mask = np.ones(tempPosDM.shape, dtype='bool') #mask out all the particles that were in the inner shell 
+            mask[DM_encl] = False
+            tempPosDM = tempPosDM[mask] #now we're only searching the unused DM particles
             mDM_encl =  np.sum(DM_encl)*massDMParticle 
             mDM_shells.append(mDM_encl)
             shells.append(shell)
@@ -122,7 +125,9 @@ if __name__=="__main__":
         snapnum (float)
     """
     script, gofilename, snapnum = argv
-    with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
+    # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
+    #     newstars = pickle.load(f,encoding = "latin1")
+    with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
         newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, newstars, group="Stars")
     print("Done!")
