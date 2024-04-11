@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+#Submission script
+run_hoffman.sh
+
 # Distribution / packaging
 .Python
 build/
