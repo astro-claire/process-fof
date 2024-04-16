@@ -107,7 +107,7 @@ def parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, radii,boxSize)
 
 class addDM_Engine():
     """
-    Class to run the association of nearby DM particles to the gas or star primary objects 
+    Parallel setup to run the association of nearby DM particles to the gas or star primary objects 
     """
     def __init__(self, radii, massDMParticle,halo100_pos,boxSize,allDMPositions): #,allDMPositions,massDMParticle,radii,boxSize):
         self.pDM = allDMPositions
@@ -168,8 +168,8 @@ def files_and_groups(filename, snapnum, group="Stars"):
     objs = {}
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
-    # TESTING MODE ONLY: Uncomment next line
-    halo100_indices = halo100_indices[0:100]
+    #TESTING MODE ONLY: Uncomment next line
+    #halo100_indices = halo100_indices[0:2]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -179,10 +179,9 @@ def files_and_groups(filename, snapnum, group="Stars"):
     #print(shells)
     #print(mDM)
     # all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad, boxSize)
-    mDMs, data = parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, halo100_rad,boxSize)
-    # objs['shells']=np.array(all_shells)
-    # objs['mDM_shells']=np.array(mDMs)
-    print(mDMs[0])
+    data = parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, halo100_rad,boxSize)
+    objs['shells']=np.array(data)[:,0]
+    objs['mDM_shells']=np.array(data)[:,1]
     print(data[0])
     objs['prim'] = prim
     objs['sec'] = sec
