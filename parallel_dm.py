@@ -85,12 +85,6 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
             shell = shell+ shell_width
     return np.array(shells),np.array(mDM_shells)
 
-def test_process(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
-    tempAxis = 10* rgroup#search within the radius of the group
-    if tempAxis ==0.:
-        tempAxis = 5. #search within 5 kpc if no rgroup given
-    return tempAxis
-
 def parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     """
     Calculates the dm shells for all the objects 
@@ -100,21 +94,7 @@ def parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, radii,boxSize)
         massDMParticle (float): code mass of DM 
         radii (numpy array): radii of all groups to calculate 
     """
-    all_shells = []
-    mDMs = []
-    # print(allDMPositions.shape)
     allDMPositions = np.array(allDMPositions)
-    # print(allDMPositions.shape)
-    t = time.time()
-    for i in range(len(halo100_pos)):
-        #r2 = test_process(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize)
-        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
-        all_shells.append(shells)
-        mDMs.append(mDM)
-    print("that took")
-    print(time.time()-t)
-    print("seconds")
-    t = time.time()
     input_indices = range(len(halo100_pos))
     try: 
         pool = Pool()
@@ -123,10 +103,7 @@ def parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, radii,boxSize)
     finally: 
         pool.close()
         pool.join()
-    print("that took")
-    print(time.time()-t)
-    print("seconds")
-    return mDMs, data_mdm#all_shells, mDMs
+    return data_mdm
 
 class addDM_Engine():
     """
