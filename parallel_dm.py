@@ -119,7 +119,7 @@ def parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, radii,boxSize)
     try: 
         pool = Pool()
         engine = addDM_Engine(radii, massDMParticle,halo100_pos, boxSize,allDMPositions)
-        data_shells, data_mdm = pool.map(engine, input_indices)
+        data_mdm = pool.map(engine, input_indices)
     finally: 
         pool.close()
         pool.join()
@@ -144,7 +144,7 @@ class addDM_Engine():
             tempAxis = 5. #search within 5 kpc if no rgroup given
         distances = dist2(self.pDM[:,0]-self.cm[ind][0],self.pDM[:,1]-self.cm[ind][1],self.pDM[:,2]-self.cm[ind][2],self.boxSize)
         nearidx = np.where(distances<=tempAxis**2)[0]
-        shell_width = tempAxis/40. # break into 20 shells 
+        shell_width = tempAxis/40. # break into 40 shells 
         if len(nearidx)==0: #if no DM 
             print("NoDM!")
             mDM_shells = np.zeros(40)
@@ -192,7 +192,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     # TESTING MODE ONLY: Uncomment next line
-    halo100_indices = halo100_indices[0:9]
+    halo100_indices = halo100_indices[0:100]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -205,8 +205,8 @@ def files_and_groups(filename, snapnum, group="Stars"):
     mDMs, data = parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, halo100_rad,boxSize)
     # objs['shells']=np.array(all_shells)
     # objs['mDM_shells']=np.array(mDMs)
-    print(mDMs)
-    print(data)
+    print(mDMs[0])
+    print(data[0])
     objs['prim'] = prim
     objs['sec'] = sec
     print("done")

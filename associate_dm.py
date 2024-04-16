@@ -93,6 +93,7 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     """
     all_shells = []
     mDMs = []
+    allDMPositions = np.array(allDMPositions)
     shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, radii[0],boxSize = boxSize)
     all_shells.append(shells)
     mDMs.append(mDM)
