@@ -8,7 +8,6 @@ from sys import argv
 import pickle
 import fof_process
 from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups
-import time
 
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
@@ -56,7 +55,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
     #tempPosDM = dx_wrap(pDM-cm,boxSize)	
     tempAxis = 10* rgroup #search within the radius of the group
     if tempAxis ==0.:
-        tempAxis = 5. #search within 5 kpc if no rgroup given
+        tempAxis = 10. #search within 10 kpc if no rgroup given
     distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
     nearidx = np.where(distances<=tempAxis**2)[0]
     shell_width = tempAxis/40. # break into 20 shells 
@@ -94,14 +93,10 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     all_shells = []
     mDMs = []
     allDMPositions = np.array(allDMPositions)
-    t = time.time()
     for i in range(len(halo100_pos)):
         shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
-    print("that took")
-    print(time.time()-t)
-    print("seconds")
     return all_shells, mDMs
 
 def files_and_groups(filename, snapnum, group="Stars"):
@@ -127,7 +122,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     # TESTING MODE ONLY: Uncomment next line
-    halo100_indices = halo100_indices[0:2]
+    #halo100_indices = halo100_indices[0:2]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -161,6 +156,6 @@ if __name__=="__main__":
     #with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
-    with open(gofilename+"/dm_shells.dat",'wb') as f:   
+    with open(gofilename+"/dm_shells"+str(snapnum)+".dat",'wb') as f:   
         pickle.dump(objs, f)
     print("Done!")
