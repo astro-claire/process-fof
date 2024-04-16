@@ -7,7 +7,7 @@ import numpy as np
 from sys import argv
 import pickle
 import fof_process
-from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_gasIDs, get_starIDs,get_starIDgroups, get_gasIDgroups
+from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups
 # import time
 
 def dx_wrap(dx,box):
@@ -24,12 +24,14 @@ def dist2(dx,dy,dz,box):
 
 def get_GroupPos(cat, halo100_indices):
     """
-    Return Group COM"""
+    Return Group COM
+    """
     return cat.GroupPos[halo100_indices]
 
 def get_GroupRadii(cat, halo100_indices):
     """
-    Return Group COM"""
+    Return Group COM
+    """
     return cat.Group_R_Crit200[halo100_indices]
 
 def get_DMIDs(f):
@@ -83,6 +85,11 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
 def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     """
     Calculates the dm shells for all the objects 
+    Parameters: 
+        allDMPositions (h5py.dataset): positions of all DM particles
+        halo100_pos (numpy array): positions (COM) of all groups 
+        massDMParticle (float): code mass of DM 
+        radii (numpy array): radii of all groups to calculate 
     """
     all_shells = []
     mDMs = []
