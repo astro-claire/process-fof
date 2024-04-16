@@ -26,6 +26,11 @@ def get_GroupPos(cat, halo100_indices):
     Return Group COM"""
     return cat.GroupPos[halo100_indices]
 
+def get_GroupRadii(cat, halo100_indices):
+    """
+    Return Group COM"""
+    return cat.Group_R_Crit200[halo100_indices]
+
 def get_DMIDs(f):
     """
     Get particle IDs (groupordered snap)
@@ -35,23 +40,26 @@ def get_DMIDs(f):
     allDMVelocities = f['PartType1/Velocities']
     return allDMIDs, allDMPositions, allDMVelocities
 
-def find_DM_shells(pDM,cm, massDMParticle, boxSize= 1775.):
+def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
     """
     This function will calculate the amount of DM inside spherical shells around a position x, y, z
     Parameters: 
         f (h5py): snapshot
         pDM (array): array of 3D positions of each DM particle in snapshot
-        cm (array or list): 3 element array containing x, y, z position from which to calculate the shells. 
+        cm (array or list): 3 element array containing x, y, z position from which to calculate the shells.
+        rgroup  
     """
     
-    #tempPosDM = dx_wrap(pDM-cm,boxSize)			
-    tempAxis = 20. #draw a 20 kpc sphere around the object to search within
+    #tempPosDM = dx_wrap(pDM-cm,boxSize)		
+    tempAxis = rgroup #search within the radius of the group
+    if tempAxis ==0.:
+        tempAxis = 5. #search within 5 kpc if no rgroup given
     nearidx, = np.where(dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)<=tempAxis**2)
     print("found the near idx")
-    shell_width = 0.5 # steps of 0.5 kpc
+    shell_width = tempAxis/20. # break into 20 chunks. 
     if len(nearidx)==0: #if no DM 
         print("NoDM!")
-        mDM_shells = np.zeros(int(tempAxis/shell_width))
+        mDM_shells = np.zeros(20)
         shells = []
     else:
         mDM_shells = []
@@ -65,27 +73,27 @@ def find_DM_shells(pDM,cm, massDMParticle, boxSize= 1775.):
             #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
             mask = np.ones(tempPosDM.shape, dtype='bool') #mask out all the particles that were in the inner shell 
             mask[DM_encl] = False
-            tempPosDM = tempPosDM[mask] #now we're only searching the unused DM particles
+            tempPosDM = tempPosDM[mask] #next shell we'll only search the unused DM particles
             mDM_encl =  np.sum(DM_encl)*massDMParticle 
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell =+ shell_width
     return np.array(shells), np.array(mDM_shells)
 
-def get_all_DM(allDMPositions,halo100_pos,massDMParticle, boxSize):
+def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     """
     adds the dm shells to all the objects 
     """
     all_shells = []
     mDMs = []
-    shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, boxSize = boxSize)
+    shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, radii[0],boxSize = boxSize)
     all_shells.append(shells)
     mDMs.append(mDM)
     #print the first object so I can see if this worked
     print(shells)
     print(mDM)
     for i in halo100_pos[1:-1]:
-        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, boxSize = boxSize)
+        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
     return all_shells, mDMs
@@ -128,9 +136,10 @@ def files_and_groups(filename, snapnum, newstars, group="Stars"):
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
+    halo100_rad = get_GroupRadii(cat, halo100_indices)
     print("dividing into shells and finding the DM")
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, boxSize = boxSize)
-    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, boxSize)
+    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad, boxSize)
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
     objs['prim'] = prim
