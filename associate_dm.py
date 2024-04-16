@@ -8,7 +8,6 @@ from sys import argv
 import pickle
 import fof_process
 from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups
-# import time
 
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
@@ -56,7 +55,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
     #tempPosDM = dx_wrap(pDM-cm,boxSize)	
     tempAxis = 10* rgroup #search within the radius of the group
     if tempAxis ==0.:
-        tempAxis = 5. #search within 5 kpc if no rgroup given
+        tempAxis = 10. #search within 10 kpc if no rgroup given
     distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
     nearidx = np.where(distances<=tempAxis**2)[0]
     shell_width = tempAxis/40. # break into 20 shells 
@@ -93,13 +92,8 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     """
     all_shells = []
     mDMs = []
-    shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, radii[0],boxSize = boxSize)
-    all_shells.append(shells)
-    mDMs.append(mDM)
-    #print the first object so I can see if this worked
-    print(shells)
-    print(mDM)
-    for i in range(len(halo100_pos))[1:-1]:
+    allDMPositions = np.array(allDMPositions)
+    for i in range(len(halo100_pos)):
         shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
