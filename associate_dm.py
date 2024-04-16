@@ -8,7 +8,7 @@ from sys import argv
 import pickle
 import fof_process
 from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups
-# import time
+import time
 
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
@@ -93,16 +93,15 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     """
     all_shells = []
     mDMs = []
-    shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, radii[0],boxSize = boxSize)
-    all_shells.append(shells)
-    mDMs.append(mDM)
-    #print the first object so I can see if this worked
-    print(shells)
-    print(mDM)
-    for i in range(len(halo100_pos))[1:-1]:
+    allDMPositions = np.array(allDMPositions)
+    t = time.time()
+    for i in range(len(halo100_pos)):
         shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
+    print("that took")
+    print(time.time()-t)
+    print("seconds")
     return all_shells, mDMs
 
 def files_and_groups(filename, snapnum, group="Stars"):
@@ -128,7 +127,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     # TESTING MODE ONLY: Uncomment next line
-    #halo100_indices = halo100_indices[0:2]
+    halo100_indices = halo100_indices[0:2]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
