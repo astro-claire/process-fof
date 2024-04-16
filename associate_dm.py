@@ -162,6 +162,6 @@ if __name__=="__main__":
     #with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
-    with open(gofilename+"/dm_shells.dat",'wb') as f:   
+    with open(gofilename+"/dm_shells"+str(snapnum)+".dat",'wb') as f:   
         pickle.dump(objs, f)
     print("Done!")
