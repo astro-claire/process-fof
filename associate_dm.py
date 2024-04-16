@@ -8,6 +8,7 @@ from sys import argv
 import pickle
 import fof_process
 from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_gasIDs, get_starIDs,get_starIDgroups, get_gasIDgroups
+# import time
 
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
@@ -47,28 +48,27 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
         f (h5py): snapshot
         pDM (array): array of 3D positions of each DM particle in snapshot
         cm (array or list): 3 element array containing x, y, z position from which to calculate the shells.
-        rgroup  
+        rgroup  (float): radius of group (will search within 20x this radius unless 0 is given)
     """
     
-    #tempPosDM = dx_wrap(pDM-cm,boxSize)		
-    tempAxis = rgroup #search within the radius of the group
+    #tempPosDM = dx_wrap(pDM-cm,boxSize)	
+    tempAxis = 10* rgroup #search within the radius of the group
     if tempAxis ==0.:
         tempAxis = 5. #search within 5 kpc if no rgroup given
-    nearidx, = np.where(dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)<=tempAxis**2)
-    print("found the near idx")
-    shell_width = tempAxis/20. # break into 20 chunks. 
+    distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
+    nearidx = np.where(distances<=tempAxis**2)[0]
+    shell_width = tempAxis/40. # break into 20 shells 
     if len(nearidx)==0: #if no DM 
         print("NoDM!")
-        mDM_shells = np.zeros(20)
+        mDM_shells = np.zeros(40)
         shells = []
     else:
         mDM_shells = []
         shells = []
         shell = shell_width
-        tempPosDM = pDM[nearidx] #This was changed from shrinker
-        while shell < tempAxis: #calculate enclosed mass inside sphere 
-            print("calculating dm for shell at radius" +str(shell)+ "out of "+str(tempAxis))
-            DM_encl, = np.where(dist2(tempPosDM[:,0]-cm[0],tempPosDM[:,1]-cm[1],tempPosDM[:,2]-cm[2],boxSize)<=shell**2)
+        tempPosDM = distances[nearidx] #This was changed from shrinker
+        while shell <= tempAxis: #calculate enclosed mass inside sphere 
+            DM_encl = np.where(tempPosDM<=shell**2)[0]
             #The line below could eventually be used for an ellipsoidal search --note some things about tempPos DM have been changed. So would need to update
             #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
             mask = np.ones(tempPosDM.shape, dtype='bool') #mask out all the particles that were in the inner shell 
@@ -77,12 +77,12 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
             mDM_encl =  np.sum(DM_encl)*massDMParticle 
             mDM_shells.append(mDM_encl)
             shells.append(shell)
-            shell =+ shell_width
-    return np.array(shells), np.array(mDM_shells)
+            shell = shell+ shell_width
+    return np.array(shells),np.array(mDM_shells)
 
 def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     """
-    adds the dm shells to all the objects 
+    Calculates the dm shells for all the objects 
     """
     all_shells = []
     mDMs = []
@@ -92,13 +92,13 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     #print the first object so I can see if this worked
     print(shells)
     print(mDM)
-    for i in halo100_pos[1:-1]:
+    for i in range(len(halo100_pos))[1:-1]:
         shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
     return all_shells, mDMs
 
-def files_and_groups(filename, snapnum, newstars, group="Stars"):
+def files_and_groups(filename, snapnum, group="Stars"):
     print('opening files')
     gofilename = str(filename)
     gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
@@ -118,35 +118,26 @@ def files_and_groups(filename, snapnum, newstars, group="Stars"):
     elif group == "DM":
         print("No need to add DM to a DM primary! Exiting now.")
     objs = {}
-    if prim == "stars" or prim == "stars+gas" or sec == "stars" or sec == "stars+gas":
-        print("have stars, getting the star groups")
-        allStarIDs, allStarMasses,allStarPositions = get_starIDs(snap)
-        startAllStars, endAllStars = get_starIDgroups(cat,halo100_indices)
-        print(" ")
-    else: 
-        print("Warning: no stars found. I will not be including them!")
-    if prim == "gas" or prim == "stars+gas" or sec =="gas" or sec =="stars+gas":
-        print("have gas, getting the gas groups")
-        allGasIDs, allGasMasses, allGasPositions = get_gasIDs(snap)
-        startAllGas, endAllGas = get_gasIDgroups(cat,halo100_indices)
-    else:
-        print("Warning: no gas found. I will not be including them!")
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
+    # TESTING MODE ONLY: Uncomment next line
+    #halo100_indices = halo100_indices[0:2]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
     print("dividing into shells and finding the DM")
-    #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[0],massDMParticle, boxSize = boxSize)
+    #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
+    #print(shells)
+    #print(mDM)
     all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad, boxSize)
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
     objs['prim'] = prim
     objs['sec'] = sec
     print("done")
-    with open(gofilename+"/testdm.dat",'wb') as f:
-        pickle.dump(objs, f)
+    #with open(gofilename+"/testdm.dat",'wb') as f:
+    #    pickle.dump(objs, f)
     return objs
 
 if __name__=="__main__":
@@ -161,7 +152,9 @@ if __name__=="__main__":
     script, gofilename, snapnum = argv
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
     #     newstars = pickle.load(f,encoding = "latin1")
-    with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
-        newstars = pickle.load(f,encoding = "latin1")
-    objs = files_and_groups(gofilename, snapnum, newstars, group="Stars")
+    #with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
+    #    newstars = pickle.load(f,encoding = "latin1")
+    objs = files_and_groups(gofilename, snapnum, group="Stars")
+    with open(gofilename+"/dm_shells.dat",'wb') as f:   
+        pickle.dump(objs, f)
     print("Done!")
