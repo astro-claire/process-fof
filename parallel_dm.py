@@ -174,7 +174,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
-    print("dividing into shells and finding the DM")
+    print("dividing into shells and finding the DM through parallel script")
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
     #print(shells)
     #print(mDM)
