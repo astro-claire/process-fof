@@ -97,7 +97,7 @@ def parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, radii,boxSize)
     allDMPositions = np.array(allDMPositions)
     input_indices = range(len(halo100_pos))
     try: 
-        pool = Pool()
+        pool = Pool(16)
         engine = addDM_Engine(radii, massDMParticle,halo100_pos, boxSize,allDMPositions)
         data_mdm = pool.map(engine, input_indices)
     finally: 
@@ -116,6 +116,7 @@ class addDM_Engine():
         self.radii = radii
         self.cm = halo100_pos
     def __call__(self,ind):
+        print(ind)
         tempAxis = 10* self.radii[ind] #search within the radius of the group
         if tempAxis ==0.:
             tempAxis = 5. #search within 5 kpc if no rgroup given
