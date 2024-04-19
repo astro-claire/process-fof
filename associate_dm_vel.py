@@ -37,7 +37,7 @@ def get_GroupVel(cat, halo100_indices):
     """
     Return Group COM
     """
-    return cat.GroupPos[halo100_indices]
+    return cat.GroupVel[halo100_indices]
 
 
 def get_DMIDs(f):
@@ -49,21 +49,23 @@ def get_DMIDs(f):
     allDMVelocities = f['PartType1/Velocities']
     return allDMIDs, allDMPositions, allDMVelocities
 
-def find_DM_shells_vel(pDM,vDM, cm,vcm massDMParticle,rgroup, boxSize= 1775.):
+def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1775.):
     """
-    This function will calculate the amount of DM inside spherical shells around a position x, y, z
+    This function will calculate the amount of DM inside spherical shells around a position x, y, z and the velocity in shells
     Parameters: 
         f (h5py): snapshot
         pDM (array): array of 3D positions of each DM particle in snapshot
         cm (array or list): 3 element array containing x, y, z position from which to calculate the shells.
         rgroup  (float): radius of group (will search within 20x this radius unless 0 is given)
     """
-    
     #tempPosDM = dx_wrap(pDM-cm,boxSize)	
     tempAxis = 10* rgroup #search within the radius of the group
     if tempAxis ==0.:
         tempAxis = 10. #search within 10 kpc if no rgroup given
     distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
+    vcm = vcm/atime
+    velDM = dx_wrap(vDM[:,0]-vcm[0],vDM[:,1]-vcm[1],vDM[:,2]-vcm[2],boxSize) # remove halo velocity
+    velMagDM = np.sqrt((velDM*velDM).sum(axis=1))
     nearidx = np.where(distances<=tempAxis**2)[0]
     shell_width = tempAxis/40. # break into 20 shells 
     if len(nearidx)==0: #if no DM 
@@ -77,20 +79,25 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm massDMParticle,rgroup, boxSize= 1775.):
         shells = []
         shell = shell_width
         tempPosDM = distances[nearidx] #This was changed from shrinker
+        tempVelDM = velMagDM[nearidx]
         while shell <= tempAxis: #calculate enclosed mass inside sphere 
             DM_encl = np.where(tempPosDM<=shell**2)[0]
+            vDM_encl = tempVelDM[DM_encl]
+            vDM_shell = sum(vDM_encl)/len(vDM_encl) # average velocity in shell
+            vDM_shells.append(vDM_shell)
             #The line below could eventually be used for an ellipsoidal search --note some things about tempPos DM have been changed. So would need to update
             #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
             mask = np.ones(tempPosDM.shape, dtype='bool') #mask out all the particles that were in the inner shell 
             mask[DM_encl] = False
             tempPosDM = tempPosDM[mask] #next shell we'll only search the unused DM particles
-            mDM_encl =  np.sum(DM_encl)*massDMParticle 
+            tempVelDM = tempVelDM[mask]
+            mDM_encl = len(DM_encl)*massDMParticle 
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
     return np.array(shells),np.array(mDM_shells), np.array(vDM_shells)
 
-def get_all_DM(allDMPositions,allDMVelocities,halo100_pos,massDMParticle, radii,boxSize):
+def get_all_DM(allDMPositions,allDMVelocities,halo100_pos,halo100_vel,massDMParticle, radii,boxSize,atime):
     """
     Calculates the dm shells for all the objects 
     Parameters: 
@@ -101,13 +108,15 @@ def get_all_DM(allDMPositions,allDMVelocities,halo100_pos,massDMParticle, radii,
     """
     all_shells = []
     mDMs = []
+    vDMs = []
     allDMPositions = np.array(allDMPositions)
-    allDMVelocities = np.array(allDMVelocities)
+    allDMVelocities = np.array(allDMVelocities)*np.sqrt(atime)
     for i in range(len(halo100_pos)):
-        shells, mDM,vDM = find_DM_shells_vel(allDMPositions,allDMVelocities,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
+        shells, mDM,vDM = find_DM_shells_vel(allDMPositions,allDMVelocities,halo100_pos[i],halo100_vel[i],massDMParticle, radii[i],atime, boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
-    return all_shells, mDMs
+        vDMs.append(vDM)
+    return all_shells, mDMs, vDMs
 
 def files_and_groups(filename, snapnum, group="Stars"):
     print('opening files')
@@ -115,6 +124,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
     snap, fof = open_hdf5(gofilename, foffilename)
     boxSize, redshift, massDMParticle = get_headerprops(snap)
+    atime = 1./(1+redshift)
     print('redshift is '+str(redshift))
     cat = set_subfind_catalog(fof)
     prim, sec = set_config(fof)
@@ -137,13 +147,16 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
+    halo100_vel = get_GroupVel(cat,halo100_indices)
     print("dividing into shells and finding the DM")
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
     #print(shells)
     #print(mDM)
-    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad, boxSize)
+    all_shells, mDMs,vDMs = get_all_DM(allDMPositions,allDMVelocities,halo100_pos,halo100_vel,massDMParticle, halo100_rad, boxSize, atime)
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
+    objs['vDM_shells']=np.array(vDMs)
+    print(vDMs)
     objs['prim'] = prim
     objs['sec'] = sec
     print("done")
