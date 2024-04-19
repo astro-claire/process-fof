@@ -70,8 +70,6 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
         tempAxis = 10. #search within 10 kpc if no rgroup given
     distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
     vcm = vcm/atime #Get rid of scale factor units
-    print(len(distances))
-    print(len(vDM))
     velDM = dx_wrap(vDM-vcm,boxSizeVel) # remove halo velocity
     velMagDM = np.sqrt((velDM*velDM).sum(axis=1))
     nearidx = np.where(distances<=tempAxis**2)[0] #indices where CM is within 10 Group Radii
@@ -150,7 +148,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     # TESTING MODE ONLY: Uncomment next line
-    halo100_indices = halo100_indices[0:2]
+    #halo100_indices = halo100_indices[0:2]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -164,7 +162,6 @@ def files_and_groups(filename, snapnum, group="Stars"):
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
     objs['vDM_shells']=np.array(vDMs)
-    print(vDMs)
     objs['prim'] = prim
     objs['sec'] = sec
     print("Units have been changed for velocities!")
