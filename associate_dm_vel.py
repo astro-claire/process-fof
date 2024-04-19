@@ -169,8 +169,6 @@ def files_and_groups(filename, snapnum, group="Stars"):
     objs['sec'] = sec
     print("Units have been changed for velocities!")
     print("done")
-    #with open(gofilename+"/testdm.dat",'wb') as f:
-    #    pickle.dump(objs, f)
     return objs
 
 if __name__=="__main__":
@@ -190,4 +188,6 @@ if __name__=="__main__":
     objs = files_and_groups(gofilename, snapnum, group="Stars")
     # with open(gofilename+"/dm_vel_shells"+str(snapnum)+".dat",'wb') as f:   
     #     pickle.dump(objs, f)
+    with open(gofilename+"/velocity_shells_dm_"+str(snapnum)+".dat",'wb') as f:
+       pickle.dump(objs, f)
     print("Done!")
