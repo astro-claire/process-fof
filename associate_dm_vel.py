@@ -64,13 +64,16 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
     boxSizeVel = boxSize * hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
     #tempPosDM = dx_wrap(pDM-cm,boxSize)	
     tempAxis = 10* rgroup #search within the radius of the group
+    #NOTE A UNIT CONVERSION MIGHT NEED TO HAPPEN HERE!! GROUP RADIUS IS A DIFFERENT UNIT!!!
     if tempAxis ==0.:
         tempAxis = 10. #search within 10 kpc if no rgroup given
     distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
     vcm = vcm/atime #Get rid of scale factor units
+    print(len(distances))
+    print(len(vDM))
     velDM = dx_wrap(vDM-vcm,boxSizeVel) # remove halo velocity
     velMagDM = np.sqrt((velDM*velDM).sum(axis=1))
-    nearidx = np.where(distances<=tempAxis**2)[0]
+    nearidx = np.where(distances<=tempAxis**2)[0] #indices where CM is within 10 Group Radii
     shell_width = tempAxis/40. # break into 20 shells 
     if len(nearidx)==0: #if no DM 
         print("NoDM!")
@@ -94,9 +97,9 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
             mask = np.ones(tempPosDM.shape, dtype='bool') #let's mask out all the particles that were in the inner shell 
             mask[DM_encl] = False #Remove the used particles
             tempPosDM = tempPosDM[mask] #next shell we'll only search the unused DM particles
-            mDM_encl =  len(DM_encl)*massDMParticle  #number of DM particles times particle mass
-            mDM_shells.append(mDM_encl)
             tempVelDM = tempVelDM[mask] # mask out the used velocities as well
+            mDM_encl =  len(DM_encl)*massDMParticle  #number of DM particles times particle mass
+            mDM_shells.append(mDM_encl) # Note that these are not cumulative because of the masking
             shells.append(shell)
             shell = shell+ shell_width
     return np.array(shells),np.array(mDM_shells), np.array(vDM_shells)
