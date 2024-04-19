@@ -71,7 +71,7 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
     distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
     vcm = vcm/atime #Get rid of scale factor units
     velDM = dx_wrap(vDM-vcm,boxSizeVel) # remove halo velocity
-    velMagDM = np.sqrt((velDM*velDM).sum(axis=1))
+    velMagDM = np.sqrt((velDM*velDM).sum(axis=1)) #Magnitude of each velocity 
     nearidx = np.where(distances<=tempAxis**2)[0] #indices where CM is within 10 Group Radii
     shell_width = tempAxis/40. # break into 20 shells 
     if len(nearidx)==0: #if no DM 
