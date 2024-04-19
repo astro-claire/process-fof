@@ -33,6 +33,13 @@ def get_GroupRadii(cat, halo100_indices):
     """
     return cat.Group_R_Crit200[halo100_indices]
 
+def get_GroupVel(cat, halo100_indices):
+    """
+    Return Group COM
+    """
+    return cat.GroupPos[halo100_indices]
+
+
 def get_DMIDs(f):
     """
     Get particle IDs (groupordered snap)
@@ -42,7 +49,7 @@ def get_DMIDs(f):
     allDMVelocities = f['PartType1/Velocities']
     return allDMIDs, allDMPositions, allDMVelocities
 
-def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
+def find_DM_shells_vel(pDM,vDM, cm,vcm massDMParticle,rgroup, boxSize= 1775.):
     """
     This function will calculate the amount of DM inside spherical shells around a position x, y, z
     Parameters: 
@@ -62,9 +69,11 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
     if len(nearidx)==0: #if no DM 
         print("NoDM!")
         mDM_shells = np.zeros(40)
+        vDM_shells = np.zeros(40)
         shells = []
     else:
         mDM_shells = []
+        vDM_shells = []
         shells = []
         shell = shell_width
         tempPosDM = distances[nearidx] #This was changed from shrinker
@@ -79,9 +88,9 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
-    return np.array(shells),np.array(mDM_shells)
+    return np.array(shells),np.array(mDM_shells), np.array(vDM_shells)
 
-def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
+def get_all_DM(allDMPositions,allDMVelocities,halo100_pos,massDMParticle, radii,boxSize):
     """
     Calculates the dm shells for all the objects 
     Parameters: 
@@ -93,8 +102,9 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     all_shells = []
     mDMs = []
     allDMPositions = np.array(allDMPositions)
+    allDMVelocities = np.array(allDMVelocities)
     for i in range(len(halo100_pos)):
-        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
+        shells, mDM,vDM = find_DM_shells_vel(allDMPositions,allDMVelocities,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
     return all_shells, mDMs

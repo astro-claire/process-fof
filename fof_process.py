@@ -72,6 +72,7 @@ class subfindGroup():
 		self.GroupLenType = f['Group/GroupLenType']
 		self.GroupPos = f['Group/GroupPos']
 		self.Group_R_Crit200 = f['Group/Group_R_Crit200']
+		self.GroupVel = f['Group/GroupVel']
 		
 		
 def print_group_properties(f):
