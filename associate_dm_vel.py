@@ -61,6 +61,7 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
     hubbleparam= 0.71 #FIX THESE SO THEY AREN'T HARD CODED
     Omega0 = 0.27
     OmegaLambda = 0.71
+    #hubble flow correction
     boxSizeVel = boxSize * hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
     #tempPosDM = dx_wrap(pDM-cm,boxSize)	
     tempAxis = 10* rgroup #search within the radius of the group
