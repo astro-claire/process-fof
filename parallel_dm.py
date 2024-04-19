@@ -79,7 +79,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
             mask = np.ones(tempPosDM.shape, dtype='bool') #mask out all the particles that were in the inner shell 
             mask[DM_encl] = False
             tempPosDM = tempPosDM[mask] #next shell we'll only search the unused DM particles
-            mDM_encl =  np.sum(DM_encl)*massDMParticle 
+            mDM_encl =  len(DM_encl)*massDMParticle 
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
@@ -97,7 +97,7 @@ def parallel_dm_shells(allDMPositions,halo100_pos,massDMParticle, radii,boxSize)
     allDMPositions = np.array(allDMPositions)
     input_indices = range(len(halo100_pos))
     try: 
-        pool = Pool(16)
+        pool = Pool(128)
         engine = addDM_Engine(radii, massDMParticle,halo100_pos, boxSize,allDMPositions)
         data_mdm = pool.map(engine, input_indices)
     finally: 
@@ -139,7 +139,7 @@ class addDM_Engine():
                 mask = np.ones(tempPosDM.shape, dtype='bool') #mask out all the particles that were in the inner shell 
                 mask[DM_encl] = False
                 tempPosDM = tempPosDM[mask] #next shell we'll only search the unused DM particles
-                mDM_encl =  np.sum(DM_encl)*self.massDMParticle 
+                mDM_encl =  len(DM_encl)*self.massDMParticle 
                 mDM_shells.append(mDM_encl)
                 shells.append(shell)
                 shell = shell+ shell_width
