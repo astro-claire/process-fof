@@ -58,13 +58,17 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
         cm (array or list): 3 element array containing x, y, z position from which to calculate the shells.
         rgroup  (float): radius of group (will search within 20x this radius unless 0 is given)
     """
+    hubbleparam= 0.71 #FIX THESE SO THEY AREN'T HARD CODED
+    Omega0 = 0.27
+    OmegaLambda = 0.71
+    boxSizeVel = boxSize * hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
     #tempPosDM = dx_wrap(pDM-cm,boxSize)	
     tempAxis = 10* rgroup #search within the radius of the group
     if tempAxis ==0.:
         tempAxis = 10. #search within 10 kpc if no rgroup given
     distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
-    vcm = vcm/atime
-    velDM = dx_wrap(vDM[:,0]-vcm[0],vDM[:,1]-vcm[1],vDM[:,2]-vcm[2],boxSize) # remove halo velocity
+    vcm = vcm/atime #Get rid of scale factor units
+    velDM = dx_wrap(vDM-vcm,boxSizeVel) # remove halo velocity
     velMagDM = np.sqrt((velDM*velDM).sum(axis=1))
     nearidx = np.where(distances<=tempAxis**2)[0]
     shell_width = tempAxis/40. # break into 20 shells 
@@ -82,17 +86,17 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
         tempVelDM = velMagDM[nearidx]
         while shell <= tempAxis: #calculate enclosed mass inside sphere 
             DM_encl = np.where(tempPosDM<=shell**2)[0]
-            vDM_encl = tempVelDM[DM_encl]
+            vDM_encl = tempVelDM[DM_encl] #velocity of particles in shell
             vDM_shell = sum(vDM_encl)/len(vDM_encl) # average velocity in shell
             vDM_shells.append(vDM_shell)
             #The line below could eventually be used for an ellipsoidal search --note some things about tempPos DM have been changed. So would need to update
             #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
-            mask = np.ones(tempPosDM.shape, dtype='bool') #mask out all the particles that were in the inner shell 
-            mask[DM_encl] = False
+            mask = np.ones(tempPosDM.shape, dtype='bool') #let's mask out all the particles that were in the inner shell 
+            mask[DM_encl] = False #Remove the used particles
             tempPosDM = tempPosDM[mask] #next shell we'll only search the unused DM particles
-            tempVelDM = tempVelDM[mask]
-            mDM_encl = len(DM_encl)*massDMParticle 
+            mDM_encl =  len(DM_encl)*massDMParticle  #number of DM particles times particle mass
             mDM_shells.append(mDM_encl)
+            tempVelDM = tempVelDM[mask] # mask out the used velocities as well
             shells.append(shell)
             shell = shell+ shell_width
     return np.array(shells),np.array(mDM_shells), np.array(vDM_shells)
@@ -110,7 +114,7 @@ def get_all_DM(allDMPositions,allDMVelocities,halo100_pos,halo100_vel,massDMPart
     mDMs = []
     vDMs = []
     allDMPositions = np.array(allDMPositions)
-    allDMVelocities = np.array(allDMVelocities)*np.sqrt(atime)
+    allDMVelocities = np.array(allDMVelocities)*np.sqrt(atime) #Get rid of scale factor units
     for i in range(len(halo100_pos)):
         shells, mDM,vDM = find_DM_shells_vel(allDMPositions,allDMVelocities,halo100_pos[i],halo100_vel[i],massDMParticle, radii[i],atime, boxSize = boxSize)
         all_shells.append(shells)
@@ -159,6 +163,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print(vDMs)
     objs['prim'] = prim
     objs['sec'] = sec
+    print("Units have been changed for velocities!")
     print("done")
     #with open(gofilename+"/testdm.dat",'wb') as f:
     #    pickle.dump(objs, f)
