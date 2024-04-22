@@ -89,7 +89,10 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
         while shell <= tempAxis: #calculate enclosed mass inside sphere 
             DM_encl = np.where(tempPosDM<=shell**2)[0]
             vDM_encl = tempVelDM[DM_encl] #velocity of particles in shell
-            vDM_shell = sum(vDM_encl)/len(vDM_encl) # average velocity in shell
+            if len(vDM_encl)>0: 
+                vDM_shell = sum(vDM_encl)/len(vDM_encl) # average velocity in shell
+            else: 
+                vDM_shell = 0.
             vDM_shells.append(vDM_shell)
             #The line below could eventually be used for an ellipsoidal search --note some things about tempPos DM have been changed. So would need to update
             #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
@@ -101,7 +104,7 @@ def find_DM_shells_vel(pDM,vDM, cm,vcm ,massDMParticle,rgroup, atime, boxSize= 1
             mDM_shells.append(mDM_encl) # Note that these are not cumulative because of the masking
             shells.append(shell)
             shell = shell+ shell_width
-    return np.array(shells),np.array(mDM_shells), np.array(vDM_shells)
+    return np.array(shells), np.array(mDM_shells), np.array(vDM_shells)
 
 def get_all_DM(allDMPositions,allDMVelocities,halo100_pos,halo100_vel,massDMParticle, radii,boxSize,atime):
     """
