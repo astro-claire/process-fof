@@ -87,6 +87,19 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
         if edge_density<200*rhodm:
             #ADD CODE TO ADD SHELLS
             print("Overdensity continues to further radii")
+            while shell <= 10*tempAxis:
+                DM_encl = np.where(tempPosDM<=shell**2)[0]
+                #The line below could eventually be used for an ellipsoidal search --note some things about tempPos DM have been changed. So would need to update
+                #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
+                mask = np.ones(tempPosDM.shape, dtype='bool') #let's mask out all the particles that were in the inner shell 
+                mask[DM_encl] = False #Remove the used particles
+                tempPosDM = tempPosDM[mask] #next shell we'll only search the unused DM particles
+                mDM_encl =  len(DM_encl)*massDMParticle  #number of DM particles times particle mass
+                mDM_shells.append(mDM_encl)
+                shells.append(shell)
+                shell = shell+ shell_width
+                edge_density = mDM_encl*UnitMass_in_g/(shell**(-3)*UnitLength_in_cm**3)
+                if 
         else:
             pass
     return np.array(shells),np.array(mDM_shells)
