@@ -99,7 +99,8 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
                 shells.append(shell)
                 shell = shell+ shell_width
                 edge_density = mDM_encl*UnitMass_in_g/(shell**(-3)*UnitLength_in_cm**3)
-                if 
+                if edge_density>200*rhodm:
+                    break
         else:
             pass
     return np.array(shells),np.array(mDM_shells)
