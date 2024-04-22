@@ -60,6 +60,9 @@ def get_headerprops(f):
 	return f['Header'].attrs['BoxSize'], f['Header'].attrs['Redshift'],  f['Header'].attrs['MassTable'][1]
 
 def get_cosmo_props(f):
+	"""
+	Create dictionary of cosmological parameters based on snapfile header. 
+	"""
 	cos = {}
 	G = 6.672e-8
 	cos['H0'] = f['Header'].attrs['HubbleParam']* 100 # hubble constant
