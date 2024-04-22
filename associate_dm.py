@@ -83,8 +83,9 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
-        edge_density = sum(mDM_shells)*UnitMass_in_g/(shells[-1]**(-3)*UnitLength_in_cm**3)
-        #BIG PROBLEM _ NEED TO CALCULATE CUMULATIVE DENSITY
+        edge_density = mDM_shells[-1]*UnitMass_in_g/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3))) #density in g/cm^2 - just the shell! Not  the whole thing 
+        print(edge_density)
+        print(rhodm)
         if edge_density>200*rhodm:
             #ADD CODE TO ADD SHELLS
             print("Overdensity continues to further radii")
@@ -99,8 +100,9 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
                 mDM_shells.append(mDM_encl)
                 shells.append(shell)
                 shell = shell + shell_width
-                edge_density = sum(mDM_shells)*UnitMass_in_g/(shell**(-3)*UnitLength_in_cm**3)
+                edge_density = mDM_shells[-1]*UnitMass_in_g/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3)))
                 if edge_density<=200*rhodm:
+                    print("edge density is "+str(edge_density))
                     break
         else:
             pass
@@ -183,6 +185,7 @@ if __name__=="__main__":
     #with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
+    print("Note, nothing is currently saved")
     # with open(gofilename+"/dm_shells_"+str(snapnum)+"_V2.dat",'wb') as f:   
     #     pickle.dump(objs, f)
     print("Done!")
