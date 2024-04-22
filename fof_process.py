@@ -72,7 +72,7 @@ def get_cosmo_props(f):
 	cos['OL0'] = f['Header'].attrs['OmegaLambda'] #z=0 DE fraction
 	cos['OL'] = cos['OL0'] # DE fraction at z of snap
 	cos['H2'] = cos['H0']**2 * (cos['Om']+cos['OL'] ) #Hubble parameter at z of snap
-	cos['rhocrit0'] = 3 * cos['H0']**2/(8*np.pi* G) * 1/((3.086e-19)**2)
+	cos['rhocrit0'] = 3 * cos['H0']**2/(8*np.pi* G) * 1/((3.086e19)**2)
 	cos['rhodm'] = cos['Om']*cos['rhocrit0'] 
 	return cos
 
