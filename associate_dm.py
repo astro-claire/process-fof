@@ -11,6 +11,7 @@ from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_hea
 
 UnitLength_in_cm = 3.085678e21 # code length unit in cm/h
 UnitMass_in_g = 1.989e43       # code length unit in g/h
+hubbleparam = .71 #hubble constant
 
 
 def dx_wrap(dx,box):
@@ -83,7 +84,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
-        edge_density = mDM_shells[-1]*UnitMass_in_g/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3))) #density in g/cm^2 - just the shell! Not  the whole thing 
+        edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3))) #density in g/cm^3 - just the shell! Not  the whole thing 
         print(edge_density)
         print(rhodm)
         if edge_density>200*rhodm:
@@ -100,7 +101,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
                 mDM_shells.append(mDM_encl)
                 shells.append(shell)
                 shell = shell + shell_width
-                edge_density = mDM_shells[-1]*UnitMass_in_g/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3)))
+                edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3)))
                 if edge_density<=200*rhodm:
                     print("edge density is "+str(edge_density))
                     break
