@@ -7,7 +7,11 @@ import numpy as np
 from sys import argv
 import pickle
 import fof_process
-from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups
+from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props
+
+UnitLength_in_cm = 3.085678e21 # code length unit in cm/h
+UnitMass_in_g = 1.989e43       # code length unit in g/h
+
 
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
@@ -42,7 +46,7 @@ def get_DMIDs(f):
     allDMVelocities = f['PartType1/Velocities']
     return allDMIDs, allDMPositions, allDMVelocities
 
-def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
+def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775., rhodm):
     """
     This function will calculate the amount of DM inside spherical shells around a position x, y, z
     Parameters: 
@@ -79,6 +83,12 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775.):
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
+        edge_density = mDM_shells[-1]*UnitMass_in_g/(shells[-1]**(-3)*UnitLength_in_cm**3)
+        if edge_density<200*rhodm:
+            #ADD CODE TO ADD SHELLS
+            print("Overdensity continues to further radii")
+        else:
+            pass
     return np.array(shells),np.array(mDM_shells)
 
 def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
@@ -105,6 +115,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
     snap, fof = open_hdf5(gofilename, foffilename)
     boxSize, redshift, massDMParticle = get_headerprops(snap)
+    cosmo = get_cosmo_props(snap)
     print('redshift is '+str(redshift))
     cat = set_subfind_catalog(fof)
     prim, sec = set_config(fof)
