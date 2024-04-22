@@ -46,7 +46,7 @@ def get_DMIDs(f):
     allDMVelocities = f['PartType1/Velocities']
     return allDMIDs, allDMPositions, allDMVelocities
 
-def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775., rhodm):
+def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
     """
     This function will calculate the amount of DM inside spherical shells around a position x, y, z
     Parameters: 
@@ -91,7 +91,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, boxSize= 1775., rhodm):
             pass
     return np.array(shells),np.array(mDM_shells)
 
-def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
+def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,rhodm, boxSize):
     """
     Calculates the dm shells for all the objects 
     Parameters: 
@@ -104,7 +104,7 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,boxSize):
     mDMs = []
     allDMPositions = np.array(allDMPositions)
     for i in range(len(halo100_pos)):
-        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],boxSize = boxSize)
+        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],rhodm,boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
     return all_shells, mDMs
@@ -142,7 +142,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
     #print(shells)
     #print(mDM)
-    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad, boxSize)
+    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhodm'], boxSize)
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
     objs['prim'] = prim
