@@ -83,8 +83,9 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
-        edge_density = mDM_shells[-1]*UnitMass_in_g/(shells[-1]**(-3)*UnitLength_in_cm**3)
-        if edge_density<200*rhodm:
+        edge_density = sum(mDM_shells)*UnitMass_in_g/(shells[-1]**(-3)*UnitLength_in_cm**3)
+        #BIG PROBLEM _ NEED TO CALCULATE CUMULATIVE DENSITY
+        if edge_density>200*rhodm:
             #ADD CODE TO ADD SHELLS
             print("Overdensity continues to further radii")
             while shell <= 10*tempAxis:
@@ -97,9 +98,9 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
                 mDM_encl =  len(DM_encl)*massDMParticle  #number of DM particles times particle mass
                 mDM_shells.append(mDM_encl)
                 shells.append(shell)
-                shell = shell+ shell_width
-                edge_density = mDM_encl*UnitMass_in_g/(shell**(-3)*UnitLength_in_cm**3)
-                if edge_density>200*rhodm:
+                shell = shell + shell_width
+                edge_density = sum(mDM_shells)*UnitMass_in_g/(shell**(-3)*UnitLength_in_cm**3)
+                if edge_density<=200*rhodm:
                     break
         else:
             pass
@@ -147,7 +148,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     # TESTING MODE ONLY: Uncomment next line
-    #halo100_indices = halo100_indices[0:2]
+    halo100_indices = halo100_indices[0:2]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -161,6 +162,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     objs['mDM_shells']=np.array(mDMs)
     objs['prim'] = prim
     objs['sec'] = sec
+    print(mDMs)
     print("done")
     #with open(gofilename+"/testdm.dat",'wb') as f:
     #    pickle.dump(objs, f)
@@ -181,6 +183,6 @@ if __name__=="__main__":
     #with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
-    with open(gofilename+"/dm_shells_"+str(snapnum)+"_V2.dat",'wb') as f:   
-        pickle.dump(objs, f)
+    # with open(gofilename+"/dm_shells_"+str(snapnum)+"_V2.dat",'wb') as f:   
+    #     pickle.dump(objs, f)
     print("Done!")
