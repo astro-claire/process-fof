@@ -84,7 +84,9 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
-        edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3))) #density in g/cm^3 - just the shell! Not  the whole thing 
+        #Note that using the mean density--uncomment for shell density
+        #edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3))) #density in g/cm^3 - just the shell! Not  the whole thing 
+        edge_density = sum( mDM_shells)*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)))
         if edge_density>200*rhodm:
             print("Overdensity continues to further radii")
             while shell <= 10*tempAxis:
@@ -98,7 +100,9 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
                 mDM_shells.append(mDM_encl)
                 shells.append(shell)
                 shell = shell + shell_width
-                edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3)))
+                #Again mean density criterion
+                #edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3)))
+                edge_density = sum( mDM_shells)*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)))
                 if edge_density<=200*rhodm:
                     print("edge density is "+str(edge_density))
                     break
@@ -122,6 +126,7 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,rhodm, boxSize):
         shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],rhodm,boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
+    print("Used mean halo density and rhoM criterion")
     return all_shells, mDMs
 
 def files_and_groups(filename, snapnum, group="Stars"):
@@ -158,6 +163,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     #print(shells)
     #print(mDM)
     all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhodm'], boxSize)
+    #rhodm is misnamed = should change to rhom. 
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
     objs['prim'] = prim
