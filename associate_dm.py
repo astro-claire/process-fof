@@ -85,10 +85,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
             shells.append(shell)
             shell = shell+ shell_width
         edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3))) #density in g/cm^3 - just the shell! Not  the whole thing 
-        print(edge_density)
-        print(rhodm)
         if edge_density>200*rhodm:
-            #ADD CODE TO ADD SHELLS
             print("Overdensity continues to further radii")
             while shell <= 10*tempAxis:
                 DM_encl = np.where(tempPosDM<=shell**2)[0]
@@ -165,7 +162,6 @@ def files_and_groups(filename, snapnum, group="Stars"):
     objs['mDM_shells']=np.array(mDMs)
     objs['prim'] = prim
     objs['sec'] = sec
-    print(mDMs)
     print("done")
     #with open(gofilename+"/testdm.dat",'wb') as f:
     #    pickle.dump(objs, f)
