@@ -61,7 +61,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
     tempAxis = 10* rgroup #search within the radius of the group
     if tempAxis ==0.:
         tempAxis = 10. #search within 10 kpc if no rgroup given
-    distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize)
+    distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize) #Note this is distance SQUARED
     nearidx = np.where(distances<=tempAxis**2)[0]
     shell_width = tempAxis/40. # break into 20 shells 
     if len(nearidx)==0: #if no DM 
@@ -151,7 +151,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     # TESTING MODE ONLY: Uncomment next line
-    halo100_indices = halo100_indices[0:2]
+    #halo100_indices = halo100_indices[0:2]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -186,7 +186,7 @@ if __name__=="__main__":
     #with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
-    print("Note, nothing is currently saved")
-    # with open(gofilename+"/dm_shells_"+str(snapnum)+"_V2.dat",'wb') as f:   
-    #     pickle.dump(objs, f)
+    print("Note, file is currently being saved")
+    with open(gofilename+"/dm_shells_"+str(snapnum)+"_V3.dat",'wb') as f:   
+        pickle.dump(objs, f)
     print("Done!")
