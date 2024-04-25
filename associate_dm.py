@@ -47,7 +47,7 @@ def get_DMIDs(f):
     allDMVelocities = f['PartType1/Velocities']
     return allDMIDs, allDMPositions, allDMVelocities
 
-def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
+def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, atime,boxSize= 1775.):
     """
     This function will calculate the amount of DM inside spherical shells around a position x, y, z
     Parameters: 
@@ -84,12 +84,12 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
             mDM_shells.append(mDM_encl)
             shells.append(shell)
             shell = shell+ shell_width
-        #Note that using the mean density--uncomment for shell density
+        #Note that using the mean density--uncomment for shell density - WRONG UNIT
         #edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3))) #density in g/cm^3 - just the shell! Not  the whole thing 
-        edge_density = sum( mDM_shells)*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)))
+        edge_density = sum(mDM_shells)*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]/hubbleparam*atime)**(3)*UnitLength_in_cm**3))
         if edge_density>200*rhodm:
             print("Overdensity continues to further radii")
-            while shell <= 10*tempAxis:
+            while shell <= 10.*tempAxis:
                 DM_encl = np.where(tempPosDM<=shell**2)[0]
                 #The line below could eventually be used for an ellipsoidal search --note some things about tempPos DM have been changed. So would need to update
                 #DM_encl = tempPosDM[:,0]**2/ratios[0]**2 + tempPosDM[:,1]**2/ratios[1]**2 + tempPosDM[:,2]**2 <= shell**2
@@ -102,7 +102,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
                 shell = shell + shell_width
                 #Again mean density criterion
                 #edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3)))
-                edge_density = sum( mDM_shells)*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)))
+                edge_density = sum( mDM_shells)*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]/hubbleparam*atime)**(3)*UnitLength_in_cm**3))
                 if edge_density<=200*rhodm:
                     print("edge density is "+str(edge_density))
                     break
@@ -110,7 +110,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, boxSize= 1775.):
             pass
     return np.array(shells),np.array(mDM_shells)
 
-def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,rhodm, boxSize):
+def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,rhodm,atime, boxSize):
     """
     Calculates the dm shells for all the objects 
     Parameters: 
@@ -123,7 +123,7 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,rhodm, boxSize):
     mDMs = []
     allDMPositions = np.array(allDMPositions)
     for i in range(len(halo100_pos)):
-        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],rhodm,boxSize = boxSize)
+        shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],rhodm,atime,boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
     print("Used mean halo density and rhoM criterion")
@@ -162,7 +162,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
     #print(shells)
     #print(mDM)
-    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhodm'], boxSize)
+    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhodm'],cosmo['a'] boxSize)
     #rhodm is misnamed = should change to rhom. 
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
