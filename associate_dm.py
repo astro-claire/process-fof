@@ -162,7 +162,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
     #print(shells)
     #print(mDM)
-    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhodm'],cosmo['a'] boxSize)
+    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhodm'],cosmo['a'], boxSize)
     #rhodm is misnamed = should change to rhom. 
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
