@@ -58,7 +58,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, atime,boxSize= 1775.):
     """
     
     #tempPosDM = dx_wrap(pDM-cm,boxSize)	
-    tempAxis = 10* rgroup #search within the radius of the group
+    tempAxis = 10* rgroup /atime*hubbleparam#search within the radius of the group - converting to the weird units that the coordinates are in . 
     if tempAxis ==0.:
         tempAxis = 10. #search within 10 kpc if no rgroup given
     distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize) #Note this is distance SQUARED
@@ -86,7 +86,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, atime,boxSize= 1775.):
             shell = shell+ shell_width
         #Note that using the mean density--uncomment for shell density - WRONG UNIT
         #edge_density = mDM_shells[-1]*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]**(3)*UnitLength_in_cm**3)-(shells[-2]**(3)*UnitLength_in_cm**3))) #density in g/cm^3 - just the shell! Not  the whole thing 
-        edge_density = sum(mDM_shells)*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]/hubbleparam*atime)**(3)*UnitLength_in_cm**3))
+        edge_density = sum(mDM_shells)*UnitMass_in_g/hubbleparam/(4./3.*np.pi *((shells[-1]/hubbleparam*atime)**(3)*UnitLength_in_cm**3)) # Conversion to physical units for comparison with critical density
         if edge_density>200*rhodm:
             print("Overdensity continues to further radii")
             while shell <= 10.*tempAxis:
@@ -108,7 +108,7 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, atime,boxSize= 1775.):
                     break
         else:
             pass
-    return np.array(shells),np.array(mDM_shells)
+    return np.array(shells,dtype=object),np.array(mDM_shells,dtype=object)
 
 def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,rhodm,atime, boxSize):
     """
@@ -126,7 +126,7 @@ def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,rhodm,atime, box
         shells, mDM = find_DM_shells(allDMPositions,halo100_pos[i],massDMParticle, radii[i],rhodm,atime,boxSize = boxSize)
         all_shells.append(shells)
         mDMs.append(mDM)
-    print("Used mean halo density and rhoM criterion")
+    print("Used mean halo density and rhocrit criterion")
     return all_shells, mDMs
 
 def files_and_groups(filename, snapnum, group="Stars"):
@@ -153,7 +153,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     # TESTING MODE ONLY: Uncomment next line
-    #halo100_indices = halo100_indices[0:2]
+    halo100_indices = halo100_indices[0:3]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -162,7 +162,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
     #print(shells)
     #print(mDM)
-    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhodm'],cosmo['a'], boxSize)
+    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhocrit'],cosmo['a'], boxSize)
     #rhodm is misnamed = should change to rhom. 
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
@@ -188,7 +188,7 @@ if __name__=="__main__":
     #with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
-    print("Note, file is currently being saved")
-    with open(gofilename+"/dm_shells_"+str(snapnum)+"_V3.dat",'wb') as f:   
-        pickle.dump(objs, f)
+    print("Note, no file is currently being saved")
+    # with open(gofilename+"/dm_shells_"+str(snapnum)+"_V3.dat",'wb') as f:   
+    #     pickle.dump(objs, f)
     print("Done!")
