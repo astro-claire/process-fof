@@ -153,7 +153,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
     # TESTING MODE ONLY: Uncomment next line
-    halo100_indices = halo100_indices[0:3]
+    #halo100_indices = halo100_indices[0:3]
     print(str(len(halo100_indices))+' objects')
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -163,7 +163,6 @@ def files_and_groups(filename, snapnum, group="Stars"):
     #print(shells)
     #print(mDM)
     all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhocrit'],cosmo['a'], boxSize)
-    #rhodm is misnamed = should change to rhom. 
     objs['shells']=np.array(all_shells)
     objs['mDM_shells']=np.array(mDMs)
     objs['prim'] = prim
@@ -189,6 +188,6 @@ if __name__=="__main__":
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
     print("Note, no file is currently being saved")
-    # with open(gofilename+"/dm_shells_"+str(snapnum)+"_V3.dat",'wb') as f:   
-    #     pickle.dump(objs, f)
+    with open(gofilename+"/dm_shells_"+str(snapnum)+"_V3.dat",'wb') as f:   
+        pickle.dump(objs, f)
     print("Done!")

@@ -74,7 +74,7 @@ def get_cosmo_props(f):
 	cos['Om'] = cos['Om0']* (cos['a']**(-3.)) *(cos['H0']**2/cos['H2'])# matter fraction at z of snap
 	cos['rhocrit0'] = 3 * cos['H0']**2/(8*np.pi* G) * 1/((3.086e19)**2) # unit conversion to g/cm^3
 	cos['rhocrit'] = 3 * cos['H2']/(8*np.pi* G) * 1/((3.086e19)**2) # unit conversion to g/cm^3
-	cos['rhodm'] = cos['Om']*cos['rhocrit'] 
+	cos['rhom'] = cos['Om']*cos['rhocrit'] 
 	return cos
 
 class subfindGroup():
