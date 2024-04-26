@@ -45,8 +45,8 @@ def open_hdf5(gofilename, foffilename):
 	Returns:
         (tuple): snap-groupordered hdf5, fof table hdf5
 	"""
-	snap = h5py.File(gofilename+'.hdf5')
-	fof = h5py.File(foffilename+'.hdf5')
+	snap = h5py.File(gofilename+'.hdf5','r')
+	fof = h5py.File(foffilename+'.hdf5','r')
 	return snap, fof
 
 def get_headerprops(f):
@@ -68,12 +68,13 @@ def get_cosmo_props(f):
 	cos['H0'] = f['Header'].attrs['HubbleParam']* 100 # hubble constant
 	cos['a'] =   f['Header'].attrs['Time'] #scale factor @ z of snap
 	cos['Om0'] = f['Header'].attrs['Omega0'] #z=0 matter fraction
-	cos['Om'] = cos['Om0']* (cos['a'])**(-3.) # matter fraction at z of snap
 	cos['OL0'] = f['Header'].attrs['OmegaLambda'] #z=0 DE fraction
 	cos['OL'] = cos['OL0'] # DE fraction at z of snap
-	cos['H2'] = cos['H0']**2 * (cos['Om']+cos['OL'] ) #Hubble parameter at z of snap
+	cos['H2'] = cos['H0']**2 * (cos['Om0']* (cos['a']**(-3.))+cos['OL'] ) #Hubble parameter at z of snap
+	cos['Om'] = cos['Om0']* (cos['a']**(-3.)) *(cos['H0']**2/cos['H2'])# matter fraction at z of snap
 	cos['rhocrit0'] = 3 * cos['H0']**2/(8*np.pi* G) * 1/((3.086e19)**2) # unit conversion to g/cm^3
-	cos['rhodm'] = cos['Om']*cos['rhocrit0'] 
+	cos['rhocrit'] = 3 * cos['H2']/(8*np.pi* G) * 1/((3.086e19)**2) # unit conversion to g/cm^3
+	cos['rhodm'] = cos['Om']*cos['rhocrit'] 
 	return cos
 
 class subfindGroup():
