@@ -28,6 +28,11 @@ def get_GroupVel(cat, halo100_indices):
     """
     return cat.GroupVel[halo100_indices]
 
+def get_GroupPos(cat, halo100_indices):
+    """
+    Return Group COM
+    """
+    return cat.GroupPos[halo100_indices]
 
 def get_starIDs(f):
     """
@@ -39,81 +44,65 @@ def get_starIDs(f):
     return allStarIDs, allStarPositions, allStarVelocities
 
 
-def calc_stellar_rotation():
-	"""
-	Calculate rotation curve of stellar component 
-	"""
-	pass
+def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
+    """
+    Calculate rotation curve of stellar component - 25 steps
+    """
+    tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel)
+    velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
+    distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
+    inner_rad = min(distances)
+    outer_rad = max(distances)
+    step = (outer_rad-inner_rad)/25
+    radius = inner_rad
+    rotation_curve = []
+    radii = []
+    while radius < outer_rad:
+         shell_idx = np.where(distances<radius)[0]
+         if len(shell_idx)>0: #only use shells containing star particles
+            vel_inShell = velMagStars[shell_idx]
+            mask = np.ones(distances.shape, dtype='bool')
+            mask[shell_idx] = False #Remove the used particles
+            distances = distances[mask] #next shell we'll only search the unused DM particles
+            velocity = sum(vel_inShell)/len(vel_inShell) #average velocity in shell
+            rotation_curve.append(velocity)
+            radii.append(radius)
+         else: 
+              #Case with empty shell
+              velocity = 0.
+         radius = radius + step
 
-def iterate_galaxies(halo100_indices):
-	"""
-	iterate all the galaxies in the FOF and find their rotation curves
-	"""
-	objs = {}
-	rotation = np.array(len(halo100_indices))
-	radii = np.array(len(halo100_indices))
-	for i in halo100_indices:
-            
-		stellar_rotation_curve, rotation_radii = calc_stellar_rotation()
-		rotation[i] = stellar_rotation_curve
-		radii[i] = rotation_radii
-	objs['rot_curves'] = rotation
-	objs['rot_radii'] = radii
-	return objs
+    return rotation_curve, radii
+     
 
-#Alternatively, let's just do this
-def get_obj_properties(cat, boxsize, halo100_indices, allStarIDs,allStarMasses, allStarPositions, startAllStars,endAllStars, r200 =True, Gas = False):
-	"""
-	Find all the star particles in each object within r200 and sums to give the mass
-	Parameters: 
-		cat
-		boxsize
-		halo100_indices
-		r200 (bool): whether or not to check whether particles lie inside r200 or not
-		Gas (bool): function can also be used for gas. If True, adds "gasMass" and "gasIndices" to dict instead of star keys. 
-					Make sure to use gas positions, indices, etc as inputs instead. 
-			Default: False
-
-	Returns: 
-		(dict): dictionary containing star IDs in each group and stellar Mass
-	"""
-	starIDs_inGroup = np.empty(np.size(cat.GroupLenType),dtype=list)
-	mStars_inGroup = np.empty(np.size(cat.GroupLenType),dtype=list)
-	mStar_Group = np.zeros(np.size(cat.GroupLenType))
-	#print("In testing mode! - not the full set")
-	Stars = True
-	if Gas:
-		Stars = False
-	if r200:  #Check whether the stars are located inside r200 or not
-		r_200 = cat.Group_R_Crit200
-		for i, j in enumerate(halo100_indices): #0-10 for testing mode only!
-			# starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]]
-			starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j])[0]
-			starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]][goodStars]
-			if Stars: #only need mass of each star particle for SFR
-				mStars_inGroup[j] = allStarMasses[startAllStars[i]:endAllStars[i]][goodStars] 
-			mStar_Group[j] = np.sum(allStarMasses[startAllStars[i]:endAllStars[i]][goodStars])
-	else:
-		for i, j in enumerate(halo100_indices): #0-10 for testing mode only!
-					starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-					#dont include the R200 condition
-					#goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize))[0]
-					starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]]
-					if Stars: 
-						mStars_inGroup[j] = allStarMasses[startAllStars[i]:endAllStars[i]]
-					mStar_Group[j] = np.sum(allStarMasses[startAllStars[i]:endAllStars[i]])
-	objs = {}
-	if Gas: 
-		objs['gasIDs'] = np.array(starIDs_inGroup[halo100_indices])
-		#objs['gasMasses']= np.array(mStars_inGroup[halo100_indices]) # the masses of each star particle in the group
-		objs['gasMass']= np.array(mStar_Group[halo100_indices]) # total stellar mass in the group
-	else: 
-		objs['starIDs'] = np.array(starIDs_inGroup[halo100_indices])
-		objs['starMasses']= np.array(mStars_inGroup[halo100_indices]) # the masses of each star particle in the group
-		objs['stellarMass']= np.array(mStar_Group[halo100_indices]) # total stellar mass in the group
-	return objs
-
+def iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities):
+    """
+    iterate all the galaxies in the FOF and find their rotation curves
+    """
+    objs = {}
+    hubbleparam= 0.71 #FIX THESE SO THEY AREN'T HARD CODED
+    Omega0 = 0.27
+    OmegaLambda = 0.71
+    groupPos = groupPos *atime / hubbleparam 
+    groupVelocities = groupVelocities /atime # convert to physical units
+    rotation = []
+    radii = []
+    #hubble flow correction
+    boxSizeVel = boxSize * hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
+    boxSize = boxSize * atime/hubbleparam
+    for i,j in enumerate(halo100_indices):
+        print(i) 
+        starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
+        starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
+        starVel_inGroup = np.array(starVel_inGroup) * np.sqrt(atime) #unit conversions on the particle coordinates 
+        starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
+        stellar_rotation_curve, rotation_radii = calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
+        rotation.append(stellar_rotation_curve)
+        radii.append(rotation_radii)
+    objs['rot_curves'] = np.array(rotation)
+    objs['rot_radii'] =np.array(radii)
+    print(radii)
+    return objs
 
 def add_rotation_curves(filename, snapnum, group = "Stars"):
     """
@@ -138,10 +127,16 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
     elif group == "DM":
         print("Not supported!")
     print("Loading star particles")
-    allStarIDs, allStarMasses,allStarPositions = get_starIDs(snap)
+    #TESTING MODE: UNCOMMENT below!!
+    halo100_indices = halo100_indices[0:2]
+    allStarIDs,allStarPositions, allStarVelocities= get_starIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
-    objs = iterate_galaxies(halo100_indices)
-    objs =get_obj_properties(cat, boxSize, halo100_indices, allStarIDs,allStarMasses, allStarPositions, startAllStars,endAllStars, r200 =True, Gas = False)
+    halo100_pos = get_GroupPos(cat, halo100_indices)
+    halo100_rad = get_GroupRadii(cat, halo100_indices)
+    halo100_vel = get_GroupVel(cat,halo100_indices)
+    atime = 1./(1.+redshift)
+    print("calculating rotation curves for all objects")
+    objs = iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel)
     return objs
 
 
@@ -158,3 +153,4 @@ if __name__=="__main__":
 	# with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
 	# 	newstars = pickle.load(f,encoding = "latin1")
 	objs = add_rotation_curves(gofilename, snapnum)
+	print("DIDNT SAVE OUTPUT!")
