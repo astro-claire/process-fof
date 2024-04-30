@@ -112,7 +112,7 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
     gofilename = str(filename)
     gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
     snap, fof = open_hdf5(gofilename, foffilename)
-    boxSize, redshift, massDMParticle = get_headerprops(snap)
+    boxSize, redshift, _ = get_headerprops(snap)
     print('redshift is '+str(redshift))
     cat = set_subfind_catalog(fof)
     prim, sec = set_config(fof)
@@ -128,8 +128,8 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
         print("Not supported!")
     print("Loading star particles")
     #TESTING MODE: UNCOMMENT below!!
-    halo100_indices = halo100_indices[0:2]
-    allStarIDs,allStarPositions, allStarVelocities= get_starIDs(snap)
+    #halo100_indices = halo100_indices[0:2]
+    _,allStarPositions, allStarVelocities= get_starIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
@@ -141,16 +141,18 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
 
 
 if __name__=="__main__":
-	"""
-	Routine if running as a script
+    """
+    Routine if running as a script
 
-	Arguments: 
-		gofilename path to directory containing groupordered file + fof table
-		# foffilename 
-		snapnum (float)
-	"""
-	script, gofilename, snapnum = argv
-	# with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
-	# 	newstars = pickle.load(f,encoding = "latin1")
-	objs = add_rotation_curves(gofilename, snapnum)
-	print("DIDNT SAVE OUTPUT!")
+    Arguments: 
+    gofilename path to directory containing groupordered file + fof table
+    # foffilename 
+    snapnum (float)
+    """
+    script, gofilename, snapnum = argv
+    # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
+    # 	newstars = pickle.load(f,encoding = "latin1")
+    objs = add_rotation_curves(gofilename, snapnum)
+    with open(gofilename+"/stellar_rotation_"+str(snapnum)+"_V4.dat",'wb') as f:   
+        pickle.dump(objs, f)
+    print("DIDNT SAVE OUTPUT!")

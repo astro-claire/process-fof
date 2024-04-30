@@ -188,6 +188,6 @@ if __name__=="__main__":
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
     print("Note, no file is currently being saved")
-    with open(gofilename+"/dm_shells_"+str(snapnum)+"_V3.dat",'wb') as f:   
+    with open(gofilename+"/dm_shells_"+str(snapnum)+"_V4.dat",'wb') as f:   
         pickle.dump(objs, f)
     print("Done!")
