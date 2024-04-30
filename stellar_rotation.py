@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 from sys import argv
 import pickle
-from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props
+from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups
 
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
@@ -15,6 +15,28 @@ def dx_wrap(dx,box):
 def dist2(dx,dy,dz,box):
 	#Calculates distance taking into account periodic boundary conditions
 	return dx_wrap(dx,box)**2 + dx_wrap(dy,box)**2 + dx_wrap(dz,box)**2
+
+def get_GroupRadii(cat, halo100_indices):
+    """
+    Return Group COM
+    """
+    return cat.Group_R_Crit200[halo100_indices]
+
+def get_GroupVel(cat, halo100_indices):
+    """
+    Return Group COM
+    """
+    return cat.GroupVel[halo100_indices]
+
+
+def get_starIDs(f):
+    """
+    Get particle IDs (groupordered snap)
+    """
+    allStarIDs = f['PartType4/ParticleIDs']
+    allStarPositions = f['PartType4/Coordinates']
+    allStarVelocities = f['PartType4/Velocities']
+    return allStarIDs, allStarPositions, allStarVelocities
 
 
 def calc_stellar_rotation():
@@ -59,8 +81,10 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
         print("used groups of 100 or more gas")
         halo100_indices=get_gasGroups(cat)
     elif group == "DM":
-        print("No need to add DM to a DM primary! Exiting now.")
-
+        print("Not supported!")
+    print("Loading star particles")
+    allStarIDs, allStarMasses,allStarPositions = get_starIDs(snap)
+    startAllStars, endAllStar = get_starIDgroups(cat, halo100_indices)
     objs = iterate_galaxies(halo100_indices)
     return objs
 
