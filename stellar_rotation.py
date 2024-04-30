@@ -38,6 +38,32 @@ def iterate_galaxies(halo100_indices):
 	objs['rot_radii'] = radii
 	return objs
 		
+def add_rotation_curves(filename, snapnum, group = "Stars"):
+    """
+    wrapper function
+    """
+    print('opening files')
+    gofilename = str(filename)
+    gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
+    snap, fof = open_hdf5(gofilename, foffilename)
+    boxSize, redshift, massDMParticle = get_headerprops(snap)
+    print('redshift is '+str(redshift))
+    cat = set_subfind_catalog(fof)
+    prim, sec = set_config(fof)
+    print("I detected that the FOF has "+str(prim)+" primary and "+str(sec)+" secondary.")
+    print("getting fof groups")
+    if group == "Stars":
+        print("used groups of 100 or more stars")
+        halo100_indices=get_starGroups(cat)
+    elif group == "Gas":
+        print("used groups of 100 or more gas")
+        halo100_indices=get_gasGroups(cat)
+    elif group == "DM":
+        print("No need to add DM to a DM primary! Exiting now.")
+
+    objs = iterate_galaxies(halo100_indices)
+    return objs
+
 
 if __name__=="__main__":
 	"""
@@ -51,4 +77,4 @@ if __name__=="__main__":
 	script, gofilename, snapnum = argv
 	# with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
 	# 	newstars = pickle.load(f,encoding = "latin1")
-	objs = calc_stellar_rotation()
+	objs = add_rotation_curves(gofilename, snapnum)
