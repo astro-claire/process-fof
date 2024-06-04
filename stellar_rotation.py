@@ -71,7 +71,6 @@ def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocit
               #Case with empty shell
               velocity = 0.
          radius = radius + step
-
     return rotation_curve, radii
      
 
@@ -99,9 +98,8 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVe
         stellar_rotation_curve, rotation_radii = calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
         rotation.append(stellar_rotation_curve)
         radii.append(rotation_radii)
-    objs['rot_curves'] = np.array(rotation)
-    objs['rot_radii'] =np.array(radii)
-    print(radii)
+    objs['rot_curves'] = np.array(rotation,dtype=object)
+    objs['rot_radii'] =np.array(radii,dtype=object)
     return objs
 
 def add_rotation_curves(filename, snapnum, group = "Stars"):
@@ -153,6 +151,6 @@ if __name__=="__main__":
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
     # 	newstars = pickle.load(f,encoding = "latin1")
     objs = add_rotation_curves(gofilename, snapnum)
-    with open(gofilename+"/stellar_rotation_"+str(snapnum)+"_V4.dat",'wb') as f:   
+    with open(gofilename+"/stellar_rotation_"+str(snapnum)+"_V1.dat",'wb') as f:   
         pickle.dump(objs, f)
-    print("DIDNT SAVE OUTPUT!")
+    print("SAVED OUTPUT!")
