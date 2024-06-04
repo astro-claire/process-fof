@@ -137,6 +137,7 @@ def get_Halos(cat):
 	halos of greater than 300 particles AND nonzero virial radius
 	"""
 	over300idx, = np.where(np.logical_and(np.greater(cat.GroupLenType[:,1],300),np.not_equal(cat.Group_R_Crit200,0.)))
+
 	return over300idx
 
 def get_gasGroups(cat):
@@ -364,6 +365,8 @@ def calc_all_stellarprops(filename, snapnum, newstars, group="Stars", SFR = True
 	elif group == "DM":
 		print("used groups of 300 or more DM")
 		halo100_indices=get_Halos(cat)
+	# TESTING MODE ONLY: Uncomment next line
+	#halo100_indices = halo100_indices[0:3]
 	objs = {}
 	if prim == "stars" or prim == "stars+gas" or sec == "stars" or sec == "stars+gas":
 		print("have stars, calculating the stellar properties")
@@ -412,11 +415,17 @@ if __name__=="__main__":
 		# foffilename 
 		snapnum (float)
 	"""
-	script, gofilename, snapnum = argv
-	with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
-		newstars = pickle.load(f,encoding = "latin1")
-	objs = calc_all_stellarprops(str(gofilename), snapnum, newstars, group="Gas", SFR=True, r200 =False)
-	print(objs['gasMass'][0:10]*10.**10/0.71)
+	script, gofilename, snapnum, SV = argv
+	if float(SV) == 2: 
+		print("Two sigma stream velocity")
+		with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
+			newstars = pickle.load(f,encoding = "latin1")
+	if float(SV) == 0: 
+		print("No stream velocity")
+		with open("/u/home/c/clairewi/project-snaoz/SF_MolSig0/newstars_Sig0_25Mpc.dat",'rb') as f:
+			newstars = pickle.load(f,encoding = "latin1")		
+	objs = calc_all_stellarprops(str(gofilename), snapnum, newstars, group="DM", SFR=True, r200 =True)
+	print(objs['new_mStar'][0:10]*10.**10/0.71/3e7)
 	# gofilename = str(gofilename)
 	# #foffilename = str(gofilename)
 	# gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
