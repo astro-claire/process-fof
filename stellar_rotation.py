@@ -51,6 +51,8 @@ def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocit
     tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel)
     velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
     distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
+    #Calculate velocity dispersion of galaxy
+    velDispStars = np.sqrt(np.sum((velMagStars - np.mean(velMagStars))**2))/np.size(velMagStars) #velocity dispersion of magnitudes (not projected along a LOS)
     inner_rad = min(distances)
     outer_rad = max(distances)
     step = (outer_rad-inner_rad)/25
@@ -71,7 +73,7 @@ def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocit
               #Case with empty shell
               velocity = 0.
          radius = radius + step
-    return rotation_curve, radii
+    return rotation_curve, radii, velDispStars
      
 
 def iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities):
@@ -86,6 +88,7 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVe
     groupVelocities = groupVelocities /atime # convert to physical units
     rotation = []
     radii = []
+    dispersions = []
     #hubble flow correction
     boxSizeVel = boxSize * hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
     boxSize = boxSize * atime/hubbleparam
@@ -95,11 +98,13 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVe
         starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
         starVel_inGroup = np.array(starVel_inGroup) * np.sqrt(atime) #unit conversions on the particle coordinates 
         starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
-        stellar_rotation_curve, rotation_radii = calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
+        stellar_rotation_curve, rotation_radii, dispersion = calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
         rotation.append(stellar_rotation_curve)
         radii.append(rotation_radii)
+        dispersions.append(dispersion)
     objs['rot_curves'] = np.array(rotation,dtype=object)
     objs['rot_radii'] =np.array(radii,dtype=object)
+    objs['vel_dispersion'] = np.array(dispersions)
     return objs
 
 def add_rotation_curves(filename, snapnum, group = "Stars"):
@@ -125,8 +130,8 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
     elif group == "DM":
         print("Not supported!")
     print("Loading star particles")
-    #TESTING MODE: UNCOMMENT below!!
-    #halo100_indices = halo100_indices[0:2]
+    # TESTING MODE: UNCOMMENT below!!
+    halo100_indices = halo100_indices[0:2]
     _,allStarPositions, allStarVelocities= get_starIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -151,6 +156,9 @@ if __name__=="__main__":
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
     # 	newstars = pickle.load(f,encoding = "latin1")
     objs = add_rotation_curves(gofilename, snapnum)
-    with open(gofilename+"/stellar_rotation_"+str(snapnum)+"_V1.dat",'wb') as f:   
-        pickle.dump(objs, f)
-    print("SAVED OUTPUT!")
+    print(objs['vel_dispersion'])
+    print(objs['rot_curves'])
+    print(objs['rot_radii'])
+    # with open(gofilename+"/stellar_rotation_"+str(snapnum)+"_V1.dat",'wb') as f:   
+    #     pickle.dump(objs, f)
+    # print("SAVED OUTPUT!")
