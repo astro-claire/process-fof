@@ -2,6 +2,8 @@ import h5py
 import numpy as np
 from sys import argv
 import pickle
+import sys 
+sys.path.append('/u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof')
 from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups
 
 def dx_wrap(dx,box):
@@ -66,6 +68,7 @@ def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocit
             mask = np.ones(distances.shape, dtype='bool')
             mask[shell_idx] = False #Remove the used particles
             distances = distances[mask] #next shell we'll only search the unused DM particles
+            velMagStars = velMagStars[mask]
             velocity = sum(vel_inShell)/len(vel_inShell) #average velocity in shell
             rotation_curve.append(velocity)
             radii.append(radius)
@@ -131,7 +134,7 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
         print("Not supported!")
     print("Loading star particles")
     # TESTING MODE: UNCOMMENT below!!
-    halo100_indices = halo100_indices[0:2]
+    #halo100_indices = halo100_indices[-20:-1]
     _,allStarPositions, allStarVelocities= get_starIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -161,4 +164,6 @@ if __name__=="__main__":
     print(objs['rot_radii'])
     # with open(gofilename+"/stellar_rotation_"+str(snapnum)+"_V1.dat",'wb') as f:   
     #     pickle.dump(objs, f)
-    # print("SAVED OUTPUT!")
+    with open("/u/scratch/c/clairewi/test_stellar_rotation_"+str(snapnum)+"_V2.dat",'wb') as f:   
+        pickle.dump(objs, f)
+    print("SAVED OUTPUT!")
