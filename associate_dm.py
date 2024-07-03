@@ -110,6 +110,52 @@ def find_DM_shells(pDM,cm, massDMParticle,rgroup, rhodm, atime,boxSize= 1775.):
             pass
     return np.array(shells,dtype=object),np.array(mDM_shells,dtype=object)
 
+def find_DM_rgroup(pDM,cm, massDMParticle,rgroup, rhodm, atime,boxSize= 1775.):
+    """
+    This function will calculate the amount of DM inside the group radius (NO shells) 
+    Parameters: 
+        f (h5py): snapshot
+        pDM (array): array of 3D positions of each DM particle in snapshot
+        cm (array or list): 3 element array containing x, y, z position from which to calculate the shells.
+        rgroup  (float): radius of group (will search within 20x this radius unless 0 is given)
+    """
+    
+    #tempPosDM = dx_wrap(pDM-cm,boxSize)	
+    tempAxis = rgroup /atime*hubbleparam#search within the radius of the group - converting to the weird units that the coordinates are in . 
+    if tempAxis ==0.:
+        tempAxis = 10. #search within 10 kpc if no rgroup given
+    distances = dist2(pDM[:,0]-cm[0],pDM[:,1]-cm[1],pDM[:,2]-cm[2],boxSize) #Note this is distance SQUARED
+    nearidx = np.where(distances<=tempAxis**2)[0]
+    if len(nearidx)==0: #if no DM 
+        print("NoDM!")
+        mDM = 0 
+        # shells = []
+        r200exist = 0. #want to be able to track if r200 was given or not
+    else:
+        mDM = len(nearidx)*massDMParticle
+        r200exist = 1.
+    return mDM , r200exist
+
+def get_all_DM_rgroup(allDMPositions,halo100_pos,massDMParticle, radii,rhodm,atime, boxSize):
+    """
+    Calculates the dm in rgroup for all the objects 
+    Parameters: 
+        allDMPositions (h5py.dataset): positions of all DM particles
+        halo100_pos (numpy array): positions (COM) of all groups 
+        massDMParticle (float): code mass of DM 
+        radii (numpy array): radii of all groups to calculate 
+    """
+    mDMs = []
+    r200exists = []
+    allDMPositions = np.array(allDMPositions)
+    for i in range(len(halo100_pos)):
+        mDM, r200= find_DM_rgroup(allDMPositions,halo100_pos[i],massDMParticle, radii[i],rhodm,atime,boxSize = boxSize)
+        mDMs.append(mDM)
+        r200exists.append(r200) # 1 if there was an r200 value, 0 if 10 kpc was used
+    print("Used mean halo density and rhocrit criterion")
+    return np.array(mDMs), np.array(r200exists)
+
+
 def get_all_DM(allDMPositions,halo100_pos,massDMParticle, radii,rhodm,atime, boxSize):
     """
     Calculates the dm shells for all the objects 
@@ -158,15 +204,23 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
-    print("dividing into shells and finding the DM")
+    print(" finding the DM - NO SHELLS METHOD")
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
     #print(shells)
     #print(mDM)
-    all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhocrit'],cosmo['a'], boxSize)
-    objs['shells']=np.array(all_shells)
-    objs['mDM_shells']=np.array(mDMs)
+    mDMs, r200exists = get_all_DM_rgroup(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhocrit'],cosmo['a'], boxSize)
+    # objs['shells']=np.array(all_shells)
+    objs['mDM']=np.array(mDMs)
+    objs['r200exists'] = np.array(r200exists)
     objs['prim'] = prim
     objs['sec'] = sec
+    # UNCOMMENT FOR SHELLS MODE
+    #print("dividing into shells and finding the DM")
+    # all_shells, mDMs = get_all_DM(allDMPositions,halo100_pos,massDMParticle, halo100_rad,cosmo['rhocrit'],cosmo['a'], boxSize)
+    # objs['shells']=np.array(all_shells)
+    # objs['mDM_shells']=np.array(mDMs)
+    # objs['prim'] = prim
+    # objs['sec'] = sec
     print("done")
     #with open(gofilename+"/testdm.dat",'wb') as f:
     #    pickle.dump(objs, f)
