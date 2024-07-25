@@ -3,7 +3,7 @@ import numpy as np
 from sys import argv
 import pickle
 import sys 
-sys.path.append('/u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof')
+sys.path.append('/home/x-cwilliams/FOF_calculations/process-fof')
 from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups
 
 def dx_wrap(dx,box):
@@ -45,6 +45,15 @@ def get_starIDs(f):
     allStarVelocities = f['PartType4/Velocities']
     return allStarIDs, allStarPositions, allStarVelocities
 
+def get_gasIDs(f):
+	"""
+	Get particle IDs (groupordered snap)
+	"""
+	allGasIDs = f['PartType0/ParticleIDs']
+	allGasVelocities = f['PartType0/Velocities']
+	allGasPositions = f['PartType0/Coordinates']
+
+	return allGasIDs, allGasPositions, allGasVelocities
 
 def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
@@ -146,6 +155,42 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
     return objs
 
 
+def add_rotation_curves_gas(filename, snapnum, group = "Stars"):
+    """
+    wrapper function - gas verison!!!!!!!! calculates for gas!!
+    """
+    print('opening files')
+    gofilename = str(filename)
+    gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
+    snap, fof = open_hdf5(gofilename, foffilename)
+    boxSize, redshift, _ = get_headerprops(snap)
+    print('redshift is '+str(redshift))
+    cat = set_subfind_catalog(fof)
+    prim, sec = set_config(fof)
+    print("I detected that the FOF has "+str(prim)+" primary and "+str(sec)+" secondary.")
+    print("getting fof groups")
+    if group == "Stars":
+        print("used groups of 100 or more stars")
+        halo100_indices=get_starGroups(cat)
+    elif group == "Gas":
+        print("used groups of 100 or more gas")
+        halo100_indices=get_gasGroups(cat)
+    elif group == "DM":
+        print("Not supported!")
+    print("Loading star particles")
+    # TESTING MODE: UNCOMMENT below!!
+    #halo100_indices = halo100_indices[-20:-1]
+    _,allGasPositions, allGasVelocities= get_gasIDs(snap)
+    startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
+    halo100_pos = get_GroupPos(cat, halo100_indices)
+    halo100_rad = get_GroupRadii(cat, halo100_indices)
+    halo100_vel = get_GroupVel(cat,halo100_indices)
+    atime = 1./(1.+redshift)
+    print("calculating rotation curves for all objects")
+    objs = iterate_galaxies(atime, boxSize, halo100_indices, allGasPositions,allGasVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel)
+    return objs
+
+
 if __name__=="__main__":
     """
     Routine if running as a script
@@ -158,12 +203,12 @@ if __name__=="__main__":
     script, gofilename, snapnum = argv
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
     # 	newstars = pickle.load(f,encoding = "latin1")
-    objs = add_rotation_curves(gofilename, snapnum)
+    objs = add_rotation_curves_gas(gofilename, snapnum)
     print(objs['vel_dispersion'])
     print(objs['rot_curves'])
     print(objs['rot_radii'])
-    # with open(gofilename+"/stellar_rotation_"+str(snapnum)+"_V1.dat",'wb') as f:   
-    #     pickle.dump(objs, f)
-    with open("/u/scratch/c/clairewi/test_stellar_rotation_"+str(snapnum)+"_V2.dat",'wb') as f:   
+    with open(gofilename+"/test_stellar_rotation_"+str(snapnum)+"_v2.dat",'wb') as f:   
         pickle.dump(objs, f)
+    # with open("/anvil/projects/x-ast180056/FOF_project/test_stellar_rotation_"+str(snapnum)+"_v2.dat",'wb') as f:   
+    #     pickle.dump(objs, f)
     print("SAVED OUTPUT!")
