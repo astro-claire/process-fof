@@ -195,6 +195,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
         halo100_indices=get_gasGroups(cat)
     elif group == "DM":
         print("No need to add DM to a DM primary! Exiting now.")
+        halo100_indices = []
     objs = {}
     print("Now getting all DM particles and their 6D vectors")
     allDMIDs, allDMPositions, allDMVelocities =  get_DMIDs(snap)
@@ -204,7 +205,7 @@ def files_and_groups(filename, snapnum, group="Stars"):
     print("Getting group COM!")
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
-    print(" finding the DM - NO SHELLS METHOD")
+    print("finding the DM - NO SHELLS METHOD")
     #shells, mDM = find_DM_shells(allDMPositions,halo100_pos[1],massDMParticle, halo100_rad[1],boxSize = boxSize)
     #print(shells)
     #print(mDM)
@@ -242,6 +243,6 @@ if __name__=="__main__":
     #    newstars = pickle.load(f,encoding = "latin1")
     objs = files_and_groups(gofilename, snapnum, group="Stars")
     print("Note, no file is currently being saved")
-    with open(gofilename+"/dm_shells_"+str(snapnum)+"_V4.dat",'wb') as f:   
-        pickle.dump(objs, f)
+    # with open(gofilename+"/dm_shells_"+str(snapnum)+"_V4.dat",'wb') as f:   
+    #     pickle.dump(objs, f)
     print("Done!")
