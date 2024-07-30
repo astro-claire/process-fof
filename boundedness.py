@@ -238,6 +238,8 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
             print("virial radius is " + str(virial_radius/UnitLength_in_cm) +" kpc")
         else: 
             virial_radius = calc_max_radius(starPos_inGroup,groupPos[i],boxSize)
+        if massDM <= 0:
+            massDM = calc_DM_mass(starPos_inGroup,groupPos[i],boxSize, allDMPositions,groupRadii[i] ,atime,massDMParticle)
         bounded.append(boundedness)
         massesDM.append(massDM)
         virialRatios.append(virial_ratio)
