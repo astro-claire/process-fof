@@ -177,7 +177,7 @@ def calc_DM_mass(starPos_inGroup,  groupPos,boxSize, pDM,groupRadius ,atime,mass
         distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
         maxdist = max(distances)
     else:
-        maxdist = (groupRadius *atime /hubbleparam )**2
+        maxdist = (groupRadius  )**2
     pDM=  np.array(pDM) *atime / hubbleparam
     distances = dist2(pDM[:,0]-groupPos[0],pDM[:,1]-groupPos[1],pDM[:,2]-groupPos[2],boxSize) #Note this is distance SQUARED
     inGroupDM = np.where(distances<maxdist)[0]
@@ -205,6 +205,7 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
     recalcRadii = []
     massesDM = []
     virialRatios = []
+    usedDMs = []
     for i,j in enumerate(halo100_indices):
         r200group = groupRadii[i]
         if r200group <=0:
@@ -214,6 +215,7 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
         virialization = 0
         mass= 0
         massDM =0 
+        usedDM = 0
         virial_radius = -1
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
         starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
@@ -221,37 +223,49 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
         starMass_inGroup = np.array(starMass_inGroup) * UnitMass_in_g / hubbleparam #convert masses
         starVel_inGroup = np.array(starVel_inGroup) * np.sqrt(atime) #unit conversions on the particle coordinates 
         starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
-        print(i)
+        #First, check for boundedness and virialization with just the stellar component
         boundedness, energyStars, kineticEnergy, potentialEnergy, mass= calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
         virialization, virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
-        if boundedness ==0:    
+        if boundedness ==0: 
+             #If that failed, try again when all DM within maximum star's distance is included   
              print("doing the dm calculation")       
              boundedness,totEnergy, kineticEnergyDM, potentialEnergyDM, massDM = calc_dm_boundedness(energyStars,starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel,allDMPositions, allDMVelocities,groupRadii[i],atime,massDMParticle) 
              kineticEnergy += kineticEnergyDM
              potentialEnergy += potentialEnergyDM
              mass += massDM
-             if boundedness ==1: 
-                print("bounded, checking for virialized")
-                virialization,virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
+             #Check again for boundedness and virialization if the boundedness status has changed with this calculation
+             if boundedness ==1:
+                usedDM = 1 #this just tracks whether or not we used the DM to find virialization/boundedness
+                if virialization ==0: 
+                    print("bounded, checking for virialized")
+                    virialization,virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
         if virialization ==1:
+            #If it was found to be virialized by either means, calculate virial radius from R = - G M^2/U
             virial_radius = calc_virial_radius(potentialEnergy,mass) #returns virial radius in cm 
             print("virial radius is " + str(virial_radius/UnitLength_in_cm) +" kpc")
+            if massDM <=0:
+                #if we hadn't already calculated the DM mass, let's get it now using the virial radius
+                massDM = calc_DM_mass(starPos_inGroup,groupPos[i],boxSize, allDMPositions,virial_radius/UnitLength_in_cm,atime,massDMParticle)
         else: 
+            #otherwise, the radius will be Rmax
             virial_radius = calc_max_radius(starPos_inGroup,groupPos[i],boxSize)
+            if massDM <= 0:
+                #if we hadn't calculated DM mass already, find DM within Rmax
+                massDM = calc_DM_mass(starPos_inGroup,groupPos[i],boxSize, allDMPositions,virial_radius/UnitLength_in_cm,atime,massDMParticle)
         if massDM <= 0:
-            massDM = calc_DM_mass(starPos_inGroup,groupPos[i],boxSize, allDMPositions,groupRadii[i] ,atime,massDMParticle)
+            massDM = calc_DM_mass(starPos_inGroup,groupPos[i],boxSize, allDMPositions,groupRadii[i]*atime /hubbleparam ,atime,massDMParticle)
         bounded.append(boundedness)
         massesDM.append(massDM)
         virialRatios.append(virial_ratio)
         recalcRadii.append(virial_radius)
         virialized.append(virialization)
-    # objs['rot_curves'] = np.array(rotation,dtype=object)
-    # objs['rot_radii'] =np.array(radii,dtype=object)
+        usedDMs.append(usedDM)
     objs['bounded'] = np.array(bounded)
     objs['virialized'] = np.array(virialized)
     objs['massDM'] = np.array(massesDM)
     objs['recalcRadii'] = np.array(recalcRadii)
     objs['virialRatios'] = np.array(virialRatios)
+    objs['usedDM']  = np.array(usedDMs)
     objs['r200'] = groupRadii[halo100_indices]
     return objs
 
