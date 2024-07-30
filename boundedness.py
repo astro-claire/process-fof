@@ -90,7 +90,12 @@ def check_virialized(kineticEnergy, potentialEnergy):
     return virialized, ratio
 
 def calc_virial_radius(potentialEnergy, mass):
-    return - GRAVITY_cgs *mass / potentialEnergy
+    return - GRAVITY_cgs * mass * mass / potentialEnergy
+
+def calc_max_radius(starPos_inGroup,groupPos,boxSize):
+    distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
+    maxdist = max(distances)
+    return UnitLength_in_cm* np.sqrt(maxdist)
 
 
 def calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
@@ -129,7 +134,7 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
         distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
         maxdist = max(distances)
      else:
-        maxdist = groupRadius *atime /hubbleparam
+        maxdist = (groupRadius *atime /hubbleparam) **2
      pDM=  np.array(pDM) *atime / hubbleparam
      vDM = np.array(vDM) * np.sqrt(atime) 
      distances = dist2(pDM[:,0]-groupPos[0],pDM[:,1]-groupPos[1],pDM[:,2]-groupPos[2],boxSize) #Note this is distance SQUARED
@@ -142,6 +147,7 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
      potentialEnergyStarsDM = 0
      lengroup = len(inGroupDM)
      massDM = lengroup* massDMParticle
+     print("DMmass is " + str(massDM))
      #DM self potential energy
      for i in range(lengroup):
          for j in range(i+1,lengroup):
@@ -165,6 +171,21 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
          print("not bound even after DM!")
          boundedness = 0
      return boundedness, totEnergy, kineticEnergyDM, potentialEnergyStarsDM + potentialEnergyDM, massDM
+
+def calc_DM_mass(starPos_inGroup,  groupPos,boxSize, pDM,groupRadius ,atime,massDMParticle):
+    if groupRadius <= 0:
+        distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
+        maxdist = max(distances)
+    else:
+        maxdist = (groupRadius *atime /hubbleparam )**2
+    pDM=  np.array(pDM) *atime / hubbleparam
+    distances = dist2(pDM[:,0]-groupPos[0],pDM[:,1]-groupPos[1],pDM[:,2]-groupPos[2],boxSize) #Note this is distance SQUARED
+    inGroupDM = np.where(distances<maxdist)[0]
+    #Kinetic energy component
+    lengroup = len(inGroupDM)
+    massDM = lengroup* massDMParticle
+    return massDM
+
           
 def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPositions,allStarVelocities, allDMPositions, allDMVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities,massDMParticle):
     """
@@ -180,11 +201,20 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
     boxSizeVel = boxSize * hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
     boxSize = boxSize * atime/hubbleparam
     bounded = []
+    virialized = []
+    recalcRadii = []
+    massesDM = []
+    virialRatios = []
     for i,j in enumerate(halo100_indices):
+        r200group = groupRadii[i]
+        if r200group <=0:
+             print("no r200")
         #print(i) 
         boundedness = 0
-        virialized = 0
+        virialization = 0
         mass= 0
+        massDM =0 
+        virial_radius = -1
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
         starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
         starMass_inGroup = allStarMasses[startAllStars[i]:endAllStars[i]]
@@ -193,7 +223,7 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
         starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
         print(i)
         boundedness, energyStars, kineticEnergy, potentialEnergy, mass= calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
-        virialized, virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
+        virialization, virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
         if boundedness ==0:    
              print("doing the dm calculation")       
              boundedness,totEnergy, kineticEnergyDM, potentialEnergyDM, massDM = calc_dm_boundedness(energyStars,starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel,allDMPositions, allDMVelocities,groupRadii[i],atime,massDMParticle) 
@@ -202,18 +232,25 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
              mass += massDM
              if boundedness ==1: 
                 print("bounded, checking for virialized")
-                virialized,virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
-        bounded.append(boundedness)
-        if virialized ==1:
+                virialization,virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
+        if virialization ==1:
             virial_radius = calc_virial_radius(potentialEnergy,mass) #returns virial radius in cm 
             print("virial radius is " + str(virial_radius/UnitLength_in_cm) +" kpc")
-        r200group = groupRadii[i]
-        if r200group <=0:
-             print("no r200")
+        else: 
+            virial_radius = calc_max_radius(starPos_inGroup,groupPos[i],boxSize)
+        bounded.append(boundedness)
+        massesDM.append(massDM)
+        virialRatios.append(virial_ratio)
+        recalcRadii.append(virial_radius)
+        virialized.append(virialization)
     # objs['rot_curves'] = np.array(rotation,dtype=object)
     # objs['rot_radii'] =np.array(radii,dtype=object)
     objs['bounded'] = np.array(bounded)
-    objs['r200'] = groupRadii
+    objs['virialized'] = np.array(virialized)
+    objs['massDM'] = np.array(massesDM)
+    objs['recalcRadii'] = np.array(recalcRadii)
+    objs['virialRatios'] = np.array(virialRatios)
+    objs['r200'] = groupRadii[halo100_indices]
     return objs
 
 def add_bounded_calculation(filename, snapnum, group = "Stars"):
