@@ -6,7 +6,7 @@ import sys
 sys.path.append('/u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof')
 from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
 
-UnitMass_in_g = 1.989e43       # code length unit in g/h
+UnitMass_in_g = 1.989e43     
 UnitLength_in_cm = 3.085678e21 
 hubbleparam = .71 #hubble constant
 GRAVITY_cgs = 6.672e-8
@@ -20,9 +20,29 @@ def dx_wrap(dx,box):
 	dx[idx] += box 
 	return dx
 
+# def dx_indv(delta, box):
+#     new_delta = []
+#     for di in delta:
+#         if di > +box/2.0:
+#             di -= box
+#         if di < -box/2.0:
+#             di += box
+#     new_delta.append(di)
+#     return np.array(new_delta)
+
+def dx_indv(dx, box):
+    if dx > +box/2.0:
+        dx -= box
+    if dx < -box/2.0:
+        dx += box 
+    return dx
+
 def dist2(dx,dy,dz,box):
 	#Calculates distance taking into account periodic boundary conditions
 	return dx_wrap(dx,box)**2 + dx_wrap(dy,box)**2 + dx_wrap(dz,box)**2
+
+def dist2_indv(dx,dy,dz,box):
+    return dx_indv(dx,box)**2 + dx_indv(dy,box)**2 + dx_indv(dz,box)**2
 
 def get_GroupRadii(cat, halo100_indices):
     """
@@ -67,7 +87,7 @@ def check_virialized(kineticEnergy, potentialEnergy):
     virialized = 0
     if 1.5<ratio<2.5:
         virialized = 1
-    return virialized
+    return virialized, ratio
 
 def calc_virial_radius(potentialEnergy, mass):
     return - GRAVITY_cgs *mass / potentialEnergy
@@ -82,13 +102,14 @@ def calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,
     kineticEnergyStars = np.sum(starMass_inGroup/2 *velMagStars*velMagStars*UnitVelocity_in_cm_per_s*UnitVelocity_in_cm_per_s)
     potentialEnergyStars = 0
     massStars = np.sum(starMass_inGroup)
+    print("stellarmass is " + str(massStars))
     lengroup = len(starMass_inGroup)
     print("group len is "+str(lengroup))
 
     for i in range(lengroup):
          for j in range(i+1,lengroup):
-            r_ij = UnitLength_in_cm* np.linalg.norm(starPos_inGroup[i] - starPos_inGroup[j])  # Compute distance between mass i and mass j
-            #r_ij  = np.sqrt(dist2(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
+            #r_ij = UnitLength_in_cm* np.linalg.norm(starPos_inGroup[i] - starPos_inGroup[j])  # Compute distance between mass i and mass j
+            r_ij  = UnitLength_in_cm* np.sqrt(dist2_indv(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
             if r_ij != 0:
                  potentialEnergyStars += -GRAVITY_cgs * starMass_inGroup[i] * starMass_inGroup[j] / r_ij              
     energyStars = kineticEnergyStars+ potentialEnergyStars
@@ -102,25 +123,6 @@ def calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,
          boundedness = 0
     return boundedness, energyStars, kineticEnergyStars, potentialEnergyStars, massStars
 
-# distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
-# outer_rad = max(distances)
-# rotation_curve = []
-# radii = []
-# while radius < outer_rad:
-#      shell_idx = np.where(distances<radius)[0]
-#      if len(shell_idx)>0: #only use shells containing star particles
-#         vel_inShell = velMagStars[shell_idx]
-#         mask = np.ones(distances.shape, dtype='bool')
-#         mask[shell_idx] = False #Remove the used particles
-#         distances = distances[mask] #next shell we'll only search the unused DM particles
-#         velMagStars = velMagStars[mask]
-#         velocity = sum(vel_inShell)/len(vel_inShell) #average velocity in shell
-#         rotation_curve.append(velocity)
-#         radii.append(radius)
-#      else: 
-#           #Case with empty shell
-#           velocity = 0.
-#      radius = radius + step
     
 def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_inGroup,  groupPos, groupVelocity,boxSize,boxSizeVel, pDM, vDM,groupRadius ,atime,massDMParticle):
      if groupRadius <= 0:
@@ -143,16 +145,16 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
      #DM self potential energy
      for i in range(lengroup):
          for j in range(i+1,lengroup):
-            r_ij = UnitLength_in_cm* np.linalg.norm(pDM[inGroupDM][i] - pDM[inGroupDM][j])  # Compute distance between mass i and mass j
-            #r_ij  = np.sqrt(dist2(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
+            #r_ij = UnitLength_in_cm* np.linalg.norm(pDM[inGroupDM][i] - pDM[inGroupDM][j])  # Compute distance between mass i and mass j
+            r_ij  = UnitLength_in_cm*np.sqrt(dist2_indv(pDM[inGroupDM][i,0]-pDM[inGroupDM][j,0],pDM[inGroupDM][i,1]-pDM[inGroupDM][j,1],pDM[inGroupDM][i,2]-pDM[inGroupDM][j,2],boxSize))
             if r_ij != 0:
                  potentialEnergyDM += -(GRAVITY_cgs * massDMParticle**2) / r_ij      
      lenstars= len(starMass_inGroup)
      #potential energy between stars and DM
      for i in range(lengroup):
          for j in range(lenstars):
-            r_ij = UnitLength_in_cm* np.linalg.norm(pDM[inGroupDM][i] - starPos_inGroup[j])  # Compute distance between mass i and mass j
-            #r_ij  = np.sqrt(dist2(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
+            #r_ij = UnitLength_in_cm* np.linalg.norm(pDM[inGroupDM][i] - starPos_inGroup[j])  # Compute distance between mass i and mass j
+            r_ij  = UnitLength_in_cm* np.sqrt(dist2_indv(pDM[inGroupDM][i,0]-starPos_inGroup[j,0],pDM[inGroupDM][i,1]-starPos_inGroup[j,1],pDM[inGroupDM][i,2]-starPos_inGroup[j,2],boxSize))
             if r_ij != 0:
                  potentialEnergyStarsDM += -(GRAVITY_cgs * massDMParticle *starMass_inGroup[j] ) / r_ij               
      totEnergy = energyStars + kineticEnergyDM + potentialEnergyStarsDM + potentialEnergyDM
@@ -182,6 +184,7 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
         #print(i) 
         boundedness = 0
         virialized = 0
+        mass= 0
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
         starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
         starMass_inGroup = allStarMasses[startAllStars[i]:endAllStars[i]]
@@ -190,7 +193,7 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
         starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
         print(i)
         boundedness, energyStars, kineticEnergy, potentialEnergy, mass= calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
-        virialized = check_virialized(kineticEnergy, potentialEnergy)
+        virialized, virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
         if boundedness ==0:    
              print("doing the dm calculation")       
              boundedness,totEnergy, kineticEnergyDM, potentialEnergyDM, massDM = calc_dm_boundedness(energyStars,starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel,allDMPositions, allDMVelocities,groupRadii[i],atime,massDMParticle) 
@@ -199,11 +202,11 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
              mass += massDM
              if boundedness ==1: 
                 print("bounded, checking for virialized")
-                virialized = check_virialized(kineticEnergy, potentialEnergy)
+                virialized,virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
         bounded.append(boundedness)
         if virialized ==1:
             virial_radius = calc_virial_radius(potentialEnergy,mass) #returns virial radius in cm 
-            print("virial radius is " + str(virial_radius*UnitLength_in_cm) +" kpc")
+            print("virial radius is " + str(virial_radius/UnitLength_in_cm) +" kpc")
         r200group = groupRadii[i]
         if r200group <=0:
              print("no r200")
