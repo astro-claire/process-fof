@@ -4,7 +4,13 @@ from sys import argv
 import pickle
 import sys 
 sys.path.append('/u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof')
-from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups
+from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
+
+UnitMass_in_g = 1.989e43       # code length unit in g/h
+UnitLength_in_cm = 3.085678e21 
+hubbleparam = .71 #hubble constant
+GRAVITY_cgs = 6.672e-8
+UnitVelocity_in_cm_per_s = 1.0e5
 
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
@@ -41,76 +47,173 @@ def get_starIDs(f):
     Get particle IDs (groupordered snap)
     """
     allStarIDs = f['PartType4/ParticleIDs']
+    allStarMasses = f['PartType4/Masses']
     allStarPositions = f['PartType4/Coordinates']
     allStarVelocities = f['PartType4/Velocities']
-    return allStarIDs, allStarPositions, allStarVelocities
+    return allStarIDs, allStarMasses, allStarPositions, allStarVelocities
+
+def get_DMIDs(f):
+	"""
+	Get particle IDs (groupordered snap)
+	"""
+	allDMIDs = f['PartType1/ParticleIDs']
+	allDMPositions = f['PartType1/Coordinates']
+	allDMVelocities = f['PartType1/Velocities']
+	
+	return allDMIDs, allDMPositions, allDMVelocities
+
+def check_virialized(kineticEnergy, potentialEnergy):
+    ratio = np.abs(potentialEnergy/kineticEnergy)
+    virialized = 0
+    if 1.5<ratio<2.5:
+        virialized = 1
+    return virialized
+
+def calc_virial_radius(potentialEnergy, mass):
+    return - GRAVITY_cgs *mass / potentialEnergy
 
 
-def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
+def calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
-    Calculate rotation curve of stellar component - 25 steps
+    Calculate boundedness
     """
     tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel)
     velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
-    distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
-    #Calculate velocity dispersion of galaxy
-    velDispStars = np.sqrt(np.sum((velMagStars - np.mean(velMagStars))**2))/np.size(velMagStars) #velocity dispersion of magnitudes (not projected along a LOS)
-    inner_rad = min(distances)
-    outer_rad = max(distances)
-    step = (outer_rad-inner_rad)/25
-    radius = inner_rad
-    rotation_curve = []
-    radii = []
-    while radius < outer_rad:
-         shell_idx = np.where(distances<radius)[0]
-         if len(shell_idx)>0: #only use shells containing star particles
-            vel_inShell = velMagStars[shell_idx]
-            mask = np.ones(distances.shape, dtype='bool')
-            mask[shell_idx] = False #Remove the used particles
-            distances = distances[mask] #next shell we'll only search the unused DM particles
-            velMagStars = velMagStars[mask]
-            velocity = sum(vel_inShell)/len(vel_inShell) #average velocity in shell
-            rotation_curve.append(velocity)
-            radii.append(radius)
-         else: 
-              #Case with empty shell
-              velocity = 0.
-         radius = radius + step
-    return rotation_curve, radii, velDispStars
-     
+    kineticEnergyStars = np.sum(starMass_inGroup/2 *velMagStars*velMagStars*UnitVelocity_in_cm_per_s*UnitVelocity_in_cm_per_s)
+    potentialEnergyStars = 0
+    massStars = np.sum(starMass_inGroup)
+    lengroup = len(starMass_inGroup)
+    print("group len is "+str(lengroup))
 
-def iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities):
+    for i in range(lengroup):
+         for j in range(i+1,lengroup):
+            r_ij = UnitLength_in_cm* np.linalg.norm(starPos_inGroup[i] - starPos_inGroup[j])  # Compute distance between mass i and mass j
+            #r_ij  = np.sqrt(dist2(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
+            if r_ij != 0:
+                 potentialEnergyStars += -GRAVITY_cgs * starMass_inGroup[i] * starMass_inGroup[j] / r_ij              
+    energyStars = kineticEnergyStars+ potentialEnergyStars
+    print("total energy")
+    print(energyStars)
+    if energyStars<0:
+         print("object is bound")
+         boundedness =  1
+    else:
+         print("object not bound")
+         boundedness = 0
+    return boundedness, energyStars, kineticEnergyStars, potentialEnergyStars, massStars
+
+# distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
+# outer_rad = max(distances)
+# rotation_curve = []
+# radii = []
+# while radius < outer_rad:
+#      shell_idx = np.where(distances<radius)[0]
+#      if len(shell_idx)>0: #only use shells containing star particles
+#         vel_inShell = velMagStars[shell_idx]
+#         mask = np.ones(distances.shape, dtype='bool')
+#         mask[shell_idx] = False #Remove the used particles
+#         distances = distances[mask] #next shell we'll only search the unused DM particles
+#         velMagStars = velMagStars[mask]
+#         velocity = sum(vel_inShell)/len(vel_inShell) #average velocity in shell
+#         rotation_curve.append(velocity)
+#         radii.append(radius)
+#      else: 
+#           #Case with empty shell
+#           velocity = 0.
+#      radius = radius + step
+    
+def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_inGroup,  groupPos, groupVelocity,boxSize,boxSizeVel, pDM, vDM,groupRadius ,atime,massDMParticle):
+     if groupRadius <= 0:
+        distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
+        maxdist = max(distances)
+     else:
+        maxdist = groupRadius *atime /hubbleparam
+     pDM=  np.array(pDM) *atime / hubbleparam
+     vDM = np.array(vDM) * np.sqrt(atime) 
+     distances = dist2(pDM[:,0]-groupPos[0],pDM[:,1]-groupPos[1],pDM[:,2]-groupPos[2],boxSize) #Note this is distance SQUARED
+     inGroupDM = np.where(distances<maxdist)[0]
+     tempvelDM = dx_wrap(vDM[inGroupDM]-groupVelocity, boxSizeVel)
+     velMagDM = np.sqrt((tempvelDM*tempvelDM).sum(axis=1))
+     #Kinetic energy component
+     kineticEnergyDM = np.sum(massDMParticle/2 *velMagDM*velMagDM*UnitVelocity_in_cm_per_s*UnitVelocity_in_cm_per_s)
+     potentialEnergyDM = 0
+     potentialEnergyStarsDM = 0
+     lengroup = len(inGroupDM)
+     massDM = lengroup* massDMParticle
+     #DM self potential energy
+     for i in range(lengroup):
+         for j in range(i+1,lengroup):
+            r_ij = UnitLength_in_cm* np.linalg.norm(pDM[inGroupDM][i] - pDM[inGroupDM][j])  # Compute distance between mass i and mass j
+            #r_ij  = np.sqrt(dist2(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
+            if r_ij != 0:
+                 potentialEnergyDM += -(GRAVITY_cgs * massDMParticle**2) / r_ij      
+     lenstars= len(starMass_inGroup)
+     #potential energy between stars and DM
+     for i in range(lengroup):
+         for j in range(lenstars):
+            r_ij = UnitLength_in_cm* np.linalg.norm(pDM[inGroupDM][i] - starPos_inGroup[j])  # Compute distance between mass i and mass j
+            #r_ij  = np.sqrt(dist2(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
+            if r_ij != 0:
+                 potentialEnergyStarsDM += -(GRAVITY_cgs * massDMParticle *starMass_inGroup[j] ) / r_ij               
+     totEnergy = energyStars + kineticEnergyDM + potentialEnergyStarsDM + potentialEnergyDM
+     if totEnergy<0:
+         print("object is bound")
+         boundedness =  1
+     else:
+         print("not bound even after DM!")
+         boundedness = 0
+     return boundedness, totEnergy, kineticEnergyDM, potentialEnergyStarsDM + potentialEnergyDM, massDM
+          
+def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPositions,allStarVelocities, allDMPositions, allDMVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities,massDMParticle):
     """
     iterate all the galaxies in the FOF and find their rotation curves
     """
     objs = {}
-    hubbleparam= 0.71 #FIX THESE SO THEY AREN'T HARD CODED
+    #FIX THESE SO THEY AREN'T HARD CODED
     Omega0 = 0.27
     OmegaLambda = 0.71
     groupPos = groupPos *atime / hubbleparam 
     groupVelocities = groupVelocities /atime # convert to physical units
-    rotation = []
-    radii = []
-    dispersions = []
     #hubble flow correction
     boxSizeVel = boxSize * hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
     boxSize = boxSize * atime/hubbleparam
+    bounded = []
     for i,j in enumerate(halo100_indices):
-        print(i) 
+        #print(i) 
+        boundedness = 0
+        virialized = 0
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
         starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
+        starMass_inGroup = allStarMasses[startAllStars[i]:endAllStars[i]]
+        starMass_inGroup = np.array(starMass_inGroup) * UnitMass_in_g / hubbleparam #convert masses
         starVel_inGroup = np.array(starVel_inGroup) * np.sqrt(atime) #unit conversions on the particle coordinates 
         starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
-        stellar_rotation_curve, rotation_radii, dispersion = calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
-        rotation.append(stellar_rotation_curve)
-        radii.append(rotation_radii)
-        dispersions.append(dispersion)
-    objs['rot_curves'] = np.array(rotation,dtype=object)
-    objs['rot_radii'] =np.array(radii,dtype=object)
-    objs['vel_dispersion'] = np.array(dispersions)
+        print(i)
+        boundedness, energyStars, kineticEnergy, potentialEnergy, mass= calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
+        virialized = check_virialized(kineticEnergy, potentialEnergy)
+        if boundedness ==0:    
+             print("doing the dm calculation")       
+             boundedness,totEnergy, kineticEnergyDM, potentialEnergyDM, massDM = calc_dm_boundedness(energyStars,starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel,allDMPositions, allDMVelocities,groupRadii[i],atime,massDMParticle) 
+             kineticEnergy += kineticEnergyDM
+             potentialEnergy += potentialEnergyDM
+             mass += massDM
+             if boundedness ==1: 
+                print("bounded, checking for virialized")
+                virialized = check_virialized(kineticEnergy, potentialEnergy)
+        bounded.append(boundedness)
+        if virialized ==1:
+            virial_radius = calc_virial_radius(potentialEnergy,mass) #returns virial radius in cm 
+            print("virial radius is " + str(virial_radius*UnitLength_in_cm) +" kpc")
+        r200group = groupRadii[i]
+        if r200group <=0:
+             print("no r200")
+    # objs['rot_curves'] = np.array(rotation,dtype=object)
+    # objs['rot_radii'] =np.array(radii,dtype=object)
+    objs['bounded'] = np.array(bounded)
+    objs['r200'] = groupRadii
     return objs
 
-def add_rotation_curves(filename, snapnum, group = "Stars"):
+def add_bounded_calculation(filename, snapnum, group = "Stars"):
     """
     wrapper function
     """
@@ -118,7 +221,7 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
     gofilename = str(filename)
     gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
     snap, fof = open_hdf5(gofilename, foffilename)
-    boxSize, redshift, _ = get_headerprops(snap)
+    boxSize, redshift, massDMParticle = get_headerprops(snap)
     print('redshift is '+str(redshift))
     cat = set_subfind_catalog(fof)
     prim, sec = set_config(fof)
@@ -134,15 +237,16 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
         print("Not supported!")
     print("Loading star particles")
     # TESTING MODE: UNCOMMENT below!!
-    #halo100_indices = halo100_indices[-20:-1]
-    _,allStarPositions, allStarVelocities= get_starIDs(snap)
+    halo100_indices = halo100_indices[-150:-1]
+    _,allStarMasses, allStarPositions, allStarVelocities= get_starIDs(snap)
+    _,allDMPositions, allDMVelocities= get_DMIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
     halo100_vel = get_GroupVel(cat,halo100_indices)
     atime = 1./(1.+redshift)
-    print("calculating rotation curves for all objects")
-    objs = iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel)
+    print("calculating boundedness for all objects")
+    objs = iterate_galaxies(atime, boxSize, halo100_indices,allStarMasses, allStarPositions,allStarVelocities, allDMPositions, allDMVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel,massDMParticle* UnitMass_in_g / hubbleparam)
     return objs
 
 
@@ -158,12 +262,10 @@ if __name__=="__main__":
     script, gofilename, snapnum = argv
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
     # 	newstars = pickle.load(f,encoding = "latin1")
-    objs = add_rotation_curves(gofilename, snapnum)
-    print(objs['vel_dispersion'])
-    print(objs['rot_curves'])
-    print(objs['rot_radii'])
+    objs = add_bounded_calculation(gofilename, snapnum)
+
     # with open(gofilename+"/stellar_rotation_"+str(snapnum)+"_V1.dat",'wb') as f:   
     #     pickle.dump(objs, f)
-    with open("/u/scratch/c/clairewi/test_stellar_rotation_"+str(snapnum)+"_V2.dat",'wb') as f:   
-        pickle.dump(objs, f)
-    print("SAVED OUTPUT!")
+    # with open("/u/scratch/c/clairewi/test_stellar_rotation_"+str(snapnum)+"_V2.dat",'wb') as f:   
+    #     pickle.dump(objs, f)
+    # print("SAVED OUTPUT!")
