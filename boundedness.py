@@ -86,6 +86,7 @@ def check_virialized(kineticEnergy, potentialEnergy):
     ratio = np.abs(potentialEnergy/kineticEnergy)
     virialized = 0
     if 1.5<ratio<2.5:
+        print("object is virialized")
         virialized = 1
     return virialized, ratio
 
@@ -147,7 +148,6 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
      potentialEnergyStarsDM = 0
      lengroup = len(inGroupDM)
      massDM = lengroup* massDMParticle
-     print("DMmass is " + str(massDM))
      #DM self potential energy
      for i in range(lengroup):
          for j in range(i+1,lengroup):
@@ -165,7 +165,7 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
                  potentialEnergyStarsDM += -(GRAVITY_cgs * massDMParticle *starMass_inGroup[j] ) / r_ij               
      totEnergy = energyStars + kineticEnergyDM + potentialEnergyStarsDM + potentialEnergyDM
      if totEnergy<0:
-         print("object is bound")
+         print("object is bound after DM!")
          boundedness =  1
      else:
          print("not bound even after DM!")
@@ -189,7 +189,7 @@ def calc_DM_mass(starPos_inGroup,  groupPos,boxSize, pDM,groupRadius ,atime,mass
           
 def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPositions,allStarVelocities, allDMPositions, allDMVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities,massDMParticle):
     """
-    iterate all the galaxies in the FOF and find their rotation curves
+    iterate all the galaxies in the FOF check boundedness and virialization, as well as calculate DM mass 
     """
     objs = {}
     #FIX THESE SO THEY AREN'T HARD CODED
@@ -250,10 +250,9 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
             #otherwise, the radius will be Rmax
             virial_radius = calc_max_radius(starPos_inGroup,groupPos[i],boxSize)
             if massDM <= 0:
-                #if we hadn't calculated DM mass already, find DM within Rmax
+                #if we hadn't calculated DM mass already, find DM within the maximum radius
                 massDM = calc_DM_mass(starPos_inGroup,groupPos[i],boxSize, allDMPositions,virial_radius/UnitLength_in_cm,atime,massDMParticle)
-        if massDM <= 0:
-            massDM = calc_DM_mass(starPos_inGroup,groupPos[i],boxSize, allDMPositions,groupRadii[i]*atime /hubbleparam ,atime,massDMParticle)
+        print("DMmass is " + str(massDM))
         bounded.append(boundedness)
         massesDM.append(massDM)
         virialRatios.append(virial_ratio)
@@ -266,7 +265,7 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
     objs['recalcRadii'] = np.array(recalcRadii)
     objs['virialRatios'] = np.array(virialRatios)
     objs['usedDM']  = np.array(usedDMs)
-    objs['r200'] = groupRadii[halo100_indices]
+    objs['r200'] = np.array(groupRadii[halo100_indices]) *atime /hubbleparam *UnitLength_in_cm #just for comparison, let's include the original group radius as calculated by the halo finder
     return objs
 
 def add_bounded_calculation(filename, snapnum, group = "Stars"):
@@ -293,7 +292,7 @@ def add_bounded_calculation(filename, snapnum, group = "Stars"):
         print("Not supported!")
     print("Loading star particles")
     # TESTING MODE: UNCOMMENT below!!
-    halo100_indices = halo100_indices[-150:-1]
+    # halo100_indices = halo100_indices[-150:-1]
     _,allStarMasses, allStarPositions, allStarVelocities= get_starIDs(snap)
     _,allDMPositions, allDMVelocities= get_DMIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
