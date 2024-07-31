@@ -42,6 +42,7 @@ def dist2(dx,dy,dz,box):
 	return dx_wrap(dx,box)**2 + dx_wrap(dy,box)**2 + dx_wrap(dz,box)**2
 
 def dist2_indv(dx,dy,dz,box):
+    #Calculates distance with periodic boundary conditions for a single vector
     return dx_indv(dx,box)**2 + dx_indv(dy,box)**2 + dx_indv(dz,box)**2
 
 def get_GroupRadii(cat, halo100_indices):
