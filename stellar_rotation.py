@@ -6,6 +6,12 @@ import sys
 sys.path.append('/home/x-cwilliams/FOF_calculations/process-fof')
 from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups
 
+UnitMass_in_g = 1.989e43     
+UnitLength_in_cm = 3.085678e21 
+hubbleparam = .71 #hubble constant
+GRAVITY_cgs = 6.672e-8
+UnitVelocity_in_cm_per_s = 1.0e5
+
 def dx_wrap(dx,box):
 	#wraps to account for period boundary conditions. This mutates the original entry
 	idx = dx > +box/2.0
@@ -13,6 +19,9 @@ def dx_wrap(dx,box):
 	idx = dx < -box/2.0
 	dx[idx] += box 
 	return dx
+
+def dx_vec(dx,dy,dz,box):
+     return np.stack((dx_wrap(dx,box),dx_wrap(dy,box),dx_wrap(dz,box)), axis =1)
 
 def dist2(dx,dy,dz,box):
 	#Calculates distance taking into account periodic boundary conditions
@@ -41,19 +50,22 @@ def get_starIDs(f):
     Get particle IDs (groupordered snap)
     """
     allStarIDs = f['PartType4/ParticleIDs']
+    allStarMasses = f['PartType4/Masses']
     allStarPositions = f['PartType4/Coordinates']
     allStarVelocities = f['PartType4/Velocities']
-    return allStarIDs, allStarPositions, allStarVelocities
+    return allStarIDs, allStarMasses, allStarPositions, allStarVelocities
+
 
 def get_gasIDs(f):
 	"""
 	Get particle IDs (groupordered snap)
 	"""
 	allGasIDs = f['PartType0/ParticleIDs']
+	allGasMasses = f['PartType0/Masses']
 	allGasVelocities = f['PartType0/Velocities']
 	allGasPositions = f['PartType0/Coordinates']
 
-	return allGasIDs, allGasPositions, allGasVelocities
+	return allGasIDs,allGasMasses, allGasPositions, allGasVelocities
 
 def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
@@ -88,7 +100,7 @@ def calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos,groupVelocit
     return rotation_curve, radii, velDispStars
      
 
-def iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities):
+def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPositions,allStarVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities):
     """
     iterate all the galaxies in the FOF and find their rotation curves
     """
@@ -108,6 +120,8 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVe
         print(i) 
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
         starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
+        starMass_inGoup = allStarMasses[startAllStars[i]:endAllStars[i]]
+        starMass_inGroup = np.array(starMass_inGroup)  * UnitMass_in_g / hubbleparam #convert masses
         starVel_inGroup = np.array(starVel_inGroup) * np.sqrt(atime) #unit conversions on the particle coordinates 
         starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
         stellar_rotation_curve, rotation_radii, dispersion = calc_stellar_rotation(starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
@@ -144,14 +158,14 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
     print("Loading star particles")
     # TESTING MODE: UNCOMMENT below!!
     #halo100_indices = halo100_indices[-20:-1]
-    _,allStarPositions, allStarVelocities= get_starIDs(snap)
+    _, allStarMasses, allStarPositions, allStarVelocities= get_starIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
     halo100_vel = get_GroupVel(cat,halo100_indices)
     atime = 1./(1.+redshift)
     print("calculating rotation curves for all objects")
-    objs = iterate_galaxies(atime, boxSize, halo100_indices, allStarPositions,allStarVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel)
+    objs = iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPositions,allStarVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel)
     return objs
 
 
@@ -180,14 +194,14 @@ def add_rotation_curves_gas(filename, snapnum, group = "Stars"):
     print("Loading star particles")
     # TESTING MODE: UNCOMMENT below!!
     #halo100_indices = halo100_indices[-20:-1]
-    _,allGasPositions, allGasVelocities= get_gasIDs(snap)
+    _,allGasMasses, allGasPositions, allGasVelocities= get_gasIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
     halo100_vel = get_GroupVel(cat,halo100_indices)
     atime = 1./(1.+redshift)
     print("calculating rotation curves for all objects")
-    objs = iterate_galaxies(atime, boxSize, halo100_indices, allGasPositions,allGasVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel)
+    objs = iterate_galaxies(atime, boxSize, halo100_indices, allGasMasses,allGasPositions,allGasVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel)
     return objs
 
 
