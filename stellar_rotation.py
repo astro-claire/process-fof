@@ -93,11 +93,11 @@ def calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, grou
     tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel) #velocity wrt group velocity
     velmagstars =  np.linalg.norm(tempvelstars, axis=1)[:,np.newaxis] #magnitude of velocity
     tempradstars = dx_wrap(starPos_inGroup-groupPos,boxSize) #radius wrt group position
-    rmagstars =  np.linalg.norm(tempradstars, axis=1)[:,np.newaxis] #magnitude of radius
+    distances=  np.linalg.norm(tempradstars, axis=1)
+    rmagstars = distances[:,np.newaxis] #magnitude of radius (distance)
     epsilon = 1e-2 #introduce an error of 1e-2 cm to avoid runtime warnings 
     rmagstars[rmagstars == 0] = epsilon
     runitstars = tempradstars / rmagstars #unit vector in direction of radius
-    print(np.linalg.norm(runitstars, axis=1))
 
     #Overall group quantities
     lvec = np.sum((np.cross(tempradstars,tempvelstars)*starMass_inGroup[:,np.newaxis]), axis = 0) #angular momentum
@@ -107,55 +107,68 @@ def calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, grou
     omegavec = lvec/iscalar
 
     #calculate more individual vectors 
-    v_rotveci = np.cross(tempradstars, omegavec)
-    v_rotmagi = np.linalg.norm(v_rotveci, axis=1)[:,np.newaxis]
-    v_radveci = runitstars * np.sum(runitstars * tempvelstars, axis =1)[:,np.newaxis]
-    v_radscalari = np.sum(runitstars * tempvelstars, axis =1)[:,np.newaxis]
-    v_turbveci = tempvelstars - v_rotveci - v_radveci
-    v_turbmagi = np.linalg.norm(v_turbveci,axis = 1)[:,np.newaxis]
+    v_rotveci = np.cross(tempradstars, omegavec) #rotational velocity
+    v_rotmagi = np.linalg.norm(v_rotveci, axis=1)[:,np.newaxis] #rotational velocity magnitude
+    v_radveci = runitstars * np.sum(runitstars * tempvelstars, axis =1)[:,np.newaxis] #radial velocity
+    v_radscalari = np.sum(runitstars * tempvelstars, axis =1)[:,np.newaxis] #radial velocity magnitude
+    v_turbveci = tempvelstars - v_rotveci - v_radveci #vector turbulent velocity
+    v_turbmagi = np.linalg.norm(v_turbveci,axis = 1)[:,np.newaxis] #magnitude turbulent velocity
 
     #bulk velocities for the halo - doing this weirdly to get around memory limit problems with array multiplication
     mtot = np.sum(starMass_inGroup)
     #total rms velocity
     v_rmstot = calc_vrms(mtot,velmagstars, starMass_inGroup)
-    print("vrmstot is" +str(v_rmstot))
     #total radial velocity
     v_radtot = calc_vrad(mtot,v_radscalari, starMass_inGroup )
-    print("vradtot is" +str(v_radtot))
     #total rotational velocity
     # v_rottot = np.sqrt(np.sum(starMass_inGroup * (np.linalg.norm(v_rotveci, axis=1)[:,np.newaxis])**2)/mtot)
     v_rottot = calc_vrot(mtot,v_rotmagi,starMass_inGroup)
     #turbulent velocity 
     v_turbtot = calc_vturb(mtot, v_turbmagi, starMass_inGroup)
-    print(v_rmstot,v_radtot,v_rottot, v_turbtot)
 
-    velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
-    print(velMagStars)
-    distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
     #Calculate velocity dispersion of galaxy
-    velDispStars = np.sqrt(np.sum((velMagStars - np.mean(velMagStars))**2))/np.size(velMagStars) #velocity dispersion of magnitudes (not projected along a LOS)
-    inner_rad = min(distances)
-    outer_rad = max(distances)
+    #velDispStars = np.sqrt(np.sum((velMagStars - np.mean(velMagStars))**2))/np.size(velMagStars) #velocity dispersion of magnitudes (not projected along a LOS)
+    inner_rad = min(rmagstars)
+    outer_rad = max(rmagstars)
     step = (outer_rad-inner_rad)/25
     radius = inner_rad
-    rotation_curve = []
+    rotation_curve_rms = []
+    rotation_curve_rad = []
+    rotation_curve_rot = []
+    rotation_curve_turb = []
     radii = []
     while radius < outer_rad:
          shell_idx = np.where(distances<radius)[0]
          if len(shell_idx)>0: #only use shells containing star particles
-            vel_inShell = velMagStars[shell_idx]
+            vel_inShell = velmagstars[shell_idx]
+            vel_rad_inShell = v_radscalari[shell_idx]
+            vel_rot_inShell = v_rotmagi[shell_idx]
+            vel_turb_inShell = v_turbmagi[shell_idx]
+            mass_inShell = starMass_inGroup[shell_idx]
+            mshell = np.sum(mass_inShell)
             mask = np.ones(distances.shape, dtype='bool')
             mask[shell_idx] = False #Remove the used particles
             distances = distances[mask] #next shell we'll only search the unused DM particles
-            velMagStars = velMagStars[mask]
-            velocity = sum(vel_inShell)/len(vel_inShell) #average velocity in shell
-            rotation_curve.append(velocity)
+            velmagstars = velmagstars[mask]
+            v_radscalari = v_radscalari[mask]
+            v_rotmagi=v_rotmagi[mask]
+            v_turbmagi=v_turbmagi[mask]
+            starMass_inGroup = starMass_inGroup[mask]
+            #velocity = sum(vel_inShell)/len(vel_inShell) #average velocity in shell
+            velocity = calc_vrms(mshell,vel_inShell,mass_inShell)
+            velocity_rad = calc_vrad(mshell,vel_rad_inShell, mass_inShell )
+            velocity_rot = calc_vrot(mshell, vel_rot_inShell,mass_inShell)
+            velocity_turb = calc_vturb(mshell, vel_turb_inShell, mass_inShell)
+            rotation_curve_rms.append(velocity)
+            rotation_curve_rad.append(velocity_rad)
+            rotation_curve_rot.append(velocity_rot)
+            rotation_curve_turb.append(velocity_turb)
             radii.append(radius)
          else: 
               #Case with empty shell
               velocity = 0.
          radius = radius + step
-    return rotation_curve, radii, velDispStars
+    return rotation_curve_rms,rotation_curve_rad,rotation_curve_rot, rotation_curve_turb,radii 
      
 
 def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPositions,allStarVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities):
@@ -171,7 +184,10 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
     groupVelocities = groupVelocities  /atime # convert to physical units
     # groupPos = groupPos * UnitLength_in_cm*atime / hubbleparam 
     # groupVelocities = groupVelocities * UnitVelocity_in_cm_per_s /atime # convert to physical units
-    rotation = []
+    rotation_rms = []
+    rotation_rad = []
+    rotation_rot = []
+    rotation_turb = []
     radii = []
     dispersions = []
     #hubble flow correction
@@ -190,13 +206,19 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
         # starMass_inGroup = np.array(starMass_inGroup)  * UnitMass_in_g / hubbleparam #convert masses
         # starVel_inGroup = np.array(starVel_inGroup) * UnitVelocity_in_cm_per_s * np.sqrt(atime) #unit conversions on the particle coordinates 
         # starPos_inGroup = np.array(starPos_inGroup) *UnitLength_in_cm *atime / hubbleparam
-        stellar_rotation_curve, rotation_radii, dispersion = calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
-        rotation.append(stellar_rotation_curve)
+        rotation_curve_rms,rotation_curve_rad,rotation_curve_rot, rotation_curve_turb,rotation_radii  = calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
+        rotation_rms.append(rotation_curve_rms)
+        rotation_rad.append(rotation_curve_rad)
+        rotation_rot.append(rotation_curve_rot)
+        rotation_turb.append(rotation_curve_turb)
         radii.append(rotation_radii)
-        dispersions.append(dispersion)
-    objs['rot_curves'] = np.array(rotation,dtype=object)
+    # objs['rot_curves'] = np.array(rotation,dtype=object)
     objs['rot_radii'] =np.array(radii,dtype=object)
-    objs['vel_dispersion'] = np.array(dispersions)
+    # objs['vel_dispersion'] = np.array(dispersions)
+    objs['rotation_curve_rms'] = rotation_rms
+    objs['rotation_curve_rad'] = rotation_rad
+    objs['rotation_curve_rot'] = rotation_rot
+    objs['rotation_curve_turb'] = rotation_turb
     return objs
 
 def add_rotation_curves(filename, snapnum, group = "Stars"):
@@ -296,7 +318,7 @@ if __name__=="__main__":
 
 
 
-    
+
     # velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
     # print(velMagStars)
     # distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
