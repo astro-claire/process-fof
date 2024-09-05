@@ -85,6 +85,11 @@ def calc_vturb(mtot, v_turbmagi,starMass_inGroup):
      vturb_argument = np.array([v_turbmagi[i] * v_turbmagi[i] * starMass_inGroup[i] for i in range(len(v_turbmagi))])
      return np.sqrt(np.sum(vturb_argument)/mtot)
 
+def calc_iscalar(tempradstars,lunitvec,starMass_inGroup):
+     iscalar_cross = np.cross(tempradstars,lunitvec)
+     iscalar_argument = np.array([np.linalg.norm(iscalar_cross[i])**2 * starMass_inGroup[i] for i in range(len(iscalar_cross))])
+     return np.sum(iscalar_argument)
+
 def calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
     Calculate rotation curve of stellar component - 25 steps
@@ -103,12 +108,18 @@ def calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, grou
     lvec = np.sum((np.cross(tempradstars,tempvelstars)*starMass_inGroup[:,np.newaxis]), axis = 0) #angular momentum
     lmag = np.linalg.norm(lvec) #magnitude of angular momentum
     lunitvec = lvec/ lmag #unit vector in direction of L
-    iscalar = np.sum(np.linalg.norm(np.cross(tempradstars,lunitvec))**2*starMass_inGroup[:,np.newaxis]) #moment of inertia
+    #iscalar = np.sum(np.linalg.norm(np.cross(tempradstars,lunitvec),axis = 1)**2*starMass_inGroup[:,np.newaxis]) #moment of inertia
+    iscalar = calc_iscalar(tempradstars, lunitvec,starMass_inGroup)
     omegavec = lvec/iscalar
+    print(lvec)
+    print(lmag)
+    print(np.linalg.norm(lunitvec))
+    print(iscalar)
 
     #calculate more individual vectors 
     v_rotveci = np.cross(tempradstars, omegavec) #rotational velocity
     v_rotmagi = np.linalg.norm(v_rotveci, axis=1)[:,np.newaxis] #rotational velocity magnitude
+    print(v_rotmagi[0:20])
     v_radveci = runitstars * np.sum(runitstars * tempvelstars, axis =1)[:,np.newaxis] #radial velocity
     v_radscalari = np.sum(runitstars * tempvelstars, axis =1)[:,np.newaxis] #radial velocity magnitude
     v_turbveci = tempvelstars - v_rotveci - v_radveci #vector turbulent velocity
@@ -246,6 +257,7 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
     print("Loading star particles")
     # TESTING MODE: UNCOMMENT below!!
     #halo100_indices = halo100_indices[-20:-1]
+    print(len(halo100_indices))
     _, allStarMasses, allStarPositions, allStarVelocities= get_starIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -307,9 +319,6 @@ if __name__=="__main__":
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
     # 	newstars = pickle.load(f,encoding = "latin1")
     objs = add_rotation_curves(gofilename, snapnum)
-    print(objs['vel_dispersion'])
-    print(objs['rot_curves'])
-    print(objs['rot_radii'])
     # with open(gofilename+"/test_stellar_rotation_"+str(snapnum)+"_v2.dat",'wb') as f:   
     #     pickle.dump(objs, f)
     # with open("/anvil/projects/x-ast180056/FOF_project/test_stellar_rotation_"+str(snapnum)+"_v2.dat",'wb') as f:   
