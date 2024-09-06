@@ -4,7 +4,7 @@ from sys import argv
 import pickle
 import sys 
 sys.path.append('/home/x-cwilliams/FOF_calculations/process-fof')
-from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups
+from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_Halos
 
 UnitMass_in_g = 1.989e43     
 UnitLength_in_cm = 3.085678e21 
@@ -115,7 +115,6 @@ def calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, grou
     #calculate more individual vectors 
     v_rotveci = np.cross(tempradstars, omegavec) #rotational velocity
     v_rotmagi = np.linalg.norm(v_rotveci, axis=1)[:,np.newaxis] #rotational velocity magnitude
-    print(v_rotmagi[0:20])
     v_radveci = runitstars * np.sum(runitstars * tempvelstars, axis =1)[:,np.newaxis] #radial velocity
     v_radscalari = np.sum(runitstars * tempvelstars, axis =1)[:,np.newaxis] #radial velocity magnitude
     v_turbveci = tempvelstars - v_rotveci - v_radveci #vector turbulent velocity
@@ -261,7 +260,8 @@ def add_rotation_curves(filename, snapnum, group = "Stars"):
         print("used groups of 100 or more gas")
         halo100_indices=get_gasGroups(cat)
     elif group == "DM":
-        print("Not supported!")
+        print("used groups of 300 or more DM!")
+        halo100_indices = get_Halos(cat)
     print("Loading star particles")
     # TESTING MODE: UNCOMMENT below!!
     #halo100_indices = halo100_indices[-20:-1]
@@ -298,10 +298,11 @@ def add_rotation_curves_gas(filename, snapnum, group = "Stars"):
         print("used groups of 100 or more gas")
         halo100_indices=get_gasGroups(cat)
     elif group == "DM":
-        print("Not supported!")
+        print("used groups of 300 or more DM!")
+        halo100_indices = get_Halos(cat)
     print("Loading star particles")
     # TESTING MODE: UNCOMMENT below!!
-    halo100_indices = halo100_indices[-20:-1]
+    #halo100_indices = halo100_indices[-20:-1]
     _,allGasMasses, allGasPositions, allGasVelocities= get_gasIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
@@ -326,12 +327,12 @@ if __name__=="__main__":
     script, gofilename, snapnum = argv
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
     # 	newstars = pickle.load(f,encoding = "latin1")
-    objs = add_rotation_curves(gofilename, snapnum)
+    objs = add_rotation_curves_gas(gofilename, snapnum)
     # with open(gofilename+"/test_stellar_rotation_"+str(snapnum)+"_v2.dat",'wb') as f:   
     #     pickle.dump(objs, f)
     # with open("/anvil/projects/x-ast180056/FOF_project/test_stellar_rotation_"+str(snapnum)+"_v2.dat",'wb') as f:   
     #     pickle.dump(objs, f)
-    print("SAVED OUTPUT!")
+    #print("SAVED OUTPUT!")
 
 
 
