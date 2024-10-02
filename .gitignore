@@ -6,6 +6,21 @@ __pycache__/
 # C extensions
 *.so
 
+#Submission script
+run_hoffman.sh
+run_hoffman2.sh
+run_hoffman3.sh
+run_hoffman4.sh
+run_hoffman5.sh
+run_hoffman6.sh
+run_hoffman7.sh
+run_hoffman8.sh
+run_hoffman9.sh
+run_hoffman10.sh
+
+#Testing script
+boundedness2.py
+
 # Distribution / packaging
 .Python
 build/
