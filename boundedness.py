@@ -628,9 +628,8 @@ def calc_DM_mass(starPos_inGroup,  groupPos,boxSize, pDM,groupRadius ,atime,mass
     return massDM
 
 
-def check_if_exists(filepath, idx): 
-    fof_process_name = "bounded_portion_153_chunk"+str(idx)+"_"
-    ###NOTE THAT 153 is HARD CODED rn 
+def check_if_exists(filepath, idx,snapnum): 
+    fof_process_name = "bounded_portion_"+str(snapnum)+"_chunk"+str(idx)+"_"
     exists = False
     for filename in os.listdir(filepath):
         # Check if the file exists in that directory
@@ -640,9 +639,8 @@ def check_if_exists(filepath, idx):
             exists = True
     return exists
 
-def check_if_exists_indv(filepath, idx,obj): 
-    fof_process_name = "indv_bounded_portion_153_chunk"+str(idx)+"_object"+str(obj)+"_"
-    ###NOTE THAT 153 is HARD CODED rn 
+def check_if_exists_indv(filepath, idx,obj,snapnum): 
+    fof_process_name = "indv_bounded_portion_"+str(snapnum)+"_chunk"+str(idx)+"_object"+str(obj)+"_"
     exists = False
     for filename in os.listdir(filepath):
         # Check if the file exists in that directory
@@ -688,7 +686,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
         objs = {}
-        if int(chunkidx) >int(N) and int(chunkidx) <= int(int(N)+10) and check_if_exists(filepath, chunkidx)==False: 
+        if int(chunkidx) >int(N) and int(chunkidx) <= int(int(N)+10) and check_if_exists(filepath, chunkidx,snapnum)==False: 
             print("file has not been created. continuing with the calculations! for index "+ str(chunkidx))
             print(f"There are {len(chunk)} objects in the chunk.")
             bounded = []
@@ -702,7 +700,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
             for i, j in enumerate(chunk):
                 indv_filepath = filepath +"/indv_objs"
                 print(f"Processing index {j} in chunk starting with {chunk[0]}")
-                if check_if_exists_indv(indv_filepath, chunkidx, j)==False:
+                if check_if_exists_indv(indv_filepath, chunkidx, j,snapnum)==False:
                     groupRadii = chunked_radii[chunkidx]
                     groupPos = chunked_groupPos[chunkidx]
                     groupVelocities= chunked_groupVelocities[chunkidx]
@@ -829,7 +827,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
         objs = {}
-        if int(chunkidx) >int(N) and int(chunkidx) <= int(int(N)+10) and check_if_exists(filepath, chunkidx)==False: 
+        if int(chunkidx) >int(N) and int(chunkidx) <= int(int(N)+10) and check_if_exists(filepath, chunkidx,snapnum)==False: 
             print("file has not been created. continuing with the calculations! for index "+ str(chunkidx))
             print(f"There are {len(chunk)} objects in the chunk.")
             bounded = []
