@@ -114,6 +114,8 @@ def set_config(f):
 		prim = "stars"
 	elif prim_type == 17: 
 		prim = "stars+gas"
+	elif prim_type == 19:
+		prim = "stars+gas+DM"
 	else: 
 		raise AttributeError("Unknown Primary FOF type. Add support for your FOF!")
 	if 'FOF_SECONDARY_LINK_TYPES' in conf.attrs:
@@ -368,7 +370,7 @@ def calc_all_stellarprops(filename, snapnum, newstars, group="Stars", SFR = True
 	# TESTING MODE ONLY: Uncomment next line
 	#halo100_indices = halo100_indices[0:3]
 	objs = {}
-	if prim == "stars" or prim == "stars+gas" or sec == "stars" or sec == "stars+gas":
+	if prim == "stars" or prim == "stars+gas" or prim == "stars+gas+DM" or sec == "stars" or sec == "stars+gas":
 		print("have stars, calculating the stellar properties")
 		allStarIDs, allStarMasses,allStarPositions = get_starIDs(snap)
 		startAllStars, endAllStars = get_starIDgroups(cat,halo100_indices)
@@ -381,7 +383,7 @@ def calc_all_stellarprops(filename, snapnum, newstars, group="Stars", SFR = True
 			print("Warning: SFR is off. Not calculating new stars")
 	else: 
 		print("Warning: no stars found. I will not calculate SFRs")
-	if prim == "gas" or prim == "stars+gas" or sec =="gas" or sec =="stars+gas":
+	if prim == "gas" or prim == "stars+gas" or prim == "stars+gas+DM" or sec =="gas" or sec =="stars+gas":
 		print("have gas, calculating the gas properties")
 		allGasIDs, allGasMasses, allGasPositions = get_gasIDs(snap)
 		startAllGas, endAllGas = get_gasIDgroups(cat,halo100_indices)
@@ -391,7 +393,7 @@ def calc_all_stellarprops(filename, snapnum, newstars, group="Stars", SFR = True
 		objs['gasMass'] = gasobjs['gasMass']
 	else:
 		print("Warning: no gas found. I will not calculate gas properties")
-	if prim =="DM" or sec =="DM":
+	if prim =="DM" or sec =="DM" or prim == "stars+gas+DM":
 		print("have DM, calculating the DM properties")
 		allDMIDs, allDMPositions = get_DMIDs(snap)
 		startAllDM, endAllDM = get_DMIDgroups(cat,halo100_indices)

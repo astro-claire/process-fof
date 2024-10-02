@@ -18,6 +18,9 @@ run_hoffman8.sh
 run_hoffman9.sh
 run_hoffman10.sh
 
+#Testing script
+boundedness2.py
+
 # Distribution / packaging
 .Python
 build/
