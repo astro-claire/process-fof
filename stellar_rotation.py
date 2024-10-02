@@ -4,7 +4,7 @@ from sys import argv
 import pickle
 import sys 
 sys.path.append('/home/x-cwilliams/FOF_calculations/process-fof')
-from fof_process import dx_wrap,dist2,get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_Halos
+from fof_process import dx_wrap,get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_Halos
 from boundedness import get_GroupPos,get_GroupRadii,get_GroupVel, get_starIDs
 
 UnitMass_in_g = 1.989e43     
