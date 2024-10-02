@@ -7,27 +7,15 @@ import os
 import concurrent.futures
 from functools import partial
 sys.path.append('/u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof')
-from fof_process import get_DMIDgroups, get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
+from fof_process import dx_wrap, dist2, get_DMIDgroups, get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
 
+#Set units and parameters
 UnitMass_in_g = 1.989e43     
 UnitLength_in_cm = 3.085678e21 
 hubbleparam = .71 #hubble constant
 GRAVITY_cgs = 6.672e-8
 UnitVelocity_in_cm_per_s = 1.0e5
 
-
-def dx_wrap(dx, box):
-    # Wraps distances using periodic boundary conditions in a vectorized way.
-    dx = np.where(dx > box / 2.0, dx - box, dx)
-    dx = np.where(dx < -box / 2.0, dx + box, dx)
-    return dx
-
-def dist2(dx, dy, dz, box):
-    # Calculates squared distance considering periodic boundary conditions
-    dx = dx_wrap(dx, box)
-    dy = dx_wrap(dy, box)
-    dz = dx_wrap(dz, box)
-    return dx**2 + dy**2 + dz**2
 
 def get_allHalos(cat):
 	"""

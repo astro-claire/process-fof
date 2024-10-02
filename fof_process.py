@@ -3,17 +3,19 @@ import numpy as np
 from sys import argv
 import pickle
 
-def dx_wrap(dx,box):
-	#wraps to account for period boundary conditions. This mutates the original entry
-	idx = dx > +box/2.0
-	dx[idx] -= box
-	idx = dx < -box/2.0
-	dx[idx] += box 
-	return dx
 
-def dist2(dx,dy,dz,box):
-	#Calculates distance taking into account periodic boundary conditions
-	return dx_wrap(dx,box)**2 + dx_wrap(dy,box)**2 + dx_wrap(dz,box)**2
+def dx_wrap(dx, box):
+    # Wraps distances using periodic boundary conditions in a vectorized way.
+    dx = np.where(dx > box / 2.0, dx - box, dx)
+    dx = np.where(dx < -box / 2.0, dx + box, dx)
+    return dx
+
+def dist2(dx, dy, dz, box):
+    # Calculates squared distance considering periodic boundary conditions
+    dx = dx_wrap(dx, box)
+    dy = dx_wrap(dy, box)
+    dz = dx_wrap(dz, box)
+    return dx**2 + dy**2 + dz**2
 
 def set_snap_directories(filename,snapnum,**kwargs):
 	"""
