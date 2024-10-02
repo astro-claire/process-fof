@@ -4,56 +4,14 @@ from sys import argv
 import pickle
 import sys 
 sys.path.append('/home/x-cwilliams/FOF_calculations/process-fof')
-from fof_process import get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_Halos
+from fof_process import dx_wrap,get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_Halos
+from boundedness import get_GroupPos,get_GroupRadii,get_GroupVel, get_starIDs
 
 UnitMass_in_g = 1.989e43     
 UnitLength_in_cm = 3.085678e21 
 hubbleparam = .71 #hubble constant
 GRAVITY_cgs = 6.672e-8
 UnitVelocity_in_cm_per_s = 1.0e5
-
-def dx_wrap(dx,box):
-	#wraps to account for period boundary conditions. This mutates the original entry
-	idx = dx > +box/2.0
-	dx[idx] -= box
-	idx = dx < -box/2.0
-	dx[idx] += box 
-	return dx
-
-# def dx_vec(dx,dy,dz,box):
-#      return np.stack((dx_wrap(dx,box),dx_wrap(dy,box),dx_wrap(dz,box)), axis =1)
-
-def dist2(dx,dy,dz,box):
-	#Calculates distance taking into account periodic boundary conditions
-	return dx_wrap(dx,box)**2 + dx_wrap(dy,box)**2 + dx_wrap(dz,box)**2
-
-def get_GroupRadii(cat, halo100_indices):
-    """
-    Return Group COM
-    """
-    return cat.Group_R_Crit200[halo100_indices]
-
-def get_GroupVel(cat, halo100_indices):
-    """
-    Return Group COM
-    """
-    return cat.GroupVel[halo100_indices]
-
-def get_GroupPos(cat, halo100_indices):
-    """
-    Return Group COM
-    """
-    return cat.GroupPos[halo100_indices]
-
-def get_starIDs(f):
-    """
-    Get particle IDs (groupordered snap)
-    """
-    allStarIDs = f['PartType4/ParticleIDs']
-    allStarMasses = f['PartType4/Masses']
-    allStarPositions = f['PartType4/Coordinates']
-    allStarVelocities = f['PartType4/Velocities']
-    return allStarIDs, allStarMasses, allStarPositions, allStarVelocities
 
 
 def get_gasIDs(f):

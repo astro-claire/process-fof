@@ -7,8 +7,9 @@ import os
 import concurrent.futures
 from functools import partial
 sys.path.append('/u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof')
-from fof_process import get_DMIDgroups, get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
+from fof_process import dx_wrap, dist2, get_DMIDgroups, get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
 
+#Set units and parameters
 UnitMass_in_g = 1.989e43     
 UnitLength_in_cm = 3.085678e21 
 hubbleparam = .71 #hubble constant
@@ -16,31 +17,36 @@ GRAVITY_cgs = 6.672e-8
 UnitVelocity_in_cm_per_s = 1.0e5
 
 
-def dx_wrap(dx, box):
-    # Wraps distances using periodic boundary conditions in a vectorized way.
-    dx = np.where(dx > box / 2.0, dx - box, dx)
-    dx = np.where(dx < -box / 2.0, dx + box, dx)
-    return dx
-
-def dist2(dx, dy, dz, box):
-    # Calculates squared distance considering periodic boundary conditions
-    dx = dx_wrap(dx, box)
-    dy = dx_wrap(dy, box)
-    dz = dx_wrap(dz, box)
-    return dx**2 + dy**2 + dz**2
-
 def get_allHalos(cat):
-	"""
-	halos of greater than 32 DM particles
-	"""
-	#print("Warning!! halos set to testing mode!")
-	over300idx, = np.where(np.greater(cat.GroupLenType[:,1],32))
+    """
+    Identify all halos containing more than 32 dark matter (DM) particles.
 
-	return over300idx
+    Args:
+        cat (halo catalog): The catalog containing halo information, including the number of particles per halo.
+
+    Returns:
+        np.ndarray: Indices of halos with more than 32 DM particles.
+    """
+    #print("Warning!! halos set to testing mode!")
+    over300idx, = np.where(np.greater(cat.GroupLenType[:,1],32))
+
+    return over300idx
 
 def set_up_DM(SV, snapnum):   
     """
-    Create catalogue of DM halos in the box and their particles
+    Set up the dark matter (DM) halo catalog from the simulation snapshot.
+
+    Args:
+        SV (int or str): Simulation version identifier (used for directory/file naming).
+        snapnum (int): Snapshot number to retrieve.
+
+    Returns:
+        tuple: A tuple containing the following:
+            - halo100_indices (np.ndarray): Indices of halos with more than 32 DM particles.
+            - halo_positions (np.ndarray): Positions of the halos.
+            - startAllDM (np.ndarray): Starting indices for DM particles in each halo.
+            - endAllDM (np.ndarray): Ending indices for DM particles in each halo.
+            - dmsnap (h5py snapshot): The opened HDF5 snapshot file containing DM data.
     """
     gofilename = '/u/home/c/clairewi/project-snaoz/FOF_project/DMP-GS-' + str(SV) 
     dmgofile, dmfoffile  = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename) )
@@ -54,7 +60,21 @@ def set_up_DM(SV, snapnum):
 
 def nearby_DM(com, halo_positions, startAllDM, endAllDM,dmsnap, boxSize,limit =10.):
     """
-    find all the halos and their particles near an object with center of mass at com
+    Find all halos and their DM particles within a certain distance from a specified center of mass (com).
+
+    Args:
+        com (np.ndarray): The 3D coordinates of the center of mass (x, y, z).
+        halo_positions (np.ndarray): The positions of the halos in the box.
+        startAllDM (np.ndarray): Starting indices for DM particles in each halo.
+        endAllDM (np.ndarray): Ending indices for DM particles in each halo.
+        dmsnap (object): The opened HDF5 snapshot file containing DM data.
+        boxSize (float): The size of the simulation box.
+        limit (float, optional): The maximum distance (in code units) from the center of mass to search for nearby halos. Defaults to 10.0.
+
+    Returns:
+        tuple: A tuple containing the following:
+            - allnearbyDMPos (np.ndarray): Positions of the DM particles in the nearby halos.
+            - allnearbyDMVel (np.ndarray): Velocities of the DM particles in the nearby halos.
     """
     print("finding the nearby halos within "+ str(limit))
     distances = dist2(halo_positions[:,0]-com[0], halo_positions[:,1]-com[1],halo_positions[:,2]-com[2], boxSize)
@@ -90,6 +110,16 @@ def chunks(lst, n):
 
 
 def dx_indv(dx, box):
+    """
+    Apply periodic boundary conditions to a coordinate difference.
+
+    Args:
+        dx (float): The difference in a single coordinate (x, y, or z).
+        box (float): The size of the simulation box.
+
+    Returns:
+        float: The adjusted coordinate difference, taking into account periodic boundary conditions.
+    """
     if dx > +box/2.0:
         dx -= box
     if dx < -box/2.0:
@@ -97,7 +127,18 @@ def dx_indv(dx, box):
     return dx
 
 def dist2_indv(dx,dy,dz,box):
-    #Calculates distance with periodic boundary conditions for a single vector
+    """
+    Calculate the squared distance between two points with periodic boundary conditions.
+
+    Args:
+        dx (float): The difference in the x-coordinate between the two points.
+        dy (float): The difference in the y-coordinate between the two points.
+        dz (float): The difference in the z-coordinate between the two points.
+        box (float): The size of the simulation box.
+
+    Returns:
+        float: The squared distance between the two points, considering periodic boundary conditions.
+    """
     return dx_indv(dx,box)**2 + dx_indv(dy,box)**2 + dx_indv(dz,box)**2
 
 def get_GroupRadii(cat, halo100_indices):
@@ -140,7 +181,16 @@ def get_DMIDs(f):
 
 def check_virialized(kineticEnergy, potentialEnergy):
     """
-    Returns virialized = one if object is virialized, zero if not, as well as virial ratio
+    Check if an object is virialized based on its kinetic and potential energy.
+
+    Args:
+        kineticEnergy (float): The kinetic energy of the object.
+        potentialEnergy (float): The potential energy of the object.
+
+    Returns:
+        tuple: A tuple containing:
+            - virialized (int): 1 if the object is virialized (virial ratio between 1.5 and 2.5), 0 otherwise.
+            - ratio (float): The virial ratio (|potentialEnergy / kineticEnergy|).
     """
     ratio = np.abs(potentialEnergy/kineticEnergy)
     virialized = 0
@@ -151,11 +201,29 @@ def check_virialized(kineticEnergy, potentialEnergy):
 
 def calc_virial_radius(potentialEnergy, mass):
     """
-    Virial radius given mass and potential energy (cgs units)
+    Calculate the virial radius given the mass and potential energy of an object (in cgs units).
+
+    Args:
+        potentialEnergy (float): The potential energy of the object.
+        mass (float): The mass of the object.
+
+    Returns:
+        float: The virial radius of the object.
     """
     return - GRAVITY_cgs * mass * mass / potentialEnergy
 
 def calc_max_radius(starPos_inGroup,groupPos,boxSize):
+    """
+    Calculate the maximum radial distance between a group of stars and the group's center.
+
+    Args:
+        starPos_inGroup (np.ndarray): The positions of stars in the group (shape: N x 3).
+        groupPos (np.ndarray): The position of the group's center (shape: 3).
+        boxSize (float): The size of the simulation box.
+
+    Returns:
+        float: The maximum distance between the stars and the group's center, in cm.
+    """
     distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
     maxdist = max(distances)
     return UnitLength_in_cm* np.sqrt(maxdist)
@@ -163,7 +231,24 @@ def calc_max_radius(starPos_inGroup,groupPos,boxSize):
 
 def calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
-    Calculate boundedness
+    Calculate whether a group of stars is gravitationally bound based on their velocities and positions.
+
+    Args:
+        starVel_inGroup (np.ndarray): The velocities of the stars in the group (shape: N x 3).
+        starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
+        starMass_inGroup (np.ndarray): The masses of the stars in the group (shape: N).
+        groupPos (np.ndarray): The position of the group's center (shape: 3).
+        groupVelocity (np.ndarray): The velocity of the group's center (shape: 3).
+        boxSize (float): The size of the simulation box.
+        boxSizeVel (float): The simulation velocity to offset.
+
+    Returns:
+        tuple: A tuple containing:
+            - boundedness (int): 1 if the group is gravitationally bound, 0 otherwise.
+            - energyStars (float): The total energy (kinetic + potential) of the stars in the group.
+            - kineticEnergyStars (float): The total kinetic energy of the stars in the group.
+            - potentialEnergyStars (float): The total potential energy of the stars in the group.
+            - massStars (float): The total mass of the stars in the group.
     """
     tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel)
     velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
@@ -194,21 +279,82 @@ def calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,
 #Functions for parallel tensor creation
 
 def tensor_dist(i,j, starPos_inGroup = np.array([[0,0,0]]),boxSize=1776.):
+    """
+    Computes the distance between particles i and j
+    
+    Args: 
+        i (int): index of particle i
+        j (int): index of particle j
+        starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
+        boxSize (float): The size of the simulation box
+    Returns: 
+        float: the distance between particle i and j in cm
+    """
     return UnitLength_in_cm* np.sqrt(dist2_indv(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
 
 def tensor_dist_2type(i,j, starPos_inGroup = np.array([[0,0,0]]),pDM = np.array([[0,0,0]]),boxSize=1776.):
+    """
+    Computes the distance between particles i and j where i is a DM particle and j is a star particle
+    
+    Args: 
+        i (int): index of particle i
+        j (int): index of particle j
+        starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
+        pDM (np.ndarray): The positions of the dark matter in the group (shape: M x 3).
+        boxSize (float): The size of the simulation box.
+
+    Returns: 
+        float: the distance between particle i and j in cm
+    """
     return UnitLength_in_cm* np.sqrt(dist2_indv(pDM[i,0]-starPos_inGroup[j,0],pDM[i,1]-starPos_inGroup[j,1],pDM[i,2]-starPos_inGroup[j,2],boxSize))
 
 def compute_row(i_elem,J, starPos_inGroup,boxSize):
+    """
+    Compute the distance tensor row for a given particle in a group.
+
+    Args:
+        i_elem (int): Index of the particle for which the distances are computed.
+        J (iterable): Iterable of indices of particles to compute distances with respect to.
+        starPos_inGroup (ndarray): Array of particle positions within the group.
+        boxSize (float): Size of the simulation box.
+
+    Returns:
+        List[float]: List of distances between the particle `i_elem` and particles in `J`.
+    """
     return [tensor_dist(i_elem, j_elem,starPos_inGroup=starPos_inGroup,boxSize=boxSize) for j_elem in J]
 
 def compute_row_2type(i_elem,J, starPos_inGroup,pDM,boxSize):
+    """
+    Compute the distance tensor row for a given particle in a group, with respect to particles of a different type (e.g., dark matter).
+
+    Args:
+        i_elem (int): Index of the particle for which the distances are computed.
+        J (iterable): Iterable of indices of particles to compute distances with respect to.
+        starPos_inGroup (ndarray): Array of particle positions within the group.
+        pDM (ndarray): Array of positions for the second particle type (e.g., dark matter).
+        boxSize (float): Size of the simulation box.
+
+    Returns:
+        List[float]: List of distances between the particle `i_elem` and particles in `J` from the second particle type.
+    """
     return [tensor_dist_2type(i_elem, j_elem,starPos_inGroup=starPos_inGroup,pDM = pDM,boxSize=boxSize) for j_elem in J]
 
 
 def parallel_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
-    Calculate boundedness
+    Calculate the boundedness of a stellar group using parallel processing.
+
+    Args:
+        starVel_inGroup (ndarray): Array of star velocities in the group.
+        starPos_inGroup (ndarray): Array of star positions in the group.
+        starMass_inGroup (ndarray): Array of star masses in the group.
+        groupPos (ndarray): Position of the group.
+        groupVelocity (ndarray): Velocity of the group.
+        boxSize (float): Size of the simulation box for positions.
+        boxSizeVel (float): Velocity for simualtion box hubble flow correction.
+
+    Returns:
+        tuple: Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy, potential energy, and total stellar mass.
     """
     tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel)
     velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
@@ -466,7 +612,19 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
 
 def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
-    This version breaks the particles into chunks for the potential energy calculation. I'm trying to reduce RAM here!! 
+    Calculate the boundedness of a stellar group using chunked processing to reduce memory usage.
+
+    Args:
+        starVel_inGroup (ndarray): Array of star velocities in the group.
+        starPos_inGroup (ndarray): Array of star positions in the group.
+        starMass_inGroup (ndarray): Array of star masses in the group.
+        groupPos (ndarray): Position of the group.
+        groupVelocity (ndarray): Velocity of the group.
+        boxSize (float): Size of the simulation box for positions.
+        boxSizeVel (float): Size of the simulation box for velocities.
+
+    Returns:
+        tuple: Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy, potential energy, and total stellar mass.
     """
     tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel)
     velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
@@ -490,6 +648,27 @@ def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, g
 
 
 def parallel_calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_inGroup,  groupPos, groupVelocity,boxSize,boxSizeVel, pDM, vDM,groupRadius ,atime,massDMParticle):
+    """
+    Calculate the boundedness of a stellar group with dark matter using parallel processing.
+
+    Args:
+        energyStars (float): Total energy of the stellar group.
+        starVel_inGroup (ndarray): Array of star velocities in the group.
+        starPos_inGroup (ndarray): Array of star positions in the group.
+        starMass_inGroup (ndarray): Array of star masses in the group.
+        groupPos (ndarray): Position of the group.
+        groupVelocity (ndarray): Velocity of the group.
+        boxSize (float): Size of the simulation box for positions.
+        boxSizeVel (float): Size of the simulation box for velocities.
+        pDM (ndarray): Array of dark matter particle positions.
+        vDM (ndarray): Array of dark matter particle velocities.
+        groupRadius (float): Radius of the group.
+        atime (float): Scale factor at the snapshot time.
+        massDMParticle (float): Mass of a dark matter particle.
+
+    Returns:
+        tuple: Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy of dark matter, total potential energy between stars and dark matter, and dark matter mass.
+    """
     if groupRadius <= 0:
         distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
         maxdist = max(distances)
@@ -548,6 +727,27 @@ def parallel_calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, s
     return boundedness, totEnergy, kineticEnergyDM, potentialEnergyStarsDM + potentialEnergyDM, massDM
 
 def chunked_calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_inGroup,  groupPos, groupVelocity,boxSize,boxSizeVel, pDM, vDM,groupRadius ,atime,massDMParticle):
+    """
+    Calculate the boundedness of a stellar group with dark matter using chunked processing to reduce memory usage.
+
+    Args:
+        energyStars (float): Total energy of the stellar group.
+        starVel_inGroup (ndarray): Array of star velocities in the group.
+        starPos_inGroup (ndarray): Array of star positions in the group.
+        starMass_inGroup (ndarray): Array of star masses in the group.
+        groupPos (ndarray): Position of the group.
+        groupVelocity (ndarray): Velocity of the group.
+        boxSize (float): Size of the simulation box for positions.
+        boxSizeVel (float): Size of the simulation box for velocities.
+        pDM (ndarray): Array of dark matter particle positions.
+        vDM (ndarray): Array of dark matter particle velocities.
+        groupRadius (float): Radius of the group.
+        atime (float): Scale factor at the snapshot time.
+        massDMParticle (float): Mass of a dark matter particle.
+
+    Returns:
+        tuple: Boundedness 
+    """
     if groupRadius <= 0:
         distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
         maxdist = max(distances)
@@ -581,6 +781,27 @@ def chunked_calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, st
     return boundedness, totEnergy, kineticEnergyDM, potentialEnergyStarsDM + potentialEnergyDM, massDM
     
 def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_inGroup,  groupPos, groupVelocity,boxSize,boxSizeVel, pDM, vDM,groupRadius ,atime,massDMParticle):
+     """
+     Calculate the boundedness of a stellar group with dark matter without any tricks to reduce memory usage
+
+     Args:
+        energyStars (float): Total energy of the stellar group.
+        starVel_inGroup (ndarray): Array of star velocities in the group.
+        starPos_inGroup (ndarray): Array of star positions in the group.
+        starMass_inGroup (ndarray): Array of star masses in the group.
+        groupPos (ndarray): Position of the group.
+        groupVelocity (ndarray): Velocity of the group.
+        boxSize (float): Size of the simulation box for positions.
+        boxSizeVel (float): Size of the simulation box for velocities.
+        pDM (ndarray): Array of dark matter particle positions.
+        vDM (ndarray): Array of dark matter particle velocities.
+        groupRadius (float): Radius of the group.
+        atime (float): Scale factor at the snapshot time.
+        massDMParticle (float): Mass of a dark matter particle.
+
+     Returns:
+        tuple: Boundedness 
+     """
      if groupRadius <= 0:
         distances = dist2(starPos_inGroup[:,0]-groupPos[0],starPos_inGroup[:,1]-groupPos[1],starPos_inGroup[:,2]-groupPos[2],boxSize)
         maxdist = max(distances)
@@ -623,6 +844,21 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
      return boundedness, totEnergy, kineticEnergyDM, potentialEnergyStarsDM + potentialEnergyDM, massDM
 
 def calc_DM_mass(starPos_inGroup,  groupPos,boxSize, pDM,groupRadius ,atime,massDMParticle):
+    """
+    Calculate the mass of dark matter (DM) within a group.
+
+    Args:
+        starPos_inGroup (ndarray): Positions of stars in the group.
+        groupPos (ndarray): Position of the center of the group.
+        boxSize (float): Size of the simulation box for periodic boundary conditions.
+        pDM (ndarray): Positions of dark matter particles.
+        groupRadius (float): Radius of the group (physical or comoving).
+        atime (float): Scale factor for the simulation.
+        massDMParticle (float): Mass of each dark matter particle.
+
+    Returns:
+        massDM (float): Total mass of the dark matter particles within the group.
+    """
     if len(pDM)==0:
         massDM = 0.
     else:
@@ -640,9 +876,19 @@ def calc_DM_mass(starPos_inGroup,  groupPos,boxSize, pDM,groupRadius ,atime,mass
     return massDM
 
 
-def check_if_exists(filepath, idx): 
-    fof_process_name = "bounded_portion_153_chunk"+str(idx)+"_"
-    ###NOTE THAT 153 is HARD CODED rn 
+def check_if_exists(filepath, idx,snapnum): 
+    """
+    Check if a file corresponding to a particular snapshot and chunk exists in the specified directory.
+
+    Parameters:
+    - filepath (str): Path to the directory.
+    - idx (int): Chunk index.
+    - snapnum (int): Snapshot number.
+
+    Returns:
+    - exists (bool): True if the file exists, False otherwise.
+    """
+    fof_process_name = "bounded_portion_"+str(snapnum)+"_chunk"+str(idx)+"_"
     exists = False
     for filename in os.listdir(filepath):
         # Check if the file exists in that directory
@@ -652,9 +898,20 @@ def check_if_exists(filepath, idx):
             exists = True
     return exists
 
-def check_if_exists_indv(filepath, idx,obj): 
-    fof_process_name = "indv_bounded_portion_153_chunk"+str(idx)+"_object"+str(obj)+"_"
-    ###NOTE THAT 153 is HARD CODED rn 
+def check_if_exists_indv(filepath, idx,obj,snapnum): 
+    """
+    Check if an individual file corresponding to a particular snapshot, chunk, and object exists in the specified directory.
+
+    Parameters:
+    - filepath (str): Path to the directory.
+    - idx (int): Chunk index.
+    - obj (int): Object identifier.
+    - snapnum (int): Snapshot number.
+
+    Returns:
+    - exists (bool): True if the file exists, False otherwise.
+    """
+    fof_process_name = "indv_bounded_portion_"+str(snapnum)+"_chunk"+str(idx)+"_object"+str(obj)+"_"
     exists = False
     for filename in os.listdir(filepath):
         # Check if the file exists in that directory
@@ -668,7 +925,32 @@ def check_if_exists_indv(filepath, idx,obj):
 
 def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSize, halo100_indices, allStarMasses, allStarPositions,allStarVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities,massDMParticle,halo_positions, startAllDM, endAllDM,dmsnap):
     """
-    iterate all the galaxies in the FOF check boundedness and virialization, as well as calculate DM mass 
+    Iterate over galaxies in chunks, checking for boundedness and virialization, and calculating dark matter mass for each galaxy.
+    Saves results for individual objects.
+
+    Arguments:
+    N (int): Index to start iterating over chunks.
+    gofilename (str): Path for saving results.
+    snapnum (int or str) Snapshot number for the simulation.
+    atime (float): Scale factor for the current snapshot.
+    boxSize (float): Size of the simulation box in comoving units.
+    halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.
+    allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.
+    allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.
+    allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.
+    startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.
+    endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.
+    groupRadii (Numpy.ndarray):  Radii of the halos in the group catalog.
+    groupPos (Numpy.ndarray): Positions of halos in the group catalog.
+    groupVelocities (Numpy.ndarray): Velocities of halos in the group catalog.
+    massDMParticle (float): Dark matter particle mass.
+    halo_positions (Numpy.ndarray): Positions of dark matter particles.
+    startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.
+    endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.
+    dmsnap (int or str): Snapshot number dark matter primary
+
+    Returns:
+    objs (dict): Dictionary containing boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy.
     """
     objs = {}
     #FIX THESE SO THEY AREN'T HARD CODED
@@ -700,7 +982,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
         objs = {}
-        if int(chunkidx) >int(N) and int(chunkidx) <= int(int(N)+10) and check_if_exists(filepath, chunkidx)==False: 
+        if int(chunkidx) >int(N) and int(chunkidx) <= int(int(N)+10) and check_if_exists(filepath, chunkidx,snapnum)==False: 
             print("file has not been created. continuing with the calculations! for index "+ str(chunkidx))
             print(f"There are {len(chunk)} objects in the chunk.")
             bounded = []
@@ -714,7 +996,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
             for i, j in enumerate(chunk):
                 indv_filepath = filepath +"/indv_objs"
                 print(f"Processing index {j} in chunk starting with {chunk[0]}")
-                if check_if_exists_indv(indv_filepath, chunkidx, j)==False:
+                if check_if_exists_indv(indv_filepath, chunkidx, j,snapnum)==False:
                     groupRadii = chunked_radii[chunkidx]
                     groupPos = chunked_groupPos[chunkidx]
                     groupVelocities= chunked_groupVelocities[chunkidx]
@@ -809,7 +1091,32 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
 
 def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo100_indices, allStarMasses, allStarPositions,allStarVelocities, startAllStars,endAllStars, groupRadii,groupPos, groupVelocities,massDMParticle,halo_positions, startAllDM, endAllDM,dmsnap):
     """
-    iterate all the galaxies in the FOF check boundedness and virialization, as well as calculate DM mass 
+    Iterate over galaxies in chunks, checking for boundedness and virialization, and calculating dark matter mass for each galaxy.
+    Saves results for chunks of  objects.
+
+    Arguments:
+    N (int): Index to start iterating over chunks.
+    gofilename (str): Path for saving results.
+    snapnum (int or str) Snapshot number for the simulation.
+    atime (float): Scale factor for the current snapshot.
+    boxSize (float): Size of the simulation box in comoving units.
+    halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.
+    allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.
+    allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.
+    allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.
+    startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.
+    endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.
+    groupRadii (Numpy.ndarray):  Radii of the halos in the group catalog.
+    groupPos (Numpy.ndarray): Positions of halos in the group catalog.
+    groupVelocities (Numpy.ndarray): Velocities of halos in the group catalog.
+    massDMParticle (float): Dark matter particle mass.
+    halo_positions (Numpy.ndarray): Positions of dark matter particles.
+    startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.
+    endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.
+    dmsnap (int or str): Snapshot number dark matter primary
+
+    Returns:
+    objs (dict): Dictionary containing boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy.
     """
     objs = {}
     #FIX THESE SO THEY AREN'T HARD CODED
@@ -841,7 +1148,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
         objs = {}
-        if int(chunkidx) >int(N) and int(chunkidx) <= int(int(N)+10) and check_if_exists(filepath, chunkidx)==False: 
+        if int(chunkidx) >int(N) and int(chunkidx) <= int(int(N)+10) and check_if_exists(filepath, chunkidx,snapnum)==False: 
             print("file has not been created. continuing with the calculations! for index "+ str(chunkidx))
             print(f"There are {len(chunk)} objects in the chunk.")
             bounded = []
@@ -940,7 +1247,16 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
 
 def add_bounded_calculation_N(filename,N, snapnum, group = "Stars"):
     """
-    wrapper function
+    Wrapper function to calculate boundedness and virialization for galaxy groups.
+    
+    Arguments:
+    filename -- Path to the input files.
+    N -- Index to start iterating over chunks.
+    snapnum -- Snapshot number for the simulation.
+    group -- Group type to calculate boundedness for ('Stars', 'Gas', or 'DM').
+    
+    Returns:
+    objs -- Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.
     """
     print('opening files')
     gofilename = str(filename)
@@ -977,7 +1293,16 @@ def add_bounded_calculation_N(filename,N, snapnum, group = "Stars"):
 
 def add_bounded_calculation_N_indv(filename,N, snapnum, group = "Stars"):
     """
-    wrapper function
+    Wrapper function to calculate boundedness and virialization and save individual galaxy groups.
+    
+    Arguments:
+    filename -- Path to the input files.
+    N -- Index to start iterating over chunks.
+    snapnum -- Snapshot number for the simulation.
+    group -- Group type to calculate boundedness for ('Stars', 'Gas', or 'DM').
+    
+    Returns:
+    objs -- Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.
     """
     print('opening files')
     gofilename = str(filename)
