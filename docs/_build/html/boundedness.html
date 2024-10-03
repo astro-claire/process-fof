@@ -8,9 +8,12 @@
     <title>Boundedness &#8212; process-fof 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Stellar Rotation" href="stellar_rotation.html" />
@@ -33,222 +36,8 @@
           <div class="body" role="main">
             
   <section id="boundedness">
-<span id="id1"></span><h1>Boundedness<a class="headerlink" href="#boundedness" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1>Boundedness<a class="headerlink" href="#boundedness" title="Link to this heading"></a></h1>
 <p>Function to perform correlations.</p>
-<dl class="py function" id="module-boundedness">
-<dt class="sig sig-object py" id="boundedness.add_bounded_calculation_N">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">add_bounded_calculation_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#add_bounded_calculation_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.add_bounded_calculation_N" title="Link to this definition">¶</a></dt>
-<dd><p>wrapper function</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.add_bounded_calculation_N_indv">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">add_bounded_calculation_N_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#add_bounded_calculation_N_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.add_bounded_calculation_N_indv" title="Link to this definition">¶</a></dt>
-<dd><p>wrapper function</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.calc_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_boundedness" title="Link to this definition">¶</a></dt>
-<dd><p>Calculate boundedness</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.calc_virial_radius">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_virial_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">potentialEnergy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_virial_radius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_virial_radius" title="Link to this definition">¶</a></dt>
-<dd><p>Virial radius given mass and potential energy (cgs units)</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.check_virialized">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">check_virialized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kineticEnergy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentialEnergy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#check_virialized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.check_virialized" title="Link to this definition">¶</a></dt>
-<dd><p>Returns virialized = one if object is virialized, zero if not, as well as virial ratio</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.chunked_calc_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_calc_boundedness" title="Link to this definition">¶</a></dt>
-<dd><p>This version breaks the particles into chunks for the potential energy calculation. I’m trying to reduce RAM here!!</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.chunked_potential_energy">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.672e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy" title="Link to this definition">¶</a></dt>
-<dd><p>Calculate the total potential energy of a system of particles using pairwise interactions.</p>
-<p>Parameters:
-masses : np.array</p>
-<blockquote>
-<div><p>1D array of particle masses.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>positions<span class="classifier">np.array</span></dt><dd><p>2D array of particle positions (shape: N x 3).</p>
-</dd>
-<dt>box_size<span class="classifier">float</span></dt><dd><p>Size of the periodic box.</p>
-</dd>
-<dt>G<span class="classifier">float</span></dt><dd><p>Gravitational constant,</p>
-</dd>
-</dl>
-<p>Returns:
-total_potential : float</p>
-<blockquote>
-<div><p>Total potential energy of the system.</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.chunked_potential_energy_between_groups">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy_between_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masses2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.672e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy_between_groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy_between_groups" title="Link to this definition">¶</a></dt>
-<dd><p>Calculate the total potential energy between two groups of particles,
-where the first group has the same mass for all particles, and the second group has an array of masses.</p>
-<p>Parameters:
-mass1 : float</p>
-<blockquote>
-<div><p>Mass of each particle in the first group (same for all particles in group 1).</p>
-</div></blockquote>
-<dl class="simple">
-<dt>positions1<span class="classifier">np.array</span></dt><dd><p>2D array of particle positions for group 1 (shape: N1 x 3).</p>
-</dd>
-<dt>masses2<span class="classifier">np.array</span></dt><dd><p>1D array of particle masses for group 2.</p>
-</dd>
-<dt>positions2<span class="classifier">np.array</span></dt><dd><p>2D array of particle positions for group 2 (shape: N2 x 3).</p>
-</dd>
-<dt>box_size<span class="classifier">float</span></dt><dd><p>Size of the periodic box.</p>
-</dd>
-<dt>G<span class="classifier">float</span></dt><dd><p>Gravitational constant, defaults to 1.0 for natural units.</p>
-</dd>
-</dl>
-<p>Returns:
-total_potential : float</p>
-<blockquote>
-<div><p>Total potential energy between the two groups of particles.</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.chunked_potential_energy_between_sets">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy_between_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masses1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masses2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.672e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy_between_sets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy_between_sets" title="Link to this definition">¶</a></dt>
-<dd><p>Calculate the total potential energy between two different sets of particles using pairwise interactions.</p>
-<p>Parameters:
-masses1 : np.array</p>
-<blockquote>
-<div><p>1D array of particle masses for set 1.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>positions1<span class="classifier">np.array</span></dt><dd><p>2D array of particle positions for set 1 (shape: N1 x 3).</p>
-</dd>
-<dt>masses2<span class="classifier">np.array</span></dt><dd><p>1D array of particle masses for set 2.</p>
-</dd>
-<dt>positions2<span class="classifier">np.array</span></dt><dd><p>2D array of particle positions for set 2 (shape: N2 x 3).</p>
-</dd>
-<dt>box_size<span class="classifier">float</span></dt><dd><p>Size of the periodic box.</p>
-</dd>
-<dt>G<span class="classifier">float</span></dt><dd><p>Gravitational constant, defaults to 1.0 for natural units.</p>
-</dd>
-</dl>
-<p>Returns:
-total_potential : float</p>
-<blockquote>
-<div><p>Total potential energy between the two sets of particles.</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.chunked_potential_energy_same_mass">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy_same_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.672e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy_same_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy_same_mass" title="Link to this definition">¶</a></dt>
-<dd><p>Calculate the total potential energy of a system of particles with the same mass using pairwise interactions.</p>
-<p>Parameters:
-mass : float</p>
-<blockquote>
-<div><p>Mass of each particle (same for all particles).</p>
-</div></blockquote>
-<dl class="simple">
-<dt>positions<span class="classifier">np.array</span></dt><dd><p>2D array of particle positions (shape: N x 3).</p>
-</dd>
-<dt>box_size<span class="classifier">float</span></dt><dd><p>Size of the periodic box.</p>
-</dd>
-<dt>G<span class="classifier">float</span></dt><dd><p>Gravitational constant, defaults to 1.0 for natural units.</p>
-</dd>
-</dl>
-<p>Returns:
-total_potential : float</p>
-<blockquote>
-<div><p>Total potential energy of the system.</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.chunks">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunks" title="Link to this definition">¶</a></dt>
-<dd><p>Yield successive n-sized chunks from lst.
-Function from chat gpt lol</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.get_DMIDs">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_DMIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_DMIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_DMIDs" title="Link to this definition">¶</a></dt>
-<dd><p>Get particle IDs (groupordered snap)</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.get_GroupPos">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupPos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupPos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupPos" title="Link to this definition">¶</a></dt>
-<dd><p>Return Group COM</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.get_GroupRadii">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupRadii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupRadii"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupRadii" title="Link to this definition">¶</a></dt>
-<dd><p>Return Group COM</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.get_GroupVel">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupVel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupVel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupVel" title="Link to this definition">¶</a></dt>
-<dd><p>Return Group COM</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.get_allHalos">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_allHalos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_allHalos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_allHalos" title="Link to this definition">¶</a></dt>
-<dd><p>halos of greater than 32 DM particles</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.get_starIDs">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_starIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_starIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_starIDs" title="Link to this definition">¶</a></dt>
-<dd><p>Get particle IDs (groupordered snap)</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.iterate_galaxies_chunked_resub_N">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">iterate_galaxies_chunked_resub_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gofilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarMasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#iterate_galaxies_chunked_resub_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.iterate_galaxies_chunked_resub_N" title="Link to this definition">¶</a></dt>
-<dd><p>iterate all the galaxies in the FOF check boundedness and virialization, as well as calculate DM mass</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.iterate_galaxies_chunked_resub_N_saveindv">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">iterate_galaxies_chunked_resub_N_saveindv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gofilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarMasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#iterate_galaxies_chunked_resub_N_saveindv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.iterate_galaxies_chunked_resub_N_saveindv" title="Link to this definition">¶</a></dt>
-<dd><p>iterate all the galaxies in the FOF check boundedness and virialization, as well as calculate DM mass</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.nearby_DM">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">nearby_DM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">com</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#nearby_DM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.nearby_DM" title="Link to this definition">¶</a></dt>
-<dd><p>find all the halos and their particles near an object with center of mass at com</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.parallel_calc_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">parallel_calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#parallel_calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.parallel_calc_boundedness" title="Link to this definition">¶</a></dt>
-<dd><p>Calculate boundedness</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.set_up_DM">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">set_up_DM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SV</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#set_up_DM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.set_up_DM" title="Link to this definition">¶</a></dt>
-<dd><p>Create catalogue of DM halos in the box and their particles</p>
-</dd></dl>
-
 </section>
 
 
@@ -271,31 +60,7 @@ Function from chat gpt lol</p>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="fof_process.html">FOF Process</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Boundedness</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.add_bounded_calculation_N"><code class="docutils literal notranslate"><span class="pre">add_bounded_calculation_N()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.add_bounded_calculation_N_indv"><code class="docutils literal notranslate"><span class="pre">add_bounded_calculation_N_indv()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.calc_boundedness"><code class="docutils literal notranslate"><span class="pre">calc_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.calc_virial_radius"><code class="docutils literal notranslate"><span class="pre">calc_virial_radius()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.check_virialized"><code class="docutils literal notranslate"><span class="pre">check_virialized()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_calc_boundedness"><code class="docutils literal notranslate"><span class="pre">chunked_calc_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_potential_energy"><code class="docutils literal notranslate"><span class="pre">chunked_potential_energy()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_potential_energy_between_groups"><code class="docutils literal notranslate"><span class="pre">chunked_potential_energy_between_groups()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_potential_energy_between_sets"><code class="docutils literal notranslate"><span class="pre">chunked_potential_energy_between_sets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_potential_energy_same_mass"><code class="docutils literal notranslate"><span class="pre">chunked_potential_energy_same_mass()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunks"><code class="docutils literal notranslate"><span class="pre">chunks()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_DMIDs"><code class="docutils literal notranslate"><span class="pre">get_DMIDs()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_GroupPos"><code class="docutils literal notranslate"><span class="pre">get_GroupPos()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_GroupRadii"><code class="docutils literal notranslate"><span class="pre">get_GroupRadii()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_GroupVel"><code class="docutils literal notranslate"><span class="pre">get_GroupVel()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_allHalos"><code class="docutils literal notranslate"><span class="pre">get_allHalos()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_starIDs"><code class="docutils literal notranslate"><span class="pre">get_starIDs()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.iterate_galaxies_chunked_resub_N"><code class="docutils literal notranslate"><span class="pre">iterate_galaxies_chunked_resub_N()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.iterate_galaxies_chunked_resub_N_saveindv"><code class="docutils literal notranslate"><span class="pre">iterate_galaxies_chunked_resub_N_saveindv()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.nearby_DM"><code class="docutils literal notranslate"><span class="pre">nearby_DM()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.parallel_calc_boundedness"><code class="docutils literal notranslate"><span class="pre">parallel_calc_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.set_up_DM"><code class="docutils literal notranslate"><span class="pre">set_up_DM()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Boundedness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stellar_rotation.html">Stellar Rotation</a></li>
 </ul>
 
