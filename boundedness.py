@@ -21,7 +21,7 @@ def get_allHalos(cat):
     """
     Identify all halos containing more than 32 dark matter (DM) particles.
 
-    Args:
+    Arguments::
         cat (halo catalog): The catalog containing halo information, including the number of particles per halo.
 
     Returns:
@@ -36,7 +36,7 @@ def set_up_DM(SV, snapnum):
     """
     Set up the dark matter (DM) halo catalog from the simulation snapshot.
 
-    Args:
+    Arguments::
         SV (int or str): Simulation version identifier (used for directory/file naming).
         snapnum (int): Snapshot number to retrieve.
 
@@ -62,7 +62,7 @@ def nearby_DM(com, halo_positions, startAllDM, endAllDM,dmsnap, boxSize,limit =1
     """
     Find all halos and their DM particles within a certain distance from a specified center of mass (com).
 
-    Args:
+    Arguments::
         com (np.ndarray): The 3D coordinates of the center of mass (x, y, z).
         halo_positions (np.ndarray): The positions of the halos in the box.
         startAllDM (np.ndarray): Starting indices for DM particles in each halo.
@@ -104,6 +104,10 @@ def chunks(lst, n):
     """
     Yield successive n-sized chunks from lst.
     Function from chat gpt lol
+
+    Arguments: 
+        lst (list): list or array to divide into chunks
+        n (int): chunk size
     """
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
@@ -113,7 +117,7 @@ def dx_indv(dx, box):
     """
     Apply periodic boundary conditions to a coordinate difference.
 
-    Args:
+    Arguments::
         dx (float): The difference in a single coordinate (x, y, or z).
         box (float): The size of the simulation box.
 
@@ -130,7 +134,7 @@ def dist2_indv(dx,dy,dz,box):
     """
     Calculate the squared distance between two points with periodic boundary conditions.
 
-    Args:
+    Arguments::
         dx (float): The difference in the x-coordinate between the two points.
         dy (float): The difference in the y-coordinate between the two points.
         dz (float): The difference in the z-coordinate between the two points.
@@ -183,7 +187,7 @@ def check_virialized(kineticEnergy, potentialEnergy):
     """
     Check if an object is virialized based on its kinetic and potential energy.
 
-    Args:
+    Arguments::
         kineticEnergy (float): The kinetic energy of the object.
         potentialEnergy (float): The potential energy of the object.
 
@@ -203,7 +207,7 @@ def calc_virial_radius(potentialEnergy, mass):
     """
     Calculate the virial radius given the mass and potential energy of an object (in cgs units).
 
-    Args:
+    Arguments::
         potentialEnergy (float): The potential energy of the object.
         mass (float): The mass of the object.
 
@@ -216,7 +220,7 @@ def calc_max_radius(starPos_inGroup,groupPos,boxSize):
     """
     Calculate the maximum radial distance between a group of stars and the group's center.
 
-    Args:
+    Arguments::
         starPos_inGroup (np.ndarray): The positions of stars in the group (shape: N x 3).
         groupPos (np.ndarray): The position of the group's center (shape: 3).
         boxSize (float): The size of the simulation box.
@@ -233,7 +237,7 @@ def calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,
     """
     Calculate whether a group of stars is gravitationally bound based on their velocities and positions.
 
-    Args:
+    Arguments::
         starVel_inGroup (np.ndarray): The velocities of the stars in the group (shape: N x 3).
         starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
         starMass_inGroup (np.ndarray): The masses of the stars in the group (shape: N).
@@ -282,7 +286,7 @@ def tensor_dist(i,j, starPos_inGroup = np.array([[0,0,0]]),boxSize=1776.):
     """
     Computes the distance between particles i and j
     
-    Args: 
+    Arguments:: 
         i (int): index of particle i
         j (int): index of particle j
         starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
@@ -296,7 +300,7 @@ def tensor_dist_2type(i,j, starPos_inGroup = np.array([[0,0,0]]),pDM = np.array(
     """
     Computes the distance between particles i and j where i is a DM particle and j is a star particle
     
-    Args: 
+    Arguments:: 
         i (int): index of particle i
         j (int): index of particle j
         starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
@@ -312,7 +316,7 @@ def compute_row(i_elem,J, starPos_inGroup,boxSize):
     """
     Compute the distance tensor row for a given particle in a group.
 
-    Args:
+    Arguments::
         i_elem (int): Index of the particle for which the distances are computed.
         J (iterable): Iterable of indices of particles to compute distances with respect to.
         starPos_inGroup (ndarray): Array of particle positions within the group.
@@ -327,7 +331,7 @@ def compute_row_2type(i_elem,J, starPos_inGroup,pDM,boxSize):
     """
     Compute the distance tensor row for a given particle in a group, with respect to particles of a different type (e.g., dark matter).
 
-    Args:
+    Arguments::
         i_elem (int): Index of the particle for which the distances are computed.
         J (iterable): Iterable of indices of particles to compute distances with respect to.
         starPos_inGroup (ndarray): Array of particle positions within the group.
@@ -344,7 +348,7 @@ def parallel_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, 
     """
     Calculate the boundedness of a stellar group using parallel processing.
 
-    Args:
+    Arguments::
         starVel_inGroup (ndarray): Array of star velocities in the group.
         starPos_inGroup (ndarray): Array of star positions in the group.
         starMass_inGroup (ndarray): Array of star masses in the group.
@@ -414,18 +418,18 @@ def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_s
     """
     Calculate the total potential energy of a system of particles using pairwise interactions.
     
-    Parameters:
-    masses : np.array
-        1D array of particle masses.
-    positions : np.array
-        2D array of particle positions (shape: N x 3).
-    box_size : float
-        Size of the periodic box.
-    G : float
-        Gravitational constant,
+    Arguments:
+        masses : np.array
+            1D array of particle masses.
+        positions : np.array
+            2D array of particle positions (shape: N x 3).
+        box_size : float
+            Size of the periodic box.
+        G : float
+            Gravitational constant,
     Returns:
-    total_potential : float
-        Total potential energy of the system.
+        total_potential : float
+            Total potential energy of the system.
     """
     N = len(masses)
     total_potential = 0.0
@@ -461,19 +465,19 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs)
     """
     Calculate the total potential energy of a system of particles with the same mass using pairwise interactions.
     
-    Parameters:
-    mass : float
-        Mass of each particle (same for all particles).
-    positions : np.array
-        2D array of particle positions (shape: N x 3).
-    box_size : float
-        Size of the periodic box.
-    G : float
-        Gravitational constant, defaults to 1.0 for natural units.
+    Arguments:
+        mass : float
+            Mass of each particle (same for all particles).
+        positions : np.array
+            2D array of particle positions (shape: N x 3).
+        box_size : float
+            Size of the periodic box.
+        G : float
+            Gravitational constant, defaults to 1.0 for natural units.
     
     Returns:
-    total_potential : float
-        Total potential energy of the system.
+        total_potential : float
+            Total potential energy of the system.
     """
     N = len(positions)
     total_potential = 0.0
@@ -506,23 +510,23 @@ def chunked_potential_energy_between_sets(masses1, positions1, masses2, position
     """
     Calculate the total potential energy between two different sets of particles using pairwise interactions.
     
-    Parameters:
-    masses1 : np.array
-        1D array of particle masses for set 1.
-    positions1 : np.array
-        2D array of particle positions for set 1 (shape: N1 x 3).
-    masses2 : np.array
-        1D array of particle masses for set 2.
-    positions2 : np.array
-        2D array of particle positions for set 2 (shape: N2 x 3).
-    box_size : float
-        Size of the periodic box.
-    G : float
-        Gravitational constant, defaults to 1.0 for natural units.
+    Arguments:
+        masses1 : np.array
+            1D array of particle masses for set 1.
+        positions1 : np.array
+            2D array of particle positions for set 1 (shape: N1 x 3).
+        masses2 : np.array
+            1D array of particle masses for set 2.
+        positions2 : np.array
+            2D array of particle positions for set 2 (shape: N2 x 3).
+        box_size : float
+            Size of the periodic box.
+        G : float
+            Gravitational constant, defaults to 1.0 for natural units.
     
     Returns:
-    total_potential : float
-        Total potential energy between the two sets of particles.
+        total_potential : float
+            Total potential energy between the two sets of particles.
     """
     N1 = len(masses1)
     N2 = len(masses2)
@@ -561,23 +565,23 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
     Calculate the total potential energy between two groups of particles, 
     where the first group has the same mass for all particles, and the second group has an array of masses.
     
-    Parameters:
-    mass1 : float
-        Mass of each particle in the first group (same for all particles in group 1).
-    positions1 : np.array
-        2D array of particle positions for group 1 (shape: N1 x 3).
-    masses2 : np.array
-        1D array of particle masses for group 2.
-    positions2 : np.array
-        2D array of particle positions for group 2 (shape: N2 x 3).
-    box_size : float
-        Size of the periodic box.
-    G : float
-        Gravitational constant, defaults to 1.0 for natural units.
+    Arguments:
+        mass1 : float
+            Mass of each particle in the first group (same for all particles in group 1).
+        positions1 : np.array
+            2D array of particle positions for group 1 (shape: N1 x 3).
+        masses2 : np.array
+            1D array of particle masses for group 2.
+        positions2 : np.array
+            2D array of particle positions for group 2 (shape: N2 x 3).
+        box_size : float
+            Size of the periodic box.
+        G : float
+            Gravitational constant, defaults to 1.0 for natural units.
     
     Returns:
-    total_potential : float
-        Total potential energy between the two groups of particles.
+        total_potential : float
+            Total potential energy between the two groups of particles.
     """
     N1 = len(positions1)
     N2 = len(masses2)
@@ -614,7 +618,7 @@ def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, g
     """
     Calculate the boundedness of a stellar group using chunked processing to reduce memory usage.
 
-    Args:
+    Arguments::
         starVel_inGroup (ndarray): Array of star velocities in the group.
         starPos_inGroup (ndarray): Array of star positions in the group.
         starMass_inGroup (ndarray): Array of star masses in the group.
@@ -651,7 +655,7 @@ def parallel_calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, s
     """
     Calculate the boundedness of a stellar group with dark matter using parallel processing.
 
-    Args:
+    Arguments::
         energyStars (float): Total energy of the stellar group.
         starVel_inGroup (ndarray): Array of star velocities in the group.
         starPos_inGroup (ndarray): Array of star positions in the group.
@@ -730,7 +734,7 @@ def chunked_calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, st
     """
     Calculate the boundedness of a stellar group with dark matter using chunked processing to reduce memory usage.
 
-    Args:
+    Arguments::
         energyStars (float): Total energy of the stellar group.
         starVel_inGroup (ndarray): Array of star velocities in the group.
         starPos_inGroup (ndarray): Array of star positions in the group.
@@ -784,7 +788,7 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
      """
      Calculate the boundedness of a stellar group with dark matter without any tricks to reduce memory usage
 
-     Args:
+     Arguments::
         energyStars (float): Total energy of the stellar group.
         starVel_inGroup (ndarray): Array of star velocities in the group.
         starPos_inGroup (ndarray): Array of star positions in the group.
@@ -847,7 +851,7 @@ def calc_DM_mass(starPos_inGroup,  groupPos,boxSize, pDM,groupRadius ,atime,mass
     """
     Calculate the mass of dark matter (DM) within a group.
 
-    Args:
+    Arguments::
         starPos_inGroup (ndarray): Positions of stars in the group.
         groupPos (ndarray): Position of the center of the group.
         boxSize (float): Size of the simulation box for periodic boundary conditions.
@@ -855,7 +859,7 @@ def calc_DM_mass(starPos_inGroup,  groupPos,boxSize, pDM,groupRadius ,atime,mass
         groupRadius (float): Radius of the group (physical or comoving).
         atime (float): Scale factor for the simulation.
         massDMParticle (float): Mass of each dark matter particle.
-
+    
     Returns:
         massDM (float): Total mass of the dark matter particles within the group.
     """
@@ -880,13 +884,13 @@ def check_if_exists(filepath, idx,snapnum):
     """
     Check if a file corresponding to a particular snapshot and chunk exists in the specified directory.
 
-    Parameters:
-    - filepath (str): Path to the directory.
-    - idx (int): Chunk index.
-    - snapnum (int): Snapshot number.
+    Arguments:
+        filepath (str): Path to the directory.
+        idx (int): Chunk index.
+        snapnum (int): Snapshot number.
 
     Returns:
-    - exists (bool): True if the file exists, False otherwise.
+        exists (bool): True if the file exists, False otherwise.
     """
     fof_process_name = "bounded_portion_"+str(snapnum)+"_chunk"+str(idx)+"_"
     exists = False
@@ -902,14 +906,14 @@ def check_if_exists_indv(filepath, idx,obj,snapnum):
     """
     Check if an individual file corresponding to a particular snapshot, chunk, and object exists in the specified directory.
 
-    Parameters:
-    - filepath (str): Path to the directory.
-    - idx (int): Chunk index.
-    - obj (int): Object identifier.
-    - snapnum (int): Snapshot number.
+    Arguments:
+        filepath (str): Path to the directory.
+        idx (int): Chunk index.
+        obj (int): Object identifier.
+        snapnum (int): Snapshot number.
 
     Returns:
-    - exists (bool): True if the file exists, False otherwise.
+        exists (bool): True if the file exists, False otherwise.
     """
     fof_process_name = "indv_bounded_portion_"+str(snapnum)+"_chunk"+str(idx)+"_object"+str(obj)+"_"
     exists = False
@@ -929,28 +933,28 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
     Saves results for individual objects.
 
     Arguments:
-    N (int): Index to start iterating over chunks.
-    gofilename (str): Path for saving results.
-    snapnum (int or str) Snapshot number for the simulation.
-    atime (float): Scale factor for the current snapshot.
-    boxSize (float): Size of the simulation box in comoving units.
-    halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.
-    allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.
-    allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.
-    allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.
-    startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.
-    endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.
-    groupRadii (Numpy.ndarray):  Radii of the halos in the group catalog.
-    groupPos (Numpy.ndarray): Positions of halos in the group catalog.
-    groupVelocities (Numpy.ndarray): Velocities of halos in the group catalog.
-    massDMParticle (float): Dark matter particle mass.
-    halo_positions (Numpy.ndarray): Positions of dark matter particles.
-    startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.
-    endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.
-    dmsnap (int or str): Snapshot number dark matter primary
+        N (int): Index to start iterating over chunks.
+        gofilename (str): Path for saving results.
+        snapnum (int or str) Snapshot number for the simulation.
+        atime (float): Scale factor for the current snapshot.
+        boxSize (float): Size of the simulation box in comoving units.
+        halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.
+        allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.
+        allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.
+        allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.
+        startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.
+        endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.
+        groupRadii (Numpy.ndarray):  Radii of the halos in the group catalog.
+        groupPos (Numpy.ndarray): Positions of halos in the group catalog.
+        groupVelocities (Numpy.ndarray): Velocities of halos in the group catalog.
+        massDMParticle (float): Dark matter particle mass.
+        halo_positions (Numpy.ndarray): Positions of dark matter particles.
+        startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.
+        endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.
+        dmsnap (int or str): Snapshot number dark matter primary
 
     Returns:
-    objs (dict): Dictionary containing boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy.
+        objs (dict): Dictionary containing boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy.
     """
     objs = {}
     #FIX THESE SO THEY AREN'T HARD CODED
@@ -1095,28 +1099,28 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
     Saves results for chunks of  objects.
 
     Arguments:
-    N (int): Index to start iterating over chunks.
-    gofilename (str): Path for saving results.
-    snapnum (int or str) Snapshot number for the simulation.
-    atime (float): Scale factor for the current snapshot.
-    boxSize (float): Size of the simulation box in comoving units.
-    halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.
-    allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.
-    allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.
-    allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.
-    startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.
-    endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.
-    groupRadii (Numpy.ndarray):  Radii of the halos in the group catalog.
-    groupPos (Numpy.ndarray): Positions of halos in the group catalog.
-    groupVelocities (Numpy.ndarray): Velocities of halos in the group catalog.
-    massDMParticle (float): Dark matter particle mass.
-    halo_positions (Numpy.ndarray): Positions of dark matter particles.
-    startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.
-    endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.
-    dmsnap (int or str): Snapshot number dark matter primary
+        N (int): Index to start iterating over chunks.
+        gofilename (str): Path for saving results.
+        snapnum (int or str) Snapshot number for the simulation.
+        atime (float): Scale factor for the current snapshot.
+        boxSize (float): Size of the simulation box in comoving units.
+        halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.
+        allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.
+        allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.
+        allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.
+        startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.
+        endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.
+        groupRadii (Numpy.ndarray):  Radii of the halos in the group catalog.
+        groupPos (Numpy.ndarray): Positions of halos in the group catalog.
+        groupVelocities (Numpy.ndarray): Velocities of halos in the group catalog.
+        massDMParticle (float): Dark matter particle mass.
+        halo_positions (Numpy.ndarray): Positions of dark matter particles.
+        startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.
+        endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.
+        dmsnap (int or str): Snapshot number dark matter primary
 
     Returns:
-    objs (dict): Dictionary containing boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy.
+        objs (dict): Dictionary containing boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy.
     """
     objs = {}
     #FIX THESE SO THEY AREN'T HARD CODED
@@ -1250,13 +1254,13 @@ def add_bounded_calculation_N(filename,N, snapnum, group = "Stars"):
     Wrapper function to calculate boundedness and virialization for galaxy groups.
     
     Arguments:
-    filename -- Path to the input files.
-    N -- Index to start iterating over chunks.
-    snapnum -- Snapshot number for the simulation.
-    group -- Group type to calculate boundedness for ('Stars', 'Gas', or 'DM').
-    
+        filename -- Path to the input files.
+        N -- Index to start iterating over chunks.
+        snapnum -- Snapshot number for the simulation.
+        group -- Group type to calculate boundedness for ('Stars', 'Gas', or 'DM').
+        
     Returns:
-    objs -- Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.
+        objs -- Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.
     """
     print('opening files')
     gofilename = str(filename)
@@ -1339,6 +1343,22 @@ def add_bounded_calculation_N_indv(filename,N, snapnum, group = "Stars"):
 
 
 def boundedness_mode(filename,N, snapnum, mode = "group", group = "Stars"):
+    """
+    Starts full boundedness calculation for either save as group or individual
+
+    Arguments: 
+        filename (str): path to FOF files
+        N (int): chunk at which to start the calculation
+        snapnum (int or str): hdf5 snap number
+        mode (str): mode for saving output
+            Options: 
+                Default: "group" - saves the group in chunks
+                "indv": saves each individual object. Requires a directory named "indv_objs" in bounded2 directory. 
+    
+    Returns :
+        dict: all object properties. 
+    
+    """
     if mode =="group":
         print("group mode")
         objs= add_bounded_calculation_N(filename,N, snapnum, group = group)
@@ -1355,9 +1375,9 @@ if __name__=="__main__":
     Routine if running as a script
 
     Arguments: 
-    gofilename path to directory containing groupordered file + fof table
-    # foffilename 
-    snapnum (float)
+        gofilename path to directory containing groupordered file + fof table
+        # foffilename 
+        snapnum (float)
     """
     script, gofilename, snapnum = argv
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
