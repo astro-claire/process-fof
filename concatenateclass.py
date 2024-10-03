@@ -17,7 +17,6 @@ class processedFOF():
             verbose (bool): whether or not you want output to be printed 
         
         """
-        
         self.snapnum = snapnum 
         self.sv = sv
         self.maxidx = maxidx

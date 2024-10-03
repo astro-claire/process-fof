@@ -473,7 +473,7 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs)
         box_size : float
             Size of the periodic box.
         G : float
-            Gravitational constant, defaults to 1.0 for natural units.
+            Gravitational constant, defaults to cgs units.
     
     Returns:
         total_potential : float
@@ -522,7 +522,7 @@ def chunked_potential_energy_between_sets(masses1, positions1, masses2, position
         box_size : float
             Size of the periodic box.
         G : float
-            Gravitational constant, defaults to 1.0 for natural units.
+            Gravitational constant, defaults to cgs units.
     
     Returns:
         total_potential : float
@@ -577,7 +577,7 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
         box_size : float
             Size of the periodic box.
         G : float
-            Gravitational constant, defaults to 1.0 for natural units.
+            Gravitational constant, defaults to cgs units.
     
     Returns:
         total_potential : float
@@ -618,7 +618,7 @@ def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, g
     """
     Calculate the boundedness of a stellar group using chunked processing to reduce memory usage.
 
-    Parameters: d
+    Parameters:
         starVel_inGroup (ndarray): Array of star velocities in the group.
         starPos_inGroup (ndarray): Array of star positions in the group.
         starMass_inGroup (ndarray): Array of star masses in the group.
@@ -1254,13 +1254,13 @@ def add_bounded_calculation_N(filename,N, snapnum, group = "Stars"):
     Wrapper function to calculate boundedness and virialization for galaxy groups.
     
     Parameters:
-        filename -- Path to the input files.
-        N -- Index to start iterating over chunks.
-        snapnum -- Snapshot number for the simulation.
-        group -- Group type to calculate boundedness for ('Stars', 'Gas', or 'DM').
+        filename (str): Path to the input files.
+        N (int): Index to start iterating over chunks.
+        snapnum (int or str): Snapshot number for the simulation.
+        group (str): Group type to calculate boundedness for ('Stars', 'Gas', or 'DM').
         
     Returns:
-        objs -- Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.
+        dict: Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.
     """
     print('opening files')
     gofilename = str(filename)
@@ -1300,13 +1300,13 @@ def add_bounded_calculation_N_indv(filename,N, snapnum, group = "Stars"):
     Wrapper function to calculate boundedness and virialization and save individual galaxy groups.
     
     Parameters:
-    filename -- Path to the input files.
-    N -- Index to start iterating over chunks.
-    snapnum -- Snapshot number for the simulation.
-    group -- Group type to calculate boundedness for ('Stars', 'Gas', or 'DM').
+        filename (str): Path to the input files.
+        N (int): Index to start iterating over chunks.
+        snapnum (int or str): Snapshot number for the simulation.
+        group (str): Group type to calculate boundedness for ('Stars', 'Gas', or 'DM').
     
     Returns:
-    objs -- Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.
+        dict: Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.
     """
     print('opening files')
     gofilename = str(filename)

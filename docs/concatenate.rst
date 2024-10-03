@@ -1,4 +1,4 @@
-.. _concatenate:
+.. _concatenateclass:
 
 processedFOF Class
 =====================
