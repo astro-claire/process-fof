@@ -13,6 +13,8 @@ jobs:
       with:
         pre-build-command: "apt install -y pandoc"
       uses: ammaraskar/sphinx-action@0.4
+      env:
+        SPHINXOPTS: "-v"  # Verbose Sphinx build output
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -26,3 +28,4 @@ jobs:
         publish_dir: docs/_build/html
         publish_branch: gh-pages
         force_orphan: true  # Force overwrite of gh-pages
+        verbose: true
