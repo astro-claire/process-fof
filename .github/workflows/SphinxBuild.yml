@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Ensure all branches are fetched
     - name: Build HTML
       with:
         pre-build-command: "apt install -y pandoc"
@@ -23,3 +25,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: docs/_build/html
         publish_branch: gh-pages
+        force_orphan: true  # Force overwrite of gh-pages
