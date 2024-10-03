@@ -24,7 +24,7 @@ jobs:
       uses: peaceiris/actions-gh-pages@v4
       if: github.ref == 'refs/heads/main'
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.ACCESS_TOKEN }}
         publish_dir: docs/_build/html
         publish_branch: gh-pages
         force_orphan: true  # Force overwrite of gh-pages
