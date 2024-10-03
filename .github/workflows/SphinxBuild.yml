@@ -19,11 +19,6 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         SPHINXOPTS: "-v"  # Verbose Sphinx build output
         
-    - name: Checkout gh-pages branch
-      run: |
-        git fetch origin gh-pages
-        git checkout gh-pages
-        
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
