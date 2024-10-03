@@ -6,6 +6,11 @@
 Welcome to process-fof's documentation!
 =======================================
 
+Overview:
+---------
+process-fof is a set of python scripts to post-process AREPO FOF runs. 
+Instructions to get started will be added here soon! 
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
