@@ -36,68 +36,14 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">sys</span> 
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/home/x-cwilliams/FOF_calculations/process-fof&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">fof_process</span> <span class="kn">import</span> <span class="n">get_starGroups</span><span class="p">,</span> <span class="n">set_snap_directories</span><span class="p">,</span> <span class="n">open_hdf5</span><span class="p">,</span> <span class="n">get_headerprops</span><span class="p">,</span> <span class="n">set_subfind_catalog</span><span class="p">,</span> <span class="n">set_config</span><span class="p">,</span><span class="n">get_gasGroups</span><span class="p">,</span> <span class="n">get_cosmo_props</span><span class="p">,</span><span class="n">get_starIDgroups</span><span class="p">,</span> <span class="n">get_Halos</span>
+<span class="kn">from</span> <span class="nn">fof_process</span> <span class="kn">import</span> <span class="n">dx_wrap</span><span class="p">,</span><span class="n">get_starGroups</span><span class="p">,</span> <span class="n">set_snap_directories</span><span class="p">,</span> <span class="n">open_hdf5</span><span class="p">,</span> <span class="n">get_headerprops</span><span class="p">,</span> <span class="n">set_subfind_catalog</span><span class="p">,</span> <span class="n">set_config</span><span class="p">,</span><span class="n">get_gasGroups</span><span class="p">,</span> <span class="n">get_cosmo_props</span><span class="p">,</span><span class="n">get_starIDgroups</span><span class="p">,</span> <span class="n">get_Halos</span>
+<span class="kn">from</span> <span class="nn">boundedness</span> <span class="kn">import</span> <span class="n">get_GroupPos</span><span class="p">,</span><span class="n">get_GroupRadii</span><span class="p">,</span><span class="n">get_GroupVel</span><span class="p">,</span> <span class="n">get_starIDs</span>
 
 <span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span>     
 <span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="mf">3.085678e21</span> 
 <span class="n">hubbleparam</span> <span class="o">=</span> <span class="mf">.71</span> <span class="c1">#hubble constant</span>
 <span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="mf">6.672e-8</span>
 <span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="mf">1.0e5</span>
-
-<span class="k">def</span> <span class="nf">dx_wrap</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">box</span><span class="p">):</span>
-	<span class="c1">#wraps to account for period boundary conditions. This mutates the original entry</span>
-	<span class="n">idx</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">&gt;</span> <span class="o">+</span><span class="n">box</span><span class="o">/</span><span class="mf">2.0</span>
-	<span class="n">dx</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-=</span> <span class="n">box</span>
-	<span class="n">idx</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">box</span><span class="o">/</span><span class="mf">2.0</span>
-	<span class="n">dx</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">box</span> 
-	<span class="k">return</span> <span class="n">dx</span>
-
-<span class="c1"># def dx_vec(dx,dy,dz,box):</span>
-<span class="c1">#      return np.stack((dx_wrap(dx,box),dx_wrap(dy,box),dx_wrap(dz,box)), axis =1)</span>
-
-<span class="k">def</span> <span class="nf">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">):</span>
-	<span class="c1">#Calculates distance taking into account periodic boundary conditions</span>
-	<span class="k">return</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
-
-<div class="viewcode-block" id="get_GroupRadii">
-<a class="viewcode-back" href="../stellar_rotation.html#stellar_rotation.get_GroupRadii">[docs]</a>
-<span class="k">def</span> <span class="nf">get_GroupRadii</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return Group COM</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">Group_R_Crit200</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="get_GroupVel">
-<a class="viewcode-back" href="../stellar_rotation.html#stellar_rotation.get_GroupVel">[docs]</a>
-<span class="k">def</span> <span class="nf">get_GroupVel</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return Group COM</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupVel</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="get_GroupPos">
-<a class="viewcode-back" href="../stellar_rotation.html#stellar_rotation.get_GroupPos">[docs]</a>
-<span class="k">def</span> <span class="nf">get_GroupPos</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return Group COM</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="get_starIDs">
-<a class="viewcode-back" href="../stellar_rotation.html#stellar_rotation.get_starIDs">[docs]</a>
-<span class="k">def</span> <span class="nf">get_starIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get particle IDs (groupordered snap)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">allStarIDs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/ParticleIDs&#39;</span><span class="p">]</span>
-    <span class="n">allStarMasses</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/Masses&#39;</span><span class="p">]</span>
-    <span class="n">allStarPositions</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/Coordinates&#39;</span><span class="p">]</span>
-    <span class="n">allStarVelocities</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/Velocities&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">allStarIDs</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span> <span class="n">allStarVelocities</span></div>
-
 
 
 <div class="viewcode-block" id="get_gasIDs">

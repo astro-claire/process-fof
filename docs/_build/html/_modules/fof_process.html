@@ -35,17 +35,19 @@
 <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">argv</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 
-<span class="k">def</span> <span class="nf">dx_wrap</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">box</span><span class="p">):</span>
-	<span class="c1">#wraps to account for period boundary conditions. This mutates the original entry</span>
-	<span class="n">idx</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">&gt;</span> <span class="o">+</span><span class="n">box</span><span class="o">/</span><span class="mf">2.0</span>
-	<span class="n">dx</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-=</span> <span class="n">box</span>
-	<span class="n">idx</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">box</span><span class="o">/</span><span class="mf">2.0</span>
-	<span class="n">dx</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">box</span> 
-	<span class="k">return</span> <span class="n">dx</span>
 
-<span class="k">def</span> <span class="nf">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">):</span>
-	<span class="c1">#Calculates distance taking into account periodic boundary conditions</span>
-	<span class="k">return</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="k">def</span> <span class="nf">dx_wrap</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+    <span class="c1"># Wraps distances using periodic boundary conditions in a vectorized way.</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dx</span> <span class="o">&gt;</span> <span class="n">box</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">dx</span> <span class="o">-</span> <span class="n">box</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">box</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">dx</span> <span class="o">+</span> <span class="n">box</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dx</span>
+
+<span class="k">def</span> <span class="nf">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+    <span class="c1"># Calculates squared distance considering periodic boundary conditions</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dz</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dz</span><span class="o">**</span><span class="mi">2</span>
 
 <div class="viewcode-block" id="set_snap_directories">
 <a class="viewcode-back" href="../fof_process.html#fof_process.set_snap_directories">[docs]</a>
@@ -553,6 +555,8 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../fof_process.html">FOF Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../boundedness.html">Boundedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stellar_rotation.html">Stellar Rotation</a></li>
 </ul>
 
 <div class="relations">
