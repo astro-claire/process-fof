@@ -8,12 +8,9 @@
     <title>FOF Process &#8212; process-fof 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <script src="_static/jquery.js?v=5d32c60e"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Boundedness" href="boundedness.html" />
@@ -36,8 +33,198 @@
           <div class="body" role="main">
             
   <section id="fof-process">
-<span id="id1"></span><h1>FOF Process<a class="headerlink" href="#fof-process" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1>FOF Process<a class="headerlink" href="#fof-process" title="Link to this heading">¶</a></h1>
 <p>Functions to get basic properties of FOF groups such as stellar mass, DM mass, etc.</p>
+<dl class="py function" id="module-fof_process">
+<dt class="sig sig-object py" id="fof_process.calc_all_stellarprops">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">calc_all_stellarprops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newstars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SFR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r200</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#calc_all_stellarprops"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.calc_all_stellarprops" title="Link to this definition">¶</a></dt>
+<dd><p>Routine to do everything
+:param group: which group to use for halos. Stars = at least 100 star particles, gas = at least 100 gas cells, DM = at least 300 DM particles.</p>
+<blockquote>
+<div><p>Default: “Stars”
+Options: “Stars”, “Gas”, “DM”</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SFR</strong> (<em>bool</em>) – whether or not to calculate the new stars
+Default: True</p></li>
+<li><p><strong>r200</strong> (<em>bool</em>) – whether or not to calculate material inside r200</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.find_newStars">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">find_newStars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newstars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#find_newStars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.find_newStars" title="Link to this definition">¶</a></dt>
+<dd><p>Compare IDs in each object to the new stars and see which stars are new
+:param objs: dictionary containing the star IDs and stellar mass of each group
+:type objs: dict
+:param newstars: dictionary containing the new stars in each snap
+:type newstars: dict
+:param snapnum: HDF5 snap number
+:type snapnum: float, str, or int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary containing the stellar mass, particle IDs, and new stellar mass of each object</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_DM">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_DM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarIDs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r200</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_DM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_DM" title="Link to this definition">¶</a></dt>
+<dd><p>Find all the DM particles in each object within r200 and sums to give the mass
+SORRY THAT EVERYTHING SAYS STARS
+:param cat:
+:param boxsize:
+:param halo100_indices:
+:param r200: whether or not to check whether particles lie inside r200 or not
+:type r200: bool</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary containing DM IDs in each group and DM Mass</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>(dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_DMIDgroups">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_DMIDgroups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_DMIDgroups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_DMIDgroups" title="Link to this definition">¶</a></dt>
+<dd><p>given a list of indices, return the beginning and end of the grourp in gas indices</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_DMIDs">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_DMIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_DMIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_DMIDs" title="Link to this definition">¶</a></dt>
+<dd><p>Get particle IDs (groupordered snap)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_Halos">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_Halos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_Halos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_Halos" title="Link to this definition">¶</a></dt>
+<dd><p>halos of greater than 300 particles AND nonzero virial radius</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_cosmo_props">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_cosmo_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_cosmo_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_cosmo_props" title="Link to this definition">¶</a></dt>
+<dd><p>Create dictionary of cosmological parameters based on snapfile header.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_gasGroups">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_gasGroups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_gasGroups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_gasGroups" title="Link to this definition">¶</a></dt>
+<dd><p>Gas clumps with greater than 100 particles</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_gasIDgroups">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_gasIDgroups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_gasIDgroups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_gasIDgroups" title="Link to this definition">¶</a></dt>
+<dd><p>given a list of indices, return the beginning and end of the grourp in gas indices</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_gasIDs">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_gasIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_gasIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_gasIDs" title="Link to this definition">¶</a></dt>
+<dd><p>Get particle IDs (groupordered snap)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_headerprops">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_headerprops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_headerprops"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_headerprops" title="Link to this definition">¶</a></dt>
+<dd><p>”
+extract header properties from hdf5file
+Parameters:
+f (snap): snap Hdf5 file with header
+Returns:
+(list): boxsize, redshift, massDMParticle</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_obj_properties">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_obj_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarIDs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarMasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r200</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Gas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_obj_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_obj_properties" title="Link to this definition">¶</a></dt>
+<dd><p>Find all the star particles in each object within r200 and sums to give the mass
+:param cat:
+:param boxsize:
+:param halo100_indices:
+:param r200: whether or not to check whether particles lie inside r200 or not
+:type r200: bool
+:param Gas:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>function can also be used for gas. If True, adds “gasMass” and “gasIndices” to dict instead of star keys.</dt><dd><p>Make sure to use gas positions, indices, etc as inputs instead.</p>
+</dd>
+</dl>
+<p>Default: False</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary containing star IDs in each group and stellar Mass</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>(dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_starGroups">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_starGroups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_starGroups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_starGroups" title="Link to this definition">¶</a></dt>
+<dd><p>”
+Star clumps with greater than 100 particles</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_starIDgroups">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_starIDgroups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_starIDgroups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_starIDgroups" title="Link to this definition">¶</a></dt>
+<dd><p>given a list of indices, return the beginning and end of the grourp in gas indices</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.get_starIDs">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">get_starIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#get_starIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.get_starIDs" title="Link to this definition">¶</a></dt>
+<dd><p>Get particle IDs (groupordered snap)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.open_hdf5">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">open_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gofilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foffilename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#open_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.open_hdf5" title="Link to this definition">¶</a></dt>
+<dd><p>Opens hdf5 files with h5py given paths as defined in set_snap_directories</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gofilename</strong> (<em>str</em>) – directory of snap-groupordered file
+goffilename (str): directory of fof table file</p>
+</dd>
+</dl>
+<p>Returns:
+(tuple): snap-groupordered hdf5, fof table hdf5</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fof_process.set_snap_directories">
+<span class="sig-prename descclassname"><span class="pre">fof_process.</span></span><span class="sig-name descname"><span class="pre">set_snap_directories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fof_process.html#set_snap_directories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fof_process.set_snap_directories" title="Link to this definition">¶</a></dt>
+<dd><p>Sets paths HDF5 from directory</p>
+<p>Arguments:
+filename (str): directory of snap-groupordered file</p>
+<blockquote>
+<div><blockquote>
+<div><p>snapnum (float): Snap file number
+foffilename (str, Optional): path to directory containing fof_subhalo_tab file.</p>
+</div></blockquote>
+<p>Default: same directory as snap-groupordered</p>
+</div></blockquote>
+<p>Returns:
+(tuple): path to groupordered file, path to fof file</p>
+</dd></dl>
+
 </section>
 
 
@@ -59,7 +246,26 @@
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">FOF Process</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">FOF Process</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.calc_all_stellarprops"><code class="docutils literal notranslate"><span class="pre">calc_all_stellarprops()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.find_newStars"><code class="docutils literal notranslate"><span class="pre">find_newStars()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_DM"><code class="docutils literal notranslate"><span class="pre">get_DM()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_DMIDgroups"><code class="docutils literal notranslate"><span class="pre">get_DMIDgroups()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_DMIDs"><code class="docutils literal notranslate"><span class="pre">get_DMIDs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_Halos"><code class="docutils literal notranslate"><span class="pre">get_Halos()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_cosmo_props"><code class="docutils literal notranslate"><span class="pre">get_cosmo_props()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_gasGroups"><code class="docutils literal notranslate"><span class="pre">get_gasGroups()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_gasIDgroups"><code class="docutils literal notranslate"><span class="pre">get_gasIDgroups()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_gasIDs"><code class="docutils literal notranslate"><span class="pre">get_gasIDs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_headerprops"><code class="docutils literal notranslate"><span class="pre">get_headerprops()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_obj_properties"><code class="docutils literal notranslate"><span class="pre">get_obj_properties()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_starGroups"><code class="docutils literal notranslate"><span class="pre">get_starGroups()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_starIDgroups"><code class="docutils literal notranslate"><span class="pre">get_starIDgroups()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.get_starIDs"><code class="docutils literal notranslate"><span class="pre">get_starIDs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.open_hdf5"><code class="docutils literal notranslate"><span class="pre">open_hdf5()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fof_process.set_snap_directories"><code class="docutils literal notranslate"><span class="pre">set_snap_directories()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="boundedness.html">Boundedness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stellar_rotation.html">Stellar Rotation</a></li>
 </ul>

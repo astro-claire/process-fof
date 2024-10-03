@@ -23,26 +23,26 @@ root_doc = 'index'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc',
+extensions = [
+    'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.doctest',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
-    'sphinx_rtd_theme',
-    'sphinx_markdown_builder',
-    'myst_parser',
-    'nbsphinx',
-    'nbsphinx_link']
+    'sphinx.ext.autosummary'
+]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-
+## Include Python objects as they appear in source files
+## Default: alphabetically ('alphabetical')
+## Default flags used by autodoc directives
+autodoc_default_options = {
+    'members': True,
+    'show-inheritance': True,
+}
+## Generate autodoc stubs with summaries from code
+autosummary_generate = True
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
