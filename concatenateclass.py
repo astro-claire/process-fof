@@ -39,6 +39,12 @@ class processedFOF():
         #self.chopUnBounded()
         
     def _findFOF(self): 
+        """
+        Opens fof_postprocess file and load in the objects
+
+        Returns: 
+            dict: properties of the objects for the fof script located at self.path for snapnum self.snapnum.
+        """
         filepath = self.path 
         fof_process_name = "fof_postprocess_"+ str(self.snapnum)+"_"+ str(self.sv) + "_" + self.directory
         for filename in os.listdir(filepath):
@@ -55,6 +61,12 @@ class processedFOF():
         return properties
     
     def _setGroup(self):
+        """
+        Sets which type of particle was used for groups in the fof postprocessing
+
+        Returns: 
+            str: "stars" if star particles, "DM" if DM particles, or "gas" if gas particles
+        """
         if self.directory == "SGP-" or self.directory == "SP-":
             return "stars"
         elif self.directory =="DMP-GS-" or self.directory == "SGDMP-":
@@ -63,6 +75,17 @@ class processedFOF():
             return "gas"
         
     def _getFOFData(self):
+        """
+        Gets the centers of mass and R_crit_200 derived by fof 
+
+        Attributes: 
+            groupnum (int): threshhold number of particles required to return a group
+                300 if DM 
+                100 if stars or gas
+
+        Returns: 
+            Numpy.ndarray  (centers of mass), Numpy.ndarray (radii)
+        """
         filepath = str(self.path) + "/fof_subhalo_tab_" + str(self.snapnum)+".hdf5"
         f = h5py.File(filepath)
         centers = []
@@ -93,6 +116,12 @@ class processedFOF():
         return centers, fofradii
     
     def _findRotation(self): 
+        """
+        Opens the stellar rotation output file and adds rotational properties to self.properties dictionary
+
+        Returns: 
+            None
+        """
         filepath = self.path 
         star_rot_name = "stellar_rotation_"+ str(self.snapnum)+"_"+ str(self.sv) + "_" + self.directory +"_v4"  
         for filename in os.listdir(filepath):
@@ -137,6 +166,12 @@ class processedFOF():
         #Can check the print statements to make sure the expected files have loaded. 
         
     def _findBounded(self): 
+        """
+        Opens bounded chunk files, concatenates, and adds their properties to the properties dict. 
+
+        Returns: 
+            None
+        """
         filepath = self.path + "/bounded2"
         indices = list(range(self.maxidx))
         indices.reverse()
@@ -178,20 +213,43 @@ class processedFOF():
         """
         This function can be used when the chunking hasn't finished running to ensure that only systems with a known bounded calculation are being used
         
+        Arguments: 
+            arr (Numpy.ndarray): array to crop
+        
+        Returns:
+            Numpy.ndarray: array with only the bounded completed indices
         """
         return arr[self.boundedidx:]
     
     def accessBounded(self, arr):
         """
         returns the array but only of systems which are bounded
+
+        Arguments: 
+            arr (Numpy.ndarray): array to crop
+        
+        Returns:
+            Numpy.ndarray: array with only the bounded indices
         """
         return arr[np.array(self.properties['bounded'], dtype = bool)]
 
     def chopUnfinished(self): 
+        """
+        For all the parameters not calculated in the bounded script, removes the indices of the objects which do not have a bounded calculation. 
+        
+        Returns:
+            None
+        """
         for key in self._properties_notBounded: 
             self.properties[key] = self.accessBoundedComplete(self.properties[key])
 
     def chopUnBounded(self): 
+        """
+        For all the parameters in self.properties, removes all unbounded objects
+
+        Returns: 
+            None
+        """
         boundedidx = np.array(self.properties['bounded'].astype(bool))
         for key in self._allKeys:
             try: 
