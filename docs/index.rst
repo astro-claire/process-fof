@@ -18,7 +18,7 @@ Instructions to get started will be added here soon!
    fof_process.rst
    boundedness.rst
    stellar_rotation.rst
-   concatenate.rst
+   concatenateclass.rst
 
 
 Indices and tables
