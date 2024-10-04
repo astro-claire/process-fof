@@ -253,5 +253,7 @@ class processedFOF():
         for key in self._allKeys:
             try: 
                 self.properties[key] = np.array(self.properties[key])[boundedidx]
+            except ValueError: 
+                self.properties[key] = np.array(self.properties[key],dtype = np.ndarray)[boundedidx]
             except IndexError:
                 print(str(key)+ " is not the right length")
