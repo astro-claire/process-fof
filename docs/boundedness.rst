@@ -18,5 +18,8 @@ If individual mode is used, individual object files are created at:
 
 Note that these directories must be created by the user before running the script.
 
+Functions: 
+----------
+
 .. automodule:: boundedness
    :members:
