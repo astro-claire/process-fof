@@ -6,19 +6,33 @@ jobs:
   sphinx-build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Ensure all branches are fetched
+      env: 
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
     - name: Build HTML
       with:
         pre-build-command: "apt install -y pandoc"
       uses: ammaraskar/sphinx-action@0.4
+      env:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        SPHINXOPTS: "-v"  # Verbose Sphinx build output
+        
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: html-docs
         path: docs/_build/html/
+        
     - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       if: github.ref == 'refs/heads/main'
+      env: 
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.ACCESS_TOKEN }}
         publish_dir: docs/_build/html
+        publish_branch: gh-pages
+        force_orphan: true  # Force overwrite of gh-pages
+        verbose: true

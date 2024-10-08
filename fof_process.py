@@ -5,13 +5,18 @@ import pickle
 
 
 def dx_wrap(dx, box):
-    # Wraps distances using periodic boundary conditions in a vectorized way.
+    """
+    Wraps distances using periodic boundary conditions in a vectorized way.
+    """
+    # 
     dx = np.where(dx > box / 2.0, dx - box, dx)
     dx = np.where(dx < -box / 2.0, dx + box, dx)
     return dx
 
 def dist2(dx, dy, dz, box):
-    # Calculates squared distance considering periodic boundary conditions
+    """
+    Calculates squared distance considering periodic boundary conditions
+    """
     dx = dx_wrap(dx, box)
     dy = dx_wrap(dy, box)
     dz = dx_wrap(dz, box)
@@ -21,11 +26,11 @@ def set_snap_directories(filename,snapnum,**kwargs):
 	"""
 	Sets paths HDF5 from directory
 	
-	Arguments: 
-        filename (str): directory of snap-groupordered file
+	Parameters: 
+		filename (str): directory of snap-groupordered file
 		snapnum (float): Snap file number
 		foffilename (str, Optional): path to directory containing fof_subhalo_tab file. 
-            Default: same directory as snap-groupordered
+			Default: same directory as snap-groupordered
 	
 	Returns:
         (tuple): path to groupordered file, path to fof file
@@ -41,11 +46,11 @@ def open_hdf5(gofilename, foffilename):
 	"""
 	Opens hdf5 files with h5py given paths as defined in set_snap_directories
 	
-	Arguments: 
-	    gofilename (str): directory of snap-groupordered file
+	Parameters: 
+		gofilename (str): directory of snap-groupordered file
 		goffilename (str): directory of fof table file
 	Returns:
-        (tuple): snap-groupordered hdf5, fof table hdf5
+		(tuple): snap-groupordered hdf5, fof table hdf5
 	"""
 	snap = h5py.File(gofilename+'.hdf5','r')
 	fof = h5py.File(foffilename+'.hdf5','r')
@@ -55,15 +60,18 @@ def get_headerprops(f):
 	""""
 	extract header properties from hdf5file
 	Parameters:
-        f (snap): snap Hdf5 file with header
+		f (snap): snap Hdf5 file with header
 	Returns:
-        (list): boxsize, redshift, massDMParticle
+		(list): boxsize, redshift, massDMParticle
 	"""
 	return f['Header'].attrs['BoxSize'], f['Header'].attrs['Redshift'],  f['Header'].attrs['MassTable'][1]
 
 def get_cosmo_props(f):
 	"""
 	Create dictionary of cosmological parameters based on snapfile header. 
+	
+	Returns: 
+		dict: dictionary of cosmological parameters. 
 	"""
 	cos = {}
 	G = 6.672e-8
@@ -84,7 +92,7 @@ class subfindGroup():
 		"""
 		initializes the subfind structure
 		Parameters: 
-            f (HDF5 file): fof table snap file 
+			f (HDF5 file): fof table snap file 
 		"""
 		self.GroupCM = f['Group/GroupCM']
 		self.GroupLen = f['Group/GroupLen']
@@ -414,7 +422,7 @@ if __name__=="__main__":
 	"""
 	Routine if running as a script
 
-	Arguments: 
+	Parameters: 
 		gofilename path to directory containing groupordered file + fof table
 		# foffilename 
 		snapnum (float)

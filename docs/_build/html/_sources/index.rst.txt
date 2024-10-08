@@ -13,6 +13,7 @@ Welcome to process-fof's documentation!
    fof_process.rst
    boundedness.rst
    stellar_rotation.rst
+   concatenate.rst
 
 
 Indices and tables
