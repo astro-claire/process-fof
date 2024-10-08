@@ -151,7 +151,7 @@ def dict_calculate(baryon_centers, dm_centers, dmmass, dmradii, boxSize = 1775.)
 
 def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home/c/clairewi/project-snaoz/FOF_project/'):   
     """
-    Wrapper function. Currently there are some unused parameters nad the 
+    Wrapper function. Currently there are some unused parameters and the 
 
     Parameters: 
         directory (str): name of directory where baryon output located (ie. "SP-", "SGP-")
@@ -161,7 +161,7 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
 
     """ 
     baryon_centers, _ = set_up_baryon_fofs(str(directory), str(snapnum), str(sv))
-    _, groupDMmass, groupPos, groupRadii= set_up_dm_fofs(str(snapnum), 'Sig2')
+    _, groupDMmass, groupPos, groupRadii= set_up_dm_fofs(str(snapnum), str(sv))
     objs = dict_calculate(baryon_centers, groupPos, groupDMmass, groupRadii, boxSize = boxSize)
     if save ==True: 
         print("Saving output!")
