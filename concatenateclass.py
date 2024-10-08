@@ -39,6 +39,7 @@ class processedFOF():
         self.goodidx = []
         #self.chopUnfinished()
         #self.chopUnBounded()
+        self.calcObservables()
         
     def _findFOF(self): 
         """
@@ -104,7 +105,10 @@ class processedFOF():
         group_pos = np.array(f['Group']['GroupPos'])
         group_len_type = np.array(f['Group']['GroupLenType'])
         group_r_crit200 = np.array(f['Group']['Group_R_Crit200'])
-
+        self.atime = f['Header'].attrs['Time']
+        self.omegaLambda = f['Header'].attrs['OmegaLambda']
+        self.H0 = f['Header'].attrs['HubbleParam']
+        self.omegaMatter0 = f['Header'].attrs['Omega0']
         # Apply a mask to filter groups based on 'grouptype' and 'groupnum'
         mask = group_len_type[:, grouptype] > groupnum
         # Use the mask to select the centers and radii directly
@@ -291,4 +295,9 @@ class processedFOF():
                 self.properties['num_within5dm']= envdict['num_within5dm']
             else: 
                 print("ERROR: number of objects in environment directory doesn't match number of objects in FOF bounded. ")
+
+    def calcObservables(self): 
+        #placeholder function
+        self.redshift = 1./self.atime -1.
+        
 
