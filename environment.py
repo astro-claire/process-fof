@@ -88,8 +88,8 @@ def compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, dmradii, boxSize =
         masks5[i] = mask
         num_within5[i] = len(mask[0][0])
         closestdm[i] = np.argmin(distances) # find closest DM halo
-        closestdm_dist[i] = distances[closestdm[i]]
-        closestdm_inr200[i] = np.greater(dmradii[closestdm[i]],distances[closestdm[i]])
+        closestdm_dist[i] = np.sqrt(distances[closestdm[i]])
+        closestdm_inr200[i] = np.greater(dmradii[closestdm[i]],closestdm_dist[i])
         closestdm_dmmass[i] = dmmass[closestdm[i]]
     return closestdm, closestdm_dist, closestdm_dmmass, closestdm_inr200, num_within10, num_within5
 
@@ -126,7 +126,7 @@ def compare_baryon_env(baryon_centers, boxSize = 1775.):
         masks5[i] = mask
         num_within5[i] = len(mask[0][0])
         closest[i] = np.argmin(distances) # find closest structure
-        closest_dist[i] = distances[closest[i]]
+        closest_dist[i] = np.sqrt(distances[closest[i]])
     return closest, closest_dist, num_within10, num_within5
 
 def dict_calculate(baryon_centers, dm_centers, dmmass, dmradii, boxSize = 1775.):
