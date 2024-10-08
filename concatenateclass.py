@@ -30,9 +30,12 @@ class processedFOF():
         self._properties_notBounded = list(self.properties.keys())
         self._findBounded()
         self._allKeys = list(self.properties.keys())
-        self._allKeys.remove('prim')
-        self._allKeys.remove('sec')
-        self._allKeys.remove('bounded')
+        if 'prim' in self._allKeys: #remove non array properties for the unfinished/unbounded remover to work
+            self._allKeys.remove('prim')
+        if 'sec' in self._allKeys:
+            self._allKeys.remove('sec')
+        if 'bounded' in self._allKeys:
+            self._allKeys.remove('bounded')
         self.goodidx = []
         #self.chopUnfinished()
         #self.chopUnBounded()
