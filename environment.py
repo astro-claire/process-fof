@@ -1,8 +1,6 @@
 import numpy as np
-import h5py 
 import numpy as np
 import pickle
-import os
 from concatenateclass import processedFOF
 from sys import argv
 from boundedness import get_allHalos, set_up_DM
@@ -72,7 +70,6 @@ def compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, dmradii, boxSize =
         arr, dtype = int: number of DM object within 5 code units;
     """
     N= len(baryon_centers)
-    N= 100 # testing mode
     masks10 = np.empty(N,dtype = np.ndarray)
     masks5 = np.empty(N,dtype = np.ndarray)
     closestdm = np.empty(N,dtype = np.ndarray)
@@ -112,7 +109,6 @@ def compare_baryon_env(baryon_centers, boxSize = 1775.):
         arr, dtype = int: number of baryon object within 5 code units;
     """
     N= len(baryon_centers)
-    N= 100 # testing mode
     masks10 = np.empty(N,dtype = np.ndarray)
     masks5 = np.empty(N,dtype = np.ndarray)
     closest = np.empty(N,dtype = np.ndarray)
@@ -133,6 +129,26 @@ def compare_baryon_env(baryon_centers, boxSize = 1775.):
         closest[i] = np.argmin(distances) # find closest DM halo
         closest_dist[i] = distances[closest[i]]
     return closest, closest_dist, num_within10, num_within5
+
+def dict_calculate(baryon_centers, dm_centers, dmmass, dmradii, boxSize = 1775.):
+    """
+    Creates dictionary of 
+    
+    Parameters: 
+        baryon_centers (arr Nx3): centers of mass of the baryon primary objects
+        dm_centers (arr, Mx3): centers of mass of the DM objects
+        dmmmass (arr, M): dark matter mass of the DM objects
+        boxSize (float): box size in code units
+    
+    Returns: 
+        dict: dictionary containing all the output parameters of compare_baryon_env, compare_baryon_dm_fof
+    """
+    objs = {}
+    print("Calculating baryon environment")
+    objs['closestb'], objs['closestb_dist'], objs['num_within10b'], objs['num_within5b'] = compare_baryon_env(baryon_centers, boxSize = boxSize)
+    objs['closestdm'], objs['closestdm_dist'], objs['closestdm_dmmass'], objs['closestdm_inr200'], objs['num_within10dm'], objs['num_within5dm'] = compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, dmradii, boxSize = boxSize)
+    return objs
+
 
 if __name__=="__main__":
     """
