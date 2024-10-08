@@ -91,7 +91,6 @@ def compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, dmradii, boxSize =
         closestdm_dist[i] = distances[closestdm[i]]
         closestdm_inr200[i] = np.greater(dmradii[closestdm[i]],distances[closestdm[i]])
         closestdm_dmmass[i] = dmmass[closestdm[i]]
-    # print(masks10)
     return closestdm, closestdm_dist, closestdm_dmmass, closestdm_inr200, num_within10, num_within5
 
 def compare_baryon_env(baryon_centers, boxSize = 1775.): 
@@ -120,13 +119,13 @@ def compare_baryon_env(baryon_centers, boxSize = 1775.):
         #remove the current object from the list of centers
         ex_centers = baryon_centers[np.isin(range(len(baryon_centers)),i,invert= True)] 
         distances = dist2(com[0]-ex_centers[:,0], com[1]-ex_centers[:,1], com[2]-ex_centers[:,2], boxSize)
-        mask = np.where(distances<100.), #find all halos within 10 kpc
+        mask = np.where(distances<100.), #find all structures within 10 kpc
         masks10[i]= mask
         num_within10[i]= len(mask[0][0])
-        mask = np.where(distances<25.), # find all halos within 5 kpc
+        mask = np.where(distances<25.), # find all structures within 5 kpc
         masks5[i] = mask
         num_within5[i] = len(mask[0][0])
-        closest[i] = np.argmin(distances) # find closest DM halo
+        closest[i] = np.argmin(distances) # find closest structure
         closest_dist[i] = distances[closest[i]]
     return closest, closest_dist, num_within10, num_within5
 
@@ -146,9 +145,28 @@ def dict_calculate(baryon_centers, dm_centers, dmmass, dmradii, boxSize = 1775.)
     objs = {}
     print("Calculating baryon environment")
     objs['closestb'], objs['closestb_dist'], objs['num_within10b'], objs['num_within5b'] = compare_baryon_env(baryon_centers, boxSize = boxSize)
+    print("Calculating DM environment")
     objs['closestdm'], objs['closestdm_dist'], objs['closestdm_dmmass'], objs['closestdm_inr200'], objs['num_within10dm'], objs['num_within5dm'] = compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, dmradii, boxSize = boxSize)
     return objs
 
+def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home/c/clairewi/project-snaoz/FOF_project/'):   
+    """
+    Wrapper function. Currently there are some unused parameters nad the 
+
+    Parameters: 
+        directory (str): name of directory where baryon output located (ie. "SP-", "SGP-")
+        sv (str): Value of stream velocity - options "Sig0" or "Sig2" 
+        snapnum (str or int): hdf5 snap output. 
+        save (bool): whether or not to save the output at path + directory + sv
+
+    """ 
+    baryon_centers, _ = set_up_baryon_fofs(str(directory), str(snapnum), str(sv))
+    _, groupDMmass, groupPos, groupRadii= set_up_dm_fofs(str(snapnum), 'Sig2')
+    objs = dict_calculate(baryon_centers, groupPos, groupDMmass, groupRadii, boxSize = boxSize)
+    if save ==True: 
+        print("Saving output!")
+        with open(str(path)+str(directory)+str(sv)+"/environment_"+str(snapnum)+"_V1.dat",'wb') as f:
+            pickle.dump(objs, f)
 
 if __name__=="__main__":
     """
@@ -159,8 +177,9 @@ if __name__=="__main__":
     # foffilename 
     snapnum (float)
     """
-    script, gofilename, snapnum = argv
-    baryon_centers, baryon_radii = set_up_baryon_fofs("SP-", str(snapnum), 'Sig2')
-    groupMass, groupDMmass, groupPos, groupRadii= set_up_dm_fofs(str(snapnum), 'Sig2')
-    compare_baryon_env(baryon_centers)
-    compare_baryon_dm_fof(baryon_centers, groupPos, groupDMmass, groupRadii)
+    script, directory, sv, snapnum = argv
+    wrapper(directory, sv,snapnum)
+    # baryon_centers, baryon_radii = set_up_baryon_fofs("SP-", str(snapnum), 'Sig2')
+    # groupMass, groupDMmass, groupPos, groupRadii= set_up_dm_fofs(str(snapnum), 'Sig2')
+    # compare_baryon_env(baryon_centers)
+    # compare_baryon_dm_fof(baryon_centers, groupPos, groupDMmass, groupRadii)
