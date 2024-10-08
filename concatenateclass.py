@@ -3,6 +3,9 @@ import h5py
 import numpy as np
 import pickle
 import os
+from astropy import units as un
+from astropy.cosmology import FlatLambdaCDM
+
 
 class processedFOF(): 
     def __init__(self,snapnum, directory, sv, path = '/u/home/c/clairewi/project-snaoz/FOF_project', verbose = True, maxidx = 300): 
@@ -39,7 +42,7 @@ class processedFOF():
         self.goodidx = []
         #self.chopUnfinished()
         #self.chopUnBounded()
-        self.calcObservables()
+        self.setupCosmo()
         
     def _findFOF(self): 
         """
@@ -296,8 +299,31 @@ class processedFOF():
             else: 
                 print("ERROR: number of objects in environment directory doesn't match number of objects in FOF bounded. ")
 
-    def calcObservables(self): 
-        #placeholder function
-        self.redshift = 1./self.atime -1.
+    def setupCosmo(self): 
+        """
+        Calculates relevant cosmology properties. ASSUMES SNAPS ARE SEPARATED BY 1 redshift!!!!!!
         
-
+        Sets: 
+            self.deltat (float): elapsed time since last snapshot in years
+        """
+        self.redshift = 1./self.atime -1.
+        if self.verbose ==True: print(f"creating flat LCDM cosmology with {self.H0} (hubble param) and {self.omegaMatter0}" )
+        cosmo = FlatLambdaCDM(H0=self.H0 * 100, Om0=self.omegaMatter0, Ob0=0.044)
+        t1= cosmo.age(self.redshift).to('Myr')
+        t2= cosmo.age(self.redshift+1).to('Myr')
+        self.deltat = ((t1-t2).to('yr')).value  #
+    
+    def calcMUV(self): 
+        """
+        Calculates absolute uv magnitude
+        
+        Sets: 
+            self.parameters['SFR'] (arr): star formation rates
+            self.M_uv
+        """
+        K_uv = 1.15*10.**(-28.) # kappa uv literature value
+        self.properties['SFR'] = self.properties['new_mStar']*1e10/self.H0/self.deltat # star formation rate in solar masses per eyar
+        L_uv = self.properties['SFR']/K_uv
+        nonzero_Luv =L_uv[np.nonzero(L_uv)]
+        self.M_uv = -2.5*np.log10(nonzero_Luv)+51.6  
+        # note this is a different length than most arrays because we've removed nonzero luminosity. 
