@@ -257,3 +257,35 @@ class processedFOF():
                 self.properties[key] = np.array(self.properties[key],dtype = np.ndarray)[boundedidx]
             except IndexError:
                 print(str(key)+ " is not the right length")
+    
+    def addEnvironment(self):
+        """
+        Search for environment output and add to properties. Must be run post bounded! Only available for baryonic primaries. 
+        """
+        filepath = self.path 
+        env_name = "environment_"+ str(self.snapnum)+"_V1"  
+        for filename in os.listdir(filepath):
+            # Check if the file exists in that directory
+            if env_name in filename:
+               env_path = filepath+"/"+filename
+        #Now, also get the gas rotation file if it exists: 
+        #NOTE WE ARE SPECIFYING VERSION NUMBER HERE
+        if 'env_path' in locals():
+            if self.verbose ==True: 
+                print(env_path)
+            with open(str(env_path),'rb') as f: 
+                envdict = pickle.load(f) 
+            if len(envdict['closestb'])== len(self.properties['virialized']):
+                self.properties['closestb']= envdict['closestb']
+                self.properties['closestb_dist']= envdict['closestb_dist']
+                self.properties['num_within10b']= envdict['num_within10b']
+                self.properties['num_within5b']= envdict['num_within5b']
+                self.properties['closestdm']= envdict['closestdm']
+                self.properties['closestdm_dist']= envdict['closestdm_dist']
+                self.properties['closestdm_dmmass']= envdict['closestdm_dmmass']
+                self.properties['closestdm_inr200']= envdict['closestdm_inr200']
+                self.properties['num_within10dm']= envdict['num_within10dm']
+                self.properties['num_within5dm']= envdict['num_within5dm']
+            else: 
+                print("ERROR: number of objects in environment directory doesn't match number of objects in FOF bounded. ")
+
