@@ -23,6 +23,7 @@ def set_up_baryon_fofs(filename, snapnum,sv):
     fof = processedFOF(snapnum,filename,sv, path = "/u/home/c/clairewi/project-snaoz/FOF_project") #call processed fof class 
     fof.chopUnBounded() #remove any unbounded objects 
     if 'recalcRadii' in fof.properties.keys():
+        print("using the recalculated radii")
         return fof.properties['centers'], fof.properties['recalcRadii']
     elif 'fofradii' in fof.properties.keys():
         return fof.properties['centers'], fof.properties['fofradii']
@@ -37,7 +38,7 @@ def set_up_dm_fofs(snapnum, sv, path = '/u/home/c/clairewi/project-snaoz/FOF_pro
         sv (str)
         path (str): path of DM primary files WITHOUT the stream velocity indicator
     Return:
-        np.ndarray: array of total group mass, np.ndarray: array of dm group mass, array of group position [x,y,z]
+        np.ndarray: array of total group mass, np.ndarray: array of dm group mass, array of group position [x,y,z], np.ndarray: array of group radii
     """
     #halo100_indices, halo_positions, startAllDM, endAllDM, dmsnap = set_up_DM(sv, snapnum)
     gofilename = path + str(sv) 
@@ -49,9 +50,10 @@ def set_up_dm_fofs(snapnum, sv, path = '/u/home/c/clairewi/project-snaoz/FOF_pro
     groupMass = np.array(dmfof['Group/GroupMass'][mask])
     groupDMmass = np.array(dmfof['Group/GroupLenType'][:,1][mask])
     groupPos = np.array(dmfof['Group/GroupPos'])[mask]
-    return groupMass, groupDMmass * massDMParticle, groupPos
+    groupRadii = np.array(dmfof['Group/Group_R_Crit200'][mask])
+    return groupMass, groupDMmass * massDMParticle, groupPos, groupRadii
 
-def compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, boxSize = 1775.): 
+def compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, dmradii, boxSize = 1775.): 
     """
     For every baryon FOF object, finds the nearest DM halos (closest one and within 5, 10 ckpc)
     
@@ -62,34 +64,75 @@ def compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, boxSize = 1775.):
         boxSize (float): box size in code units
 
     Returns:
-
+        arr, dtype = int: indices of closest DM object;
+        arr, dtype = float : distances to closest DM object in code units; 
+        arr, dtype = float: masses of closest DM object in code mass; 
+        arr, dtype = bool: whether or not the object is within R200 of the closest DM; 
+        arr, dtype = int: number of DM object within 10 code units;
+        arr, dtype = int: number of DM object within 5 code units;
     """
-    # for i in range(len(baryon_centers)): 
     N= len(baryon_centers)
-    N= 10 # testing mode
+    N= 100 # testing mode
     masks10 = np.empty(N,dtype = np.ndarray)
     masks5 = np.empty(N,dtype = np.ndarray)
     closestdm = np.empty(N,dtype = np.ndarray)
     closestdm_dist = np.empty(N,dtype = float)
     closestdm_dmmass = np.empty(N,dtype= float)
-    num_within10 =  np.empty(N,dtype = float)
-    num_within5 =  np.empty(N,dtype = float)
+    closestdm_inr200 = np.empty(N, dtype=bool)
+    num_within10 =  np.empty(N,dtype = int)
+    num_within5 =  np.empty(N,dtype = int)
     for i in range(N):
         com = baryon_centers[i]
         distances = dist2(com[0]-dm_centers[:,0], com[1]-dm_centers[:,1], com[2]-dm_centers[:,2], boxSize)
         mask = np.where(distances<100.), #find all halos within 10 kpc
         masks10[i]= mask
-        num_within10[i]= len(mask)
+        num_within10[i]= len(mask[0][0])
         mask = np.where(distances<25.), # find all halos within 5 kpc
         masks5[i] = mask
-        num_within5[i] = len(mask)
+        num_within5[i] = len(mask[0][0])
         closestdm[i] = np.argmin(distances) # find closest DM halo
         closestdm_dist[i] = distances[closestdm[i]]
+        closestdm_inr200[i] = np.greater(dmradii[closestdm[i]],distances[closestdm[i]])
         closestdm_dmmass[i] = dmmass[closestdm[i]]
-    print(closestdm_dmmass)
+    # print(masks10)
+    return closestdm, closestdm_dist, closestdm_dmmass, closestdm_inr200, num_within10, num_within5
 
+def compare_baryon_env(baryon_centers, boxSize = 1775.): 
+    """
+    For every baryon FOF object, finds the nearest other baryon objects (closest one and within 5, 10 ckpc)
+    
+    Parameters: 
+        baryon_centers (arr Nx3): centers of mass of the baryon primary objects
+        boxSize (float): box size in code units
 
-
+    Returns:
+        arr, dtype = int: indices of closest baryon object;
+        arr, dtype = float : distances to closest baryon object in code units; 
+        arr, dtype = int: number of baryon object within 10 code units;
+        arr, dtype = int: number of baryon object within 5 code units;
+    """
+    N= len(baryon_centers)
+    N= 100 # testing mode
+    masks10 = np.empty(N,dtype = np.ndarray)
+    masks5 = np.empty(N,dtype = np.ndarray)
+    closest = np.empty(N,dtype = np.ndarray)
+    closest_dist = np.empty(N,dtype = float)
+    num_within10 =  np.empty(N,dtype = int)
+    num_within5 =  np.empty(N,dtype = int)
+    for i in range(N):
+        com = baryon_centers[i]
+        #remove the current object from the list of centers
+        ex_centers = baryon_centers[np.isin(range(len(baryon_centers)),i,invert= True)] 
+        distances = dist2(com[0]-ex_centers[:,0], com[1]-ex_centers[:,1], com[2]-ex_centers[:,2], boxSize)
+        mask = np.where(distances<100.), #find all halos within 10 kpc
+        masks10[i]= mask
+        num_within10[i]= len(mask[0][0])
+        mask = np.where(distances<25.), # find all halos within 5 kpc
+        masks5[i] = mask
+        num_within5[i] = len(mask[0][0])
+        closest[i] = np.argmin(distances) # find closest DM halo
+        closest_dist[i] = distances[closest[i]]
+    return closest, closest_dist, num_within10, num_within5
 
 if __name__=="__main__":
     """
@@ -102,5 +145,6 @@ if __name__=="__main__":
     """
     script, gofilename, snapnum = argv
     baryon_centers, baryon_radii = set_up_baryon_fofs("SP-", str(snapnum), 'Sig2')
-    groupMass, groupDMmass, groupPos= set_up_dm_fofs(str(snapnum), 'Sig2')
-    compare_baryon_dm_fof(baryon_centers, groupPos, groupDMmass)
+    groupMass, groupDMmass, groupPos, groupRadii= set_up_dm_fofs(str(snapnum), 'Sig2')
+    compare_baryon_env(baryon_centers)
+    compare_baryon_dm_fof(baryon_centers, groupPos, groupDMmass, groupRadii)
