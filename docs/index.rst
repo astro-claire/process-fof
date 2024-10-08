@@ -19,6 +19,7 @@ Instructions to get started will be added here soon!
    boundedness.rst
    stellar_rotation.rst
    concatenateclass.rst
+   environment.rst
 
 
 Indices and tables
