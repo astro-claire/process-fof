@@ -307,7 +307,7 @@ class processedFOF():
             self.deltat (float): elapsed time since last snapshot in years
         """
         self.redshift = 1./self.atime -1.
-        if self.verbose ==True: print(f"creating flat LCDM cosmology with {self.H0} (hubble param) and {self.omegaMatter0}" )
+        if self.verbose ==True: print(f"creating flat LCDM cosmology with hubble param = {self.H0}  and omega_m0 = {self.omegaMatter0}." )
         cosmo = FlatLambdaCDM(H0=self.H0 * 100, Om0=self.omegaMatter0, Ob0=0.044)
         t1= cosmo.age(self.redshift).to('Myr')
         t2= cosmo.age(self.redshift+1).to('Myr')
@@ -326,4 +326,11 @@ class processedFOF():
         L_uv = self.properties['SFR']/K_uv
         nonzero_Luv =L_uv[np.nonzero(L_uv)]
         self.M_uv = -2.5*np.log10(nonzero_Luv)+51.6  
+        if 'DM' in self.properties['prim']: #Need a DM mass indicator if you're going to correct for number densities
+            self.DMMass_Muv = self.properties['DMMass'][np.nonzero(L_uv)]*1e10 /self.H0
+        elif 'closestdm_dmmass' in self.properties.keys():
+            self.DMMass_Muv = self.properties['closestdm_dmmass'][np.nonzero(L_uv)]*1e10 /self.H0
+        else: 
+            print("No suitable DM key for Muv DM masses. Skipping it.")
+        self.stellarMass_Muv = self.properties['stellarMass'][np.nonzero(L_uv)]*1e10 /self.H0
         # note this is a different length than most arrays because we've removed nonzero luminosity. 
