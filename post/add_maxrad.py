@@ -12,7 +12,19 @@ UnitLength_in_cm = 3.085678e21
 def get_maxradii(allStarPositions,startAllStars,endAllStars,baryon_centers,boxSize,cosmo):
     """
     iterate through the bounded and virialized objects and add their max radius parameter
-    """
+
+    Parameters:
+        allStarPositions (np.ndarray): positions of all the star particles in the simulation
+        startAllStars (np.ndarray): Starting indices for star particles in each halo.
+        endAllStars (np.ndarray): Ending indices for star particles in each halo.
+        baryon_centers (np.ndarray): Center of masses of baryon primary groups
+        boxSize (float): size of box in code units for periodic boundary conditions correcitons
+        cosmo (dict): dictionary of cosmological parameters. Here we only need H0 (hubble constant) and a (scale factor)
+    
+    Returns: 
+        np.ndarray: radius of maximum star particle in each object (in physical units) 
+        
+    """ 
     hubbleparam = cosmo['H0']/100.
     atime = cosmo ['a']
     baryon_centers = baryon_centers *atime / hubbleparam 
