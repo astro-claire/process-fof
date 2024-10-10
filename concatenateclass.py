@@ -3,6 +3,9 @@ import h5py
 import numpy as np
 import pickle
 import os
+from astropy import units as un
+from astropy.cosmology import FlatLambdaCDM
+
 
 class processedFOF(): 
     def __init__(self,snapnum, directory, sv, path = '/u/home/c/clairewi/project-snaoz/FOF_project', verbose = True, maxidx = 300): 
@@ -30,12 +33,16 @@ class processedFOF():
         self._properties_notBounded = list(self.properties.keys())
         self._findBounded()
         self._allKeys = list(self.properties.keys())
-        self._allKeys.remove('prim')
-        self._allKeys.remove('sec')
-        self._allKeys.remove('bounded')
+        if 'prim' in self._allKeys: #remove non array properties for the unfinished/unbounded remover to work
+            self._allKeys.remove('prim')
+        if 'sec' in self._allKeys:
+            self._allKeys.remove('sec')
+        if 'bounded' in self._allKeys:
+            self._allKeys.remove('bounded')
         self.goodidx = []
         #self.chopUnfinished()
         #self.chopUnBounded()
+        self.setupCosmo()
         
     def _findFOF(self): 
         """
@@ -101,7 +108,10 @@ class processedFOF():
         group_pos = np.array(f['Group']['GroupPos'])
         group_len_type = np.array(f['Group']['GroupLenType'])
         group_r_crit200 = np.array(f['Group']['Group_R_Crit200'])
-
+        self.atime = f['Header'].attrs['Time']
+        self.omegaLambda = f['Header'].attrs['OmegaLambda']
+        self.H0 = f['Header'].attrs['HubbleParam']
+        self.omegaMatter0 = f['Header'].attrs['Omega0']
         # Apply a mask to filter groups based on 'grouptype' and 'groupnum'
         mask = group_len_type[:, grouptype] > groupnum
         # Use the mask to select the centers and radii directly
@@ -257,3 +267,72 @@ class processedFOF():
                 self.properties[key] = np.array(self.properties[key],dtype = np.ndarray)[boundedidx]
             except IndexError:
                 print(str(key)+ " is not the right length")
+    
+    def addEnvironment(self):
+        """
+        Search for environment output and add to properties. Must be run post bounded! Only available for baryonic primaries. 
+        """
+        filepath = self.path 
+        env_name = "environment_"+ str(self.snapnum)+"_V1"  
+        for filename in os.listdir(filepath):
+            # Check if the file exists in that directory
+            if env_name in filename:
+               env_path = filepath+"/"+filename
+        #Now, also get the gas rotation file if it exists: 
+        #NOTE WE ARE SPECIFYING VERSION NUMBER HERE
+        if 'env_path' in locals():
+            if self.verbose ==True: 
+                print(env_path)
+            with open(str(env_path),'rb') as f: 
+                envdict = pickle.load(f) 
+            if len(envdict['closestb'])== len(self.properties['virialized']):
+                self.properties['closestb']= envdict['closestb']
+                self.properties['closestb_dist']= envdict['closestb_dist']
+                self.properties['num_within10b']= envdict['num_within10b']
+                self.properties['num_within5b']= envdict['num_within5b']
+                self.properties['closestdm']= envdict['closestdm']
+                self.properties['closestdm_dist']= envdict['closestdm_dist']
+                self.properties['closestdm_dmmass']= envdict['closestdm_dmmass']
+                self.properties['closestdm_inr200']= envdict['closestdm_inr200']
+                self.properties['num_within10dm']= envdict['num_within10dm']
+                self.properties['num_within5dm']= envdict['num_within5dm']
+            else: 
+                print("ERROR: number of objects in environment directory doesn't match number of objects in FOF bounded. ")
+
+    def setupCosmo(self): 
+        """
+        Calculates relevant cosmology properties. ASSUMES SNAPS ARE SEPARATED BY 1 redshift!!!!!!
+        
+        Sets: 
+            self.deltat (float): elapsed time since last snapshot in years
+        """
+        self.redshift = 1./self.atime -1.
+        if self.verbose ==True: print(f"creating flat LCDM cosmology with hubble param = {self.H0}  and omega_m0 = {self.omegaMatter0}." )
+        cosmo = FlatLambdaCDM(H0=self.H0 * 100, Om0=self.omegaMatter0, Ob0=0.044)
+        t1= cosmo.age(self.redshift).to('Myr')
+        t2= cosmo.age(self.redshift+1).to('Myr')
+        self.deltat = ((t1-t2).to('yr')).value  #
+    
+    def calcMUV(self): 
+        """
+        Calculates absolute uv magnitude
+        
+        Sets: 
+            self.parameters['SFR'] (arr): star formation rates
+            self.M_uv
+        """
+        K_uv = 1.15*10.**(-28.) # kappa uv literature value
+        if 'new_mStar' in self.properties.keys():
+            self.properties['SFR'] = self.properties['new_mStar']*1e10/self.H0/self.deltat # star formation rate in solar masses per eyar
+            L_uv = self.properties['SFR']/K_uv
+            nonzero_Luv =L_uv[np.nonzero(L_uv)]
+            self.M_uv = -2.5*np.log10(nonzero_Luv)+51.6  
+            if 'DM' in self.properties['prim']: #Need a DM mass indicator if you're going to correct for number densities
+                self.DMMass_Muv = self.properties['DMMass'][np.nonzero(L_uv)]*1e10 /self.H0
+            elif 'closestdm_dmmass' in self.properties.keys():
+                self.DMMass_Muv = self.properties['closestdm_dmmass'][np.nonzero(L_uv)]*1e10 /self.H0
+            else: 
+                print("No suitable DM key for Muv DM masses. Skipping it.")
+            if 'stellarMass' in self.properties.keys():
+                self.stellarMass_Muv = self.properties['stellarMass'][np.nonzero(L_uv)]*1e10 /self.H0
+            # note this is a different length than most arrays because we've removed nonzero luminosity. 
