@@ -332,5 +332,6 @@ class processedFOF():
             self.DMMass_Muv = self.properties['closestdm_dmmass'][np.nonzero(L_uv)]*1e10 /self.H0
         else: 
             print("No suitable DM key for Muv DM masses. Skipping it.")
-        self.stellarMass_Muv = self.properties['stellarMass'][np.nonzero(L_uv)]*1e10 /self.H0
+        if 'stellarMass' in self.properties.keys():
+            self.stellarMass_Muv = self.properties['stellarMass'][np.nonzero(L_uv)]*1e10 /self.H0
         # note this is a different length than most arrays because we've removed nonzero luminosity. 
