@@ -1,7 +1,6 @@
 import numpy as np
 import numpy as np
 import pickle
-from concatenateclass import processedFOF
 from sys import argv
 import sys
 sys.path.append('../')

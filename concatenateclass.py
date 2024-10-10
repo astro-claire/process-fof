@@ -112,6 +112,18 @@ class processedFOF():
         #         center = [f['Group']['GroupPos'][idx][0], f['Group']['GroupPos'][idx][1], f['Group']['GroupPos'][idx][2]]
         #         fofradii.append(f['Group']['Group_R_Crit200'][idx])
         #         centers.append(center)
+        maxradname = "maxradii_"+str(self.snapnum)+"_V1.dat"
+        filepath = self.path 
+        for filename in os.listdir(filepath):
+            # Check if the file exists in that directory
+            if maxradname in filename:
+                max_rad_path = filepath+"/"+filename
+            if 'max_rad_path' in locals():
+                if self.verbose ==True: 
+                    print(max_rad_path)
+                with open(str(max_rad_path),'rb') as f: 
+                    maxrad = pickle.load(f) 
+                self.properties['maxradii']= maxrad['maxradii']
         return centers, fofradii
     
     def _findRotation(self): 
