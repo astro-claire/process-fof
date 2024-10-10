@@ -123,7 +123,7 @@ class processedFOF():
                     print(max_rad_path)
                 with open(str(max_rad_path),'rb') as f: 
                     maxrad = pickle.load(f) 
-                self.properties['maxradii']= maxrad['maxradii']
+                self.properties['maxradii']= maxrad['maxradii'][mask]
         return centers, fofradii
     
     def _findRotation(self): 
