@@ -397,6 +397,7 @@ def parallel_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, 
     tensor_r_ij = result
     print("created the tensor")
     for i in range(lengroup):
+         r_ij = 0
          for j in range(i+1,lengroup):
             #r_ij = UnitLength_in_cm* np.linalg.norm(starPos_inGroup[i] - starPos_inGroup[j])  # Compute distance between mass i and mass j
             #r_ij  = UnitLength_in_cm* np.sqrt(dist2_indv(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))
@@ -702,6 +703,7 @@ def parallel_calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, s
     tensor_r_ij = result
     print("created the tensor")
     for i in range(lengroup):
+            r_ij = 0
             for j in range(i+1,lengroup):
                 r_ij = tensor_r_ij[i][j]
             if r_ij != 0:
