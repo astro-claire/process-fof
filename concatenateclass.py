@@ -322,16 +322,17 @@ class processedFOF():
             self.M_uv
         """
         K_uv = 1.15*10.**(-28.) # kappa uv literature value
-        self.properties['SFR'] = self.properties['new_mStar']*1e10/self.H0/self.deltat # star formation rate in solar masses per eyar
-        L_uv = self.properties['SFR']/K_uv
-        nonzero_Luv =L_uv[np.nonzero(L_uv)]
-        self.M_uv = -2.5*np.log10(nonzero_Luv)+51.6  
-        if 'DM' in self.properties['prim']: #Need a DM mass indicator if you're going to correct for number densities
-            self.DMMass_Muv = self.properties['DMMass'][np.nonzero(L_uv)]*1e10 /self.H0
-        elif 'closestdm_dmmass' in self.properties.keys():
-            self.DMMass_Muv = self.properties['closestdm_dmmass'][np.nonzero(L_uv)]*1e10 /self.H0
-        else: 
-            print("No suitable DM key for Muv DM masses. Skipping it.")
-        if 'stellarMass' in self.properties.keys():
-            self.stellarMass_Muv = self.properties['stellarMass'][np.nonzero(L_uv)]*1e10 /self.H0
-        # note this is a different length than most arrays because we've removed nonzero luminosity. 
+        if 'new_mStar' in self.properties.keys():
+            self.properties['SFR'] = self.properties['new_mStar']*1e10/self.H0/self.deltat # star formation rate in solar masses per eyar
+            L_uv = self.properties['SFR']/K_uv
+            nonzero_Luv =L_uv[np.nonzero(L_uv)]
+            self.M_uv = -2.5*np.log10(nonzero_Luv)+51.6  
+            if 'DM' in self.properties['prim']: #Need a DM mass indicator if you're going to correct for number densities
+                self.DMMass_Muv = self.properties['DMMass'][np.nonzero(L_uv)]*1e10 /self.H0
+            elif 'closestdm_dmmass' in self.properties.keys():
+                self.DMMass_Muv = self.properties['closestdm_dmmass'][np.nonzero(L_uv)]*1e10 /self.H0
+            else: 
+                print("No suitable DM key for Muv DM masses. Skipping it.")
+            if 'stellarMass' in self.properties.keys():
+                self.stellarMass_Muv = self.properties['stellarMass'][np.nonzero(L_uv)]*1e10 /self.H0
+            # note this is a different length than most arrays because we've removed nonzero luminosity. 
