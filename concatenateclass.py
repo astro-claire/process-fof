@@ -118,12 +118,12 @@ class processedFOF():
             # Check if the file exists in that directory
             if maxradname in filename:
                 max_rad_path = filepath+"/"+filename
-            if 'max_rad_path' in locals():
-                if self.verbose ==True: 
-                    print(max_rad_path)
-                with open(str(max_rad_path),'rb') as f: 
-                    maxrad = pickle.load(f) 
-                self.properties['maxradii']= maxrad['maxradii'][mask]
+        if 'max_rad_path' in locals():
+            if self.verbose ==True: 
+                print(max_rad_path)
+            with open(str(max_rad_path),'rb') as f: 
+                maxrad = pickle.load(f) 
+                self.properties['maxradii']= maxrad['maxradii']
         return centers, fofradii
     
     def _findRotation(self): 
