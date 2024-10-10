@@ -5,17 +5,21 @@ from concatenateclass import processedFOF
 from sys import argv
 import sys
 sys.path.append('../')
-from boundedness import get_allHalos, set_up_DM, calc_max_radius
-from fof_process import dx_wrap, dist2, set_snap_directories, open_hdf5, get_headerprops
-from environment import set_up_baryon_fofs
+from boundedness import calc_max_radius, get_GroupPos
+from fof_process import set_subfind_catalog, get_starIDs,get_starIDgroups,get_starGroups, set_snap_directories, open_hdf5, get_headerprops
 
 def get_maxradii(allStarPositions,startAllStars,endAllStars,baryon_centers,boxSize):
     """
     iterate through the bounded and virialized objects and add their max radius parameter
     """
-    starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-    for center in baryon_centers:
-        maxradius = calc_max_radius(starPos_inGroup,baryon_centers,boxSize)
+    N = len(baryon_centers)
+    maxradii = np.empty(N,dtype = np.ndarray)
+    for i in range(N):
+        com = baryon_centers[i]
+        starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
+        maxradii[i] = calc_max_radius(starPos_inGroup,com,boxSize)
+    return maxradii
+
 
 def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home/c/clairewi/project-snaoz/FOF_project/'):   
     """
@@ -28,4 +32,19 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
         save (bool): whether or not to save the output at path + directory + sv
 
     """ 
-    baryon_centers, _ = set_up_baryon_fofs(str(directory), str(snapnum), str(sv))
+    gofilename = str(path)+str(directory)+str(sv)
+    gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
+    snap, fof = open_hdf5(gofilename, foffilename)
+    boxSize, redshift, massDMParticle = get_headerprops(snap)
+    cat = set_subfind_catalog(fof)
+    halo100_indices=get_starGroups(cat)
+    _,_, allStarPositions, _= get_starIDs(snap)
+    startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
+    halo100_pos = get_GroupPos(cat, halo100_indices)
+    radii = get_maxradii(allStarPositions,startAllStars,endAllStars,halo100_pos,boxSize)
+    if save ==True: 
+        objs = {}
+        objs['maxradii'] = np.array(radii)
+        print("Saving output!")
+        with open(gofilename+"/maxradii_"+str(snapnum)+"_V1.dat",'wb') as f:
+            pickle.dump(objs, f)
