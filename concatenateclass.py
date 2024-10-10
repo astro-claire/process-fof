@@ -84,6 +84,9 @@ class processedFOF():
 
         Returns: 
             Numpy.ndarray  (centers of mass), Numpy.ndarray (radii)
+        
+        Sets: 
+            properties['maxradii']: if file exists, adds array of max radii to properties dictionary 
         """
         filepath = str(self.path) + "/fof_subhalo_tab_" + str(self.snapnum)+".hdf5"
         f = h5py.File(filepath)
@@ -107,11 +110,6 @@ class processedFOF():
         # Use the mask to select the centers and radii directly
         centers = group_pos[mask]
         fofradii = group_r_crit200[mask]
-        # for idx in range(len(f['Group']['GroupPos'])):
-        #     if f['Group']['GroupLenType'][idx][grouptype] >groupnum:
-        #         center = [f['Group']['GroupPos'][idx][0], f['Group']['GroupPos'][idx][1], f['Group']['GroupPos'][idx][2]]
-        #         fofradii.append(f['Group']['Group_R_Crit200'][idx])
-        #         centers.append(center)
         maxradname = "maxradii_"+str(self.snapnum)+"_V1.dat"
         filepath = self.path 
         for filename in os.listdir(filepath):
