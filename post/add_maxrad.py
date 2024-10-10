@@ -5,21 +5,28 @@ from concatenateclass import processedFOF
 from sys import argv
 import sys
 sys.path.append('../')
-from boundedness import calc_max_radius, get_GroupPos
-from fof_process import set_subfind_catalog, get_starIDs,get_starIDgroups,get_starGroups, set_snap_directories, open_hdf5, get_headerprops
+from boundedness import calc_max_radius, get_GroupPos, get_starIDs
+from fof_process import set_subfind_catalog,get_cosmo_props,get_starIDgroups,get_starGroups, set_snap_directories, open_hdf5, get_headerprops
 
-def get_maxradii(allStarPositions,startAllStars,endAllStars,baryon_centers,boxSize):
+UnitLength_in_cm = 3.085678e21 
+
+def get_maxradii(allStarPositions,startAllStars,endAllStars,baryon_centers,boxSize,cosmo):
     """
     iterate through the bounded and virialized objects and add their max radius parameter
     """
+    hubbleparam = cosmo['H0']/100.
+    atime = cosmo ['a']
+    baryon_centers = baryon_centers *atime / hubbleparam 
     N = len(baryon_centers)
+    print(str(N)+" objects")
     maxradii = np.empty(N,dtype = np.ndarray)
+    boxSize = boxSize * atime/hubbleparam
     for i in range(N):
         com = baryon_centers[i]
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-        maxradii[i] = calc_max_radius(starPos_inGroup,com,boxSize)
+        np.array(starPos_inGroup) *atime / hubbleparam
+        maxradii[i] = calc_max_radius(starPos_inGroup,com,boxSize)/UnitLength_in_cm
     return maxradii
-
 
 def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home/c/clairewi/project-snaoz/FOF_project/'):   
     """
@@ -35,16 +42,35 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
     gofilename = str(path)+str(directory)+str(sv)
     gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
     snap, fof = open_hdf5(gofilename, foffilename)
-    boxSize, redshift, massDMParticle = get_headerprops(snap)
+    boxSize, _, _ = get_headerprops(snap)
     cat = set_subfind_catalog(fof)
     halo100_indices=get_starGroups(cat)
     _,_, allStarPositions, _= get_starIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
-    radii = get_maxradii(allStarPositions,startAllStars,endAllStars,halo100_pos,boxSize)
+    cos = get_cosmo_props(snap)
+    print("calculating the radii")
+    radii = get_maxradii(allStarPositions,startAllStars,endAllStars,halo100_pos,boxSize,cos)
+    print("Got the radii")
     if save ==True: 
         objs = {}
         objs['maxradii'] = np.array(radii)
         print("Saving output!")
-        with open(gofilename+"/maxradii_"+str(snapnum)+"_V1.dat",'wb') as f:
+        with open(str(path)+str(directory)+str(sv)+"/maxradii_"+str(snapnum)+"_V1.dat",'wb') as f:
             pickle.dump(objs, f)
+
+if __name__=="__main__":
+    """
+    Routine if running as a script
+
+    Arguments: 
+    gofilename path to directory containing groupordered file + fof table
+    # foffilename 
+    snapnum (float)
+    """
+    script, directory, sv, snapnum = argv
+    wrapper(directory, sv,snapnum, save =True)
+    # baryon_centers, baryon_radii = set_up_baryon_fofs("SP-", str(snapnum), 'Sig2')
+    # groupMass, groupDMmass, groupPos, groupRadii= set_up_dm_fofs(str(snapnum), 'Sig2')
+    # compare_baryon_env(baryon_centers)
+    # compare_baryon_dm_fof(baryon_centers, groupPos, groupDMmass, groupRadii)
