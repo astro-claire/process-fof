@@ -199,6 +199,7 @@ class processedFOF():
         self.properties['bounded'] = []
         self.properties['virialized']= []
         self.properties['recalcRadii']= []
+        self.properties['usedDM']= []
         indexexists = 0
         for j in indices:
             fof_process_name = "bounded_portion_"+str(self.snapnum)+"_chunk"+str(j)+"_"
@@ -216,6 +217,7 @@ class processedFOF():
                     self.properties['bounded'] = np.concatenate((self.properties['bounded'], chunk['bounded']), axis = None)
                     self.properties['virialized'] = np.concatenate((self.properties['virialized'], chunk['virialized']), axis = None)
                     self.properties['recalcRadii'] = np.concatenate((self.properties['recalcRadii'], chunk['recalcRadii']), axis = None)
+                    self.properties['usedDM'] = np.concatenate((self.properties['usedDM'], chunk['usedDM']), axis = None)
         try:
             self.boundedidx  = int(biggestchunkfile[-10:-7])
         except ValueError:
