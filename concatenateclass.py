@@ -8,7 +8,7 @@ from astropy.cosmology import FlatLambdaCDM
 
 
 class processedFOF(): 
-    def __init__(self,snapnum, directory, sv, path = '/u/home/c/clairewi/project-snaoz/FOF_project', verbose = True, maxidx = 300): 
+    def __init__(self,snapnum, directory, sv, path = '/u/home/c/clairewi/project-snaoz/FOF_project', verbose = True, maxidx = 300, **kwargs): 
         """
         Initializes fof post processing  concatenator
         
@@ -25,6 +25,8 @@ class processedFOF():
         self.maxidx = maxidx
         self.directory = directory
         self.path = path + "/"+  str(directory) + str(sv)
+        if 'extra_path' in kwargs.keys():
+            self.path = self.path + "/"+str(kwargs['extra_path'])
         self.verbose = verbose
         self.group = self._setGroup()
         self.properties = self._findFOF()
@@ -192,43 +194,47 @@ class processedFOF():
             None
         """
         filepath = self.path + "/bounded2"
-        indices = list(range(self.maxidx))
-        indices.reverse()
-        self.properties['massDM'] = []
-        self.properties['massStars']=[]
-        self.properties['bounded'] = []
-        self.properties['virialized']= []
-        self.properties['recalcRadii']= []
-        self.properties['usedDM']= []
-        indexexists = 0
-        for j in indices:
-            fof_process_name = "bounded_portion_"+str(self.snapnum)+"_chunk"+str(j)+"_"
-            for filename in os.listdir(filepath):
-                # Check if the file exists in that directory
-                if fof_process_name in filename:
-                    if indexexists == 0: 
-                        biggestchunkfile = filename
-                        indexexists = 1
-                    fof_process_path = filepath+"/"+filename
-                    with open(fof_process_path,'rb') as f: 
-                        chunk = pickle.load(f) 
-                    self.properties['massDM'] = np.concatenate((self.properties['massDM'], chunk['massDM']), axis = None)
-                    self.properties['massStars'] = np.concatenate((self.properties['massStars'], chunk['massStars']), axis = None)
-                    self.properties['bounded'] = np.concatenate((self.properties['bounded'], chunk['bounded']), axis = None)
-                    self.properties['virialized'] = np.concatenate((self.properties['virialized'], chunk['virialized']), axis = None)
-                    self.properties['recalcRadii'] = np.concatenate((self.properties['recalcRadii'], chunk['recalcRadii']), axis = None)
-                    self.properties['usedDM'] = np.concatenate((self.properties['usedDM'], chunk['usedDM']), axis = None)
         try:
-            self.boundedidx  = int(biggestchunkfile[-10:-7])
-        except ValueError:
+            indices = list(range(self.maxidx))
+            indices.reverse()
+            self.properties['massDM'] = []
+            self.properties['massStars']=[]
+            self.properties['bounded'] = []
+            self.properties['virialized']= []
+            self.properties['recalcRadii']= []
+            self.properties['usedDM']= []
+            indexexists = 0
+            for j in indices:
+                fof_process_name = "bounded_portion_"+str(self.snapnum)+"_chunk"+str(j)+"_"
+                for filename in os.listdir(filepath):
+                    # Check if the file exists in that directory
+                    if fof_process_name in filename:
+                        if indexexists == 0: 
+                            biggestchunkfile = filename
+                            indexexists = 1
+                        fof_process_path = filepath+"/"+filename
+                    if 'fof_process_path' in locals():
+                        with open(fof_process_path,'rb') as f: 
+                            chunk = pickle.load(f) 
+                        self.properties['massDM'] = np.concatenate((self.properties['massDM'], chunk['massDM']), axis = None)
+                        self.properties['massStars'] = np.concatenate((self.properties['massStars'], chunk['massStars']), axis = None)
+                        self.properties['bounded'] = np.concatenate((self.properties['bounded'], chunk['bounded']), axis = None)
+                        self.properties['virialized'] = np.concatenate((self.properties['virialized'], chunk['virialized']), axis = None)
+                        self.properties['recalcRadii'] = np.concatenate((self.properties['recalcRadii'], chunk['recalcRadii']), axis = None)
+                        self.properties['usedDM'] = np.concatenate((self.properties['usedDM'], chunk['usedDM']), axis = None)
             try:
-                self.boundedidx = int(biggestchunkfile[-9:-7])
+                self.boundedidx  = int(biggestchunkfile[-10:-7])
             except ValueError:
-                self.boundedidx = int(biggestchunkfile[-8:-7])
-        except NameError:
-             self.boundedidx = 0
-        if self.verbose == True: 
-            print("highest bounded calculated is " + str(self.boundedidx))
+                try:
+                    self.boundedidx = int(biggestchunkfile[-9:-7])
+                except ValueError:
+                    self.boundedidx = int(biggestchunkfile[-8:-7])
+            except NameError:
+                self.boundedidx = 0
+            if self.verbose == True: 
+                print("highest bounded calculated is " + str(self.boundedidx))
+        except FileNotFoundError:
+            print("no bounded exists for this snap file")
         
     def accessBoundedComplete(self,arr):
         """
@@ -280,6 +286,29 @@ class processedFOF():
             except IndexError:
                 print(str(key)+ " is not the right length")
     
+    def chopResolutionHalos(self):
+        """
+        if the list contains DM halos beyond the resolution limit, chop them off
+        """
+        self._nonRotationKeys = self._allKeys
+        for key in ['rotation_curve_rms','rotation_curve_turb','rotation_curve_rot', 'rotation_curve_rad', 'v_rms','v_rad','v_rot','v_turb','star_rot_radii','gas_rot_radii','gas_rotation_curve_rms','gas_rotation_curve_turb','gas_rotation_curve_rot', 'gas_rotation_curve_rad', 'gas_v_rms','gas_v_rad','gas_v_rot','gas_v_turb']:
+            if key in self._nonRotationKeys:
+                self._nonRotationKeys.remove(key)
+        if 'DM' in self.properties['prim']:
+            filepath = str(self.path) + "/snap-groupordered_" + str(self.snapnum)+".hdf5"
+            f = h5py.File(filepath)
+            resolution = f['Header'].attrs['MassTable'][1]*300
+            mask = self.properties['DMMass'] >resolution
+            mask = np.array(mask.astype(bool))
+            for key in self._allKeys:
+                if len(self.properties[key])>1.:
+                    try: 
+                        self.properties[key]= np.array(self.properties[key])[mask]
+                    except ValueError: 
+                        self.properties[key] = np.array(self.properties[key],dtype = object)[mask]
+                    except IndexError:
+                        print(str(key)+" is not the right length")
+
     def addEnvironment(self):
         """
         Search for environment output and add to properties. Must be run post bounded! Only available for baryonic primaries. 
