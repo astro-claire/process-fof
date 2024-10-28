@@ -194,7 +194,7 @@ class processedFOF():
             None
         """
         filepath = self.path + "/bounded2"
-        try:
+        if os.path.exists(filepath):
             indices = list(range(self.maxidx))
             indices.reverse()
             self.properties['massDM'] = []
@@ -213,7 +213,7 @@ class processedFOF():
                             biggestchunkfile = filename
                             indexexists = 1
                         fof_process_path = filepath+"/"+filename
-                    if 'fof_process_path' in locals():
+                    #if 'fof_process_path' in locals():
                         with open(fof_process_path,'rb') as f: 
                             chunk = pickle.load(f) 
                         self.properties['massDM'] = np.concatenate((self.properties['massDM'], chunk['massDM']), axis = None)
@@ -233,7 +233,7 @@ class processedFOF():
                 self.boundedidx = 0
             if self.verbose == True: 
                 print("highest bounded calculated is " + str(self.boundedidx))
-        except FileNotFoundError:
+        else:
             print("no bounded exists for this snap file")
         
     def accessBoundedComplete(self,arr):
@@ -286,10 +286,11 @@ class processedFOF():
             except IndexError:
                 print(str(key)+ " is not the right length")
     
-    def chopResolutionHalos(self):
+    def chopResolutionHalos(self, cutoff = 300):
         """
         if the list contains DM halos beyond the resolution limit, chop them off
         """
+        #TODO: Claire: rerun the rotations with correct DM group and then remove 
         self._nonRotationKeys = self._allKeys
         for key in ['rotation_curve_rms','rotation_curve_turb','rotation_curve_rot', 'rotation_curve_rad', 'v_rms','v_rad','v_rot','v_turb','star_rot_radii','gas_rot_radii','gas_rotation_curve_rms','gas_rotation_curve_turb','gas_rotation_curve_rot', 'gas_rotation_curve_rad', 'gas_v_rms','gas_v_rad','gas_v_rot','gas_v_turb']:
             if key in self._nonRotationKeys:
@@ -297,7 +298,7 @@ class processedFOF():
         if 'DM' in self.properties['prim']:
             filepath = str(self.path) + "/snap-groupordered_" + str(self.snapnum)+".hdf5"
             f = h5py.File(filepath)
-            resolution = f['Header'].attrs['MassTable'][1]*300
+            resolution = f['Header'].attrs['MassTable'][1]*cutoff
             mask = self.properties['DMMass'] >resolution
             mask = np.array(mask.astype(bool))
             for key in self._allKeys:
