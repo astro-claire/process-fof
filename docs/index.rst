@@ -20,6 +20,7 @@ Instructions to get started will be added here soon!
    stellar_rotation.rst
    concatenateclass.rst
    environment.rst
+   dm_virialization.rst
 
 
 Indices and tables
