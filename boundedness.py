@@ -462,7 +462,7 @@ def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_s
 
     return total_potential
 
-def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs):
+def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs, chunk_size = 10000):
     """
     Calculate the total potential energy of a system of particles with the same mass using pairwise interactions.
     
@@ -482,7 +482,7 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs)
     """
     N = len(positions)
     total_potential = 0.0
-    chunk_size = 10000  # Use chunking to avoid excessive memory usage
+    chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
 
     for i in range(0, N, chunk_size):
         for j in range(i + 1, N, chunk_size):
@@ -507,7 +507,7 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs)
 
     return total_potential
 
-def chunked_potential_energy_between_sets(masses1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs):
+def chunked_potential_energy_between_sets(masses1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):
     """
     Calculate the total potential energy between two different sets of particles using pairwise interactions.
     
@@ -532,7 +532,7 @@ def chunked_potential_energy_between_sets(masses1, positions1, masses2, position
     N1 = len(masses1)
     N2 = len(masses2)
     total_potential = 0.0
-    chunk_size = 10000  # Use chunking to avoid excessive memory usage
+    chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
 
     # Loop over the first set of particles in chunks
     for i in range(0, N1, chunk_size):
@@ -561,7 +561,7 @@ def chunked_potential_energy_between_sets(masses1, positions1, masses2, position
 
     return total_potential
 
-def chunked_potential_energy_between_groups(mass1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs):
+def chunked_potential_energy_between_groups(mass1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):
     """
     Calculate the total potential energy between two groups of particles, 
     where the first group has the same mass for all particles, and the second group has an array of masses.
@@ -587,7 +587,7 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
     N1 = len(positions1)
     N2 = len(masses2)
     total_potential = 0.0
-    chunk_size = 10000  # Use chunking to avoid excessive memory usage
+    chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
 
     # Loop over the first group of particles in chunks
     for i in range(0, N1, chunk_size):
