@@ -109,6 +109,11 @@ class processedFOF():
         elif self.group == "DM":
             grouptype = 1
             groupnum = 300
+        else:
+            if self.verbose ==True: 
+                print("defaulting to DM grouptype")
+            grouptype = 1
+            groupnum = 300
         # Convert relevant data to NumPy arrays if they aren't already
         group_pos = np.array(f['Group']['GroupPos'])
         group_len_type = np.array(f['Group']['GroupLenType'])
