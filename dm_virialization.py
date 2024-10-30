@@ -60,22 +60,30 @@ def chunked_calc_dm_boundedness(energyStars, starPos_inGroup, starMass_inGroup, 
     lengroup = len(pDM)
     massDM = lengroup* massDMParticle
     #Kinetic energy component
-    kineticEnergyDM = np.sum(massDMParticle/2 *velMagDM*velMagDM*UnitVelocity_in_cm_per_s*UnitVelocity_in_cm_per_s)
+    # max_velocity = np.max(velMagDM)
+    # print("Max velocity:", max_velocity)
+    # kineticEnergyDM = np.sum(massDMParticle/2 *velMagDM*velMagDM)
+    chunk_size = 500  # Process in smaller batches
+    kineticEnergyDM = 0.0
+    #doing this way to elimatine infinite error
+    for i in range(0, len(velMagDM), chunk_size):
+        chunk = velMagDM[i:i + chunk_size]
+        kineticEnergyDM += np.sum(massDMParticle /UnitMass_in_g/ 2 * chunk**2 * UnitVelocity_in_cm_per_s**2)    
     potentialEnergyDM = 0
     potentialEnergyStarsDM = 0
     #DM self potential energy
     print("chunked DM potential calculation")
     potentialEnergyDM = chunked_potential_energy_same_mass(massDMParticle, pDM,boxSize,chunk_size = 10000)
     print("chunked stars and dm potential calculation")
-    potentialEnergyStarsDM = chunked_potential_energy_between_groups(massDMParticle, pDM, starMass_inGroup,starPos_inGroup,boxSize,chunk_size = 10000)
-    totEnergy = energyStars + kineticEnergyDM + potentialEnergyStarsDM + potentialEnergyDM
+    potentialEnergyStarsDM = chunked_potential_energy_between_groups(massDMParticle, pDM, starMass_inGroup,starPos_inGroup,boxSize ,chunk_size = 10000)
+    totEnergy = energyStars + kineticEnergyDM*UnitMass_in_g + potentialEnergyStarsDM + potentialEnergyDM
     if totEnergy<0:
          print("object is bound after DM!")
          boundedness =  1
     else:
          print("not bound even after DM!")
          boundedness = 0
-    return boundedness, totEnergy, kineticEnergyDM, potentialEnergyStarsDM + potentialEnergyDM, massDM
+    return boundedness, totEnergy, kineticEnergyDM*UnitMass_in_g, potentialEnergyStarsDM + potentialEnergyDM, massDM
 
 
 def get_fof_particles(filename, snapnum, sv):
@@ -91,6 +99,7 @@ def get_fof_particles(filename, snapnum, sv):
     cat = set_subfind_catalog(fof)
     print("used groups of 300 or more DM")
     halo100_indices=get_Halos(cat)
+    halo100_indices = halo100_indices[1500:2200]
     print(len(halo100_indices))
     _, allStarMasses, allStarPositions, allStarVelocities = get_starIDs(snap)
     _, allDMPositions, allDMVelocities = get_DMIDs(snap)
@@ -100,12 +109,12 @@ def get_fof_particles(filename, snapnum, sv):
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     objs={}
     #DMIDs_inGroups, starIDs_inGroups, starMasses_inGroups = set_up_DM_fofs(str(filename),snapnum, sv)
-    bounded, virialized, usedDM = iterate_objs(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAllStars, endAllStars,allStarPositions, allStarMasses,allStarVelocities, allDMPositions, allDMVelocities,boxSize,atime,massDMParticle)
+    bounded, virialized, usedDM = iterate_objs(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAllStars, endAllStars,allStarPositions, allStarMasses,allStarVelocities, allDMPositions, allDMVelocities,boxSize,atime,massDMParticle* UnitMass_in_g / hubbleparam)
     objs['bounded'] = bounded
     objs['virialized'] = virialized
     objs['usedDM'] = usedDM
     print("saving output at" + str(gofilename))
-    with open(gofilename+"/boundedDM_"+str(snapnum)+"_V1.dat",'wb') as f:   
+    with open( str(filename)+"/boundedDM_"+str(snapnum)+"_V1.dat",'wb') as f:   
         pickle.dump(objs, f)
     return 
 
@@ -150,6 +159,7 @@ def iterate_objs(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAl
         starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
         boundedness, energyStars, kineticEnergyStars, potentialEnergyStars, _=chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVel[i],boxSize,boxSizeVel)
         virialized, _ = check_virialized(kineticEnergyStars,potentialEnergyStars)
+        print(kineticEnergyStars, potentialEnergyStars)
         if virialized ==0:
             usedDM = 1
             pDM = allDMPositions[startAllDM[i]:endAllDM[i]]
@@ -158,9 +168,12 @@ def iterate_objs(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAl
             kineticEnergy = kineticEnergyDM +kineticEnergyStars
             potentialEnergy = potentialEnergyDM +potentialEnergyStars
             virialized,_ = check_virialized(kineticEnergy, potentialEnergy)
+            print(kineticEnergy, potentialEnergy)
         if (boundedness == 1) or (boundednessDM == 1):
             boundednessgroups[i] = 1
         virialgroups[i]=virialized
+        if virialized ==1: 
+            print("OMG VIRIALIZED")
         usedDMgroups[i]= usedDM
     return boundednessgroups, virialgroups, usedDMgroups
 

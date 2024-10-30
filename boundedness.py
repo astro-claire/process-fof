@@ -456,11 +456,67 @@ def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_s
                 
                 # Avoid division by zero by setting an effective minimum distance
                 r = np.where(r < 1e-10, 1e-10, r)
-                
-                # Sum up potential energy contributions
-                total_potential += -G * np.sum(masses_i[k] * masses_j / r)
+                mask = r >= 2e-10
+                valid_r = r[mask]
+                valid_masses_j = masses_j[mask]
 
-    return total_potential
+                # Sum up potential energy contributions
+                total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
+
+    return total_potential/2 #factor of two from the indexing
+
+# def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_size = 10000):
+#     """
+#     Calculate the total potential energy of a system of particles using pairwise interactions.
+    
+#     Parameters:
+#         masses : np.array
+#             1D array of particle masses.
+#         positions : np.array
+#             2D array of particle positions (shape: N x 3).
+#         box_size : float
+#             Size of the periodic box.
+#         G : float
+#             Gravitational constant,
+#     Returns:
+#         total_potential : float
+#             Total potential energy of the system.
+#     """
+#     N = len(masses)
+#     total_potential = 0.0
+#     chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
+
+#     for i in range(0, N, chunk_size):
+#         print(f"starting potential chunk {i}")
+#         j=i+1
+#         # Select smaller chunks to handle
+#         end = i+chunk_size
+#         if end>N:
+#             end = N
+#         masses_i = masses[i:end]
+#         masses_j = masses[j:N]
+#         pos_i = positions[i:end]
+#         pos_j = positions[j:N]
+        
+#         # Calculate pairwise distances between chunks
+#         for k in range(len(masses_i)):
+#             dx = pos_i[k, 0] - pos_j[:, 0]
+#             dy = pos_i[k, 1] - pos_j[:, 1]
+#             dz = pos_i[k, 2] - pos_j[:, 2]
+            
+#             r2 = dist2(dx, dy, dz, box_size)
+#             r = np.sqrt(r2)
+            
+#             # Avoid division by zero by setting an effective minimum distance
+#             r = np.where(r < 9e-6, 9e-6, r)
+#             mask = r >= 1e-5
+#             valid_r = r[mask]
+#             valid_masses_j = masses_j[mask]
+
+#             # Sum up potential energy contributions
+#             total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
+
+#     return total_potential
 
 def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs, chunk_size = 10000):
     """
@@ -501,65 +557,69 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs,
                 
                 # Avoid division by zero by setting an effective minimum distance
                 r = np.where(r < 1e-10, 1e-10, r)
+                mask = r >= 2e-10
+                valid_r = r[mask]
                 
                 # Sum up potential energy contributions using the same mass for all particles
-                total_potential += -G * np.sum(mass * mass / r)
+                total_potential += -G * np.sum(mass * mass / valid_r /UnitLength_in_cm)
 
-    return total_potential
+    return total_potential /2.
 
-def chunked_potential_energy_between_sets(masses1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):
-    """
-    Calculate the total potential energy between two different sets of particles using pairwise interactions.
+# def chunked_potential_energy_between_sets(masses1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):
+#     """
+#     Calculate the total potential energy between two different sets of particles using pairwise interactions.
     
-    Parameters:
-        masses1 : np.array
-            1D array of particle masses for set 1.
-        positions1 : np.array
-            2D array of particle positions for set 1 (shape: N1 x 3).
-        masses2 : np.array
-            1D array of particle masses for set 2.
-        positions2 : np.array
-            2D array of particle positions for set 2 (shape: N2 x 3).
-        box_size : float
-            Size of the periodic box.
-        G : float
-            Gravitational constant, defaults to cgs units.
+#     Parameters:
+#         masses1 : np.array
+#             1D array of particle masses for set 1.
+#         positions1 : np.array
+#             2D array of particle positions for set 1 (shape: N1 x 3).
+#         masses2 : np.array
+#             1D array of particle masses for set 2.
+#         positions2 : np.array
+#             2D array of particle positions for set 2 (shape: N2 x 3).
+#         box_size : float
+#             Size of the periodic box.
+#         G : float
+#             Gravitational constant, defaults to cgs units.
     
-    Returns:
-        total_potential : float
-            Total potential energy between the two sets of particles.
-    """
-    N1 = len(masses1)
-    N2 = len(masses2)
-    total_potential = 0.0
-    chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
+#     Returns:
+#         total_potential : float
+#             Total potential energy between the two sets of particles.
+#     """
+#     N1 = len(masses1)
+#     N2 = len(masses2)
+#     total_potential = 0.0
+#     chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
 
-    # Loop over the first set of particles in chunks
-    for i in range(0, N1, chunk_size):
-        # Loop over the second set of particles in chunks
-        for j in range(0, N2, chunk_size):
-            # Select chunks of particles
-            masses1_chunk = masses1[i:i+chunk_size]
-            positions1_chunk = positions1[i:i+chunk_size]
-            masses2_chunk = masses2[j:j+chunk_size]
-            positions2_chunk = positions2[j:j+chunk_size]
+#     # Loop over the first set of particles in chunks
+#     for i in range(0, N1, chunk_size):
+#         # Loop over the second set of particles in chunks
+#         for j in range(0, N2, chunk_size):
+#             # Select chunks of particles
+#             masses1_chunk = masses1[i:i+chunk_size]
+#             positions1_chunk = positions1[i:i+chunk_size]
+#             masses2_chunk = masses2[j:j+chunk_size]
+#             positions2_chunk = positions2[j:j+chunk_size]
             
-            # Calculate pairwise distances between the two sets
-            for k in range(len(masses1_chunk)):
-                dx = positions1_chunk[k, 0] - positions2_chunk[:, 0]
-                dy = positions1_chunk[k, 1] - positions2_chunk[:, 1]
-                dz = positions1_chunk[k, 2] - positions2_chunk[:, 2]
+#             # Calculate pairwise distances between the two sets
+#             for k in range(len(masses1_chunk)):
+#                 dx = positions1_chunk[k, 0] - positions2_chunk[:, 0]
+#                 dy = positions1_chunk[k, 1] - positions2_chunk[:, 1]
+#                 dz = positions1_chunk[k, 2] - positions2_chunk[:, 2]
                 
-                r2 = dist2(dx, dy, dz, box_size)
-                r = np.sqrt(r2)
+#                 r2 = dist2(dx, dy, dz, box_size)
+#                 r = np.sqrt(r2)
                 
-                # Avoid division by zero by setting an effective minimum distance
-                r = np.where(r < 1e-10, 1e-10, r)
+#                 # Avoid division by zero by setting an effective minimum distance
+#                 mask = r >= 1e-10
+#                 valid_r = r[mask]
+#                 valid_masses_j = masses2_chunk[mask]
                 
-                # Sum up potential energy contributions between particles in set 1 and set 2
-                total_potential += -G * np.sum(masses1_chunk[k] * masses2_chunk / r)
+#                 # Sum up potential energy contributions between particles in set 1 and set 2
+#                 total_potential += -G * np.sum(masses1_chunk[k] * valid_masses_j /valid_r /UnitLength_in_cm)
 
-    return total_potential
+#     return total_potential
 
 def chunked_potential_energy_between_groups(mass1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):
     """
@@ -605,15 +665,18 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
                 dz = positions1_chunk[k, 2] - positions2_chunk[:, 2]
                 
                 r2 = dist2(dx, dy, dz, box_size)
-                r = np.sqrt(r2)
+                r = np.sqrt(r2) 
                 
                 # Avoid division by zero by setting an effective minimum distance
                 r = np.where(r < 1e-10, 1e-10, r)
-                
-                # Sum up potential energy contributions
-                total_potential += -G * np.sum(mass1 * masses2_chunk / r)
+                mask = r >= 2e-10
+                valid_r = r[mask]
+                valid_masses_j = masses2_chunk[mask]
 
-    return total_potential
+                # Sum up potential energy contributions
+                total_potential += -G * np.sum(mass1 * valid_masses_j / valid_r /UnitLength_in_cm)
+
+    return total_potential/2. 
 
 def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
@@ -634,6 +697,15 @@ def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, g
     tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel)
     velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
     kineticEnergyStars = np.sum(starMass_inGroup/2 *velMagStars*velMagStars*UnitVelocity_in_cm_per_s*UnitVelocity_in_cm_per_s)
+    if 'inf' in str(kineticEnergyStars):
+        chunk_size = 500  # Process in smaller batches
+        kineticEnergyStars = 0.0
+        #doing this way to eliminate infinite error
+        for i in range(0, len(velMagStars), chunk_size):
+            chunk = velMagStars[i:i + chunk_size]
+            chunkstarmass = starMass_inGroup[i:i + chunk_size]
+            kineticEnergyStars += np.sum(chunkstarmass /UnitMass_in_g/ 2 * chunk**2 * UnitVelocity_in_cm_per_s**2)   
+        kineticEnergyStars = kineticEnergyStars*UnitMass_in_g #add back in the units
     potentialEnergyStars = 0
     massStars = np.sum(starMass_inGroup)
     print("stellarmass is " + str(massStars))
@@ -643,6 +715,7 @@ def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, g
     energyStars = kineticEnergyStars+ potentialEnergyStars
     print("total energy")
     print(energyStars)
+    print(kineticEnergyStars, potentialEnergyStars)
     if energyStars<0:
          print("object is bound")
          boundedness =  1
@@ -770,6 +843,14 @@ def chunked_calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, st
     massDM = lengroup* massDMParticle
     #Kinetic energy component
     kineticEnergyDM = np.sum(massDMParticle/2 *velMagDM*velMagDM*UnitVelocity_in_cm_per_s*UnitVelocity_in_cm_per_s)
+    if 'inf' in str(kineticEnergyDM):
+        chunk_size = 500  # Process in smaller batches
+        kineticEnergyDM = 0.0
+        #doing this way to elimatine infinite error
+        for i in range(0, len(velMagDM), chunk_size):
+            chunk = velMagDM[i:i + chunk_size]
+            kineticEnergyDM += np.sum(massDMParticle /UnitMass_in_g/ 2 * chunk**2 * UnitVelocity_in_cm_per_s**2)   
+        kineticEnergyDM = kineticEnergyDM*UnitMass_in_g #add back in the units
     potentialEnergyDM = 0
     potentialEnergyStarsDM = 0
     #DM self potential energy
@@ -831,7 +912,7 @@ def calc_dm_boundedness(energyStars,starVel_inGroup, starPos_inGroup, starMass_i
             #r_ij = UnitLength_in_cm* np.linalg.norm(pDM[inGroupDM][i] - pDM[inGroupDM][j])  # Compute distance between mass i and mass j
             r_ij  = UnitLength_in_cm*np.sqrt(dist2_indv(pDM[inGroupDM][i,0]-pDM[inGroupDM][j,0],pDM[inGroupDM][i,1]-pDM[inGroupDM][j,1],pDM[inGroupDM][i,2]-pDM[inGroupDM][j,2],boxSize))
             if r_ij != 0:
-                 potentialEnergyDM += -(GRAVITY_cgs * massDMParticle**2) / r_ij      
+                 potentialEnergyDM += -(GRAVITY_cgs * (massDMParticle)**2) / r_ij      
      lenstars= len(starMass_inGroup)
      #potential energy between stars and DM
      for i in range(lengroup):
@@ -983,7 +1064,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
     chunked_startAllStars.reverse()
     chunked_endAllStars.reverse()
     chunked_groupVelocities.reverse()
-    filepath = str(gofilename)+"/bounded2"
+    filepath = str(gofilename)+"/bounded3"
     print("checking in the following file")
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
@@ -1080,7 +1161,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
                     indv_objs['virial_ratio']= virial_ratio
                     indv_objs['usedDM']= usedDM
                     print(f"Finished processing obj {j} in chunk starting with {chunk[0]}, saving progress...")
-                    with open(gofilename+"/bounded2/indv_objs/indv_bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_object"+str(j)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
+                    with open(gofilename+"/bounded3/indv_objs/indv_bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_object"+str(j)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
                         pickle.dump(indv_objs, f)
             objs['bounded'] = np.array(bounded)
             objs['virialized'] = np.array(virialized)
@@ -1149,7 +1230,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
     chunked_startAllStars.reverse()
     chunked_endAllStars.reverse()
     chunked_groupVelocities.reverse()
-    filepath = str(gofilename)+"/bounded2"
+    filepath = str(gofilename)+"/bounded3"
     print("checking in the following file")
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
@@ -1189,7 +1270,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
                 starVel_inGroup = np.array(starVel_inGroup) * np.sqrt(atime) #unit conversions on the particle coordinates 
                 starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
                 #First, check for boundedness and virialization with just the stellar component
-                boundedness, energyStars, kineticEnergy, potentialEnergy, mass= parallel_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
+                boundedness, energyStars, kineticEnergy, potentialEnergy, mass= chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
                 massStar = mass
                 virialization, virial_ratio = check_virialized(kineticEnergy, potentialEnergy)
                 pDM, vDM = nearby_DM(groupPos[i]/atime *hubbleparam, halo_positions, startAllDM, endAllDM,dmsnap, boxSize,limit =10. )
@@ -1204,7 +1285,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
                         kineticEnergyDM=0.
                         potentialEnergyDM = 0.
                     else:
-                        boundedness,totEnergy, kineticEnergyDM, potentialEnergyDM, massDM = parallel_calc_dm_boundedness(energyStars,starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel,pDM, vDM,groupRadii[i],atime,massDMParticle) 
+                        boundedness,totEnergy, kineticEnergyDM, potentialEnergyDM, massDM = chunked_calc_dm_boundedness(energyStars,starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel,pDM, vDM,groupRadii[i],atime,massDMParticle) 
                     kineticEnergy += kineticEnergyDM
                     potentialEnergy += potentialEnergyDM
                     mass += massDM
@@ -1244,7 +1325,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
             objs['usedDM']  = np.array(usedDMs)
             objs['r200'] = np.array(groupRadii) *atime /hubbleparam *UnitLength_in_cm #just for comparison, let's include the original group radius as calculated by the halo finder
             print(f"Finished processing chunk starting with {chunk[0]}, saving progress...")
-            with open(gofilename+"/bounded2/bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
+            with open(gofilename+"/bounded3/bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
                 pickle.dump(objs, f)
     return objs
 
@@ -1355,7 +1436,7 @@ def boundedness_mode(filename,N, snapnum, mode = "group", group = "Stars"):
         mode (str): mode for saving output
             Options: 
                 Default: "group" - saves the group in chunks
-                "indv": saves each individual object. Requires a directory named "indv_objs" in bounded2 directory. 
+                "indv": saves each individual object. Requires a directory named "indv_objs" in bounded directory. 
     
     Returns :
         dict: all object properties. 

@@ -27,13 +27,16 @@ class processedFOF():
         self.path = path + "/"+  str(directory) + str(sv)
         if 'extra_path' in kwargs.keys():
             self.path = self.path + "/"+str(kwargs['extra_path'])
+        self.bounded_path = "bounded2"
+        if 'bounded_path' in kwargs.keys():
+            self.bounded_path = str(kwargs['bounded_path'])
         self.verbose = verbose
         self.group = self._setGroup()
         self.properties = self._findFOF()
         self._findRotation() 
         self.properties['centers'], self.properties['fofradii'] = self._getFOFData()
         self._properties_notBounded = list(self.properties.keys())
-        self._findBounded()
+        self._findBounded(path = self.bounded_path)
         self._allKeys = list(self.properties.keys())
         if 'prim' in self._allKeys: #remove non array properties for the unfinished/unbounded remover to work
             self._allKeys.remove('prim')
@@ -191,14 +194,14 @@ class processedFOF():
             self.properties['gas_rot_radii']= starrot['rot_radii']  
         #Can check the print statements to make sure the expected files have loaded. 
         
-    def _findBounded(self): 
+    def _findBounded(self,path = "bounded2"): 
         """
         Opens bounded chunk files, concatenates, and adds their properties to the properties dict. 
 
         Returns: 
             None
         """
-        filepath = self.path + "/bounded2"
+        filepath = self.path+"/" + str(path)
         if os.path.exists(filepath):
             indices = list(range(self.maxidx))
             indices.reverse()
@@ -297,7 +300,9 @@ class processedFOF():
         """
         #TODO: Claire: rerun the rotations with correct DM group and then remove 
         self._nonRotationKeys = self._allKeys
-        for key in ['rotation_curve_rms','rotation_curve_turb','rotation_curve_rot', 'rotation_curve_rad', 'v_rms','v_rad','v_rot','v_turb','star_rot_radii','gas_rot_radii','gas_rotation_curve_rms','gas_rotation_curve_turb','gas_rotation_curve_rot', 'gas_rotation_curve_rad', 'gas_v_rms','gas_v_rad','gas_v_rot','gas_v_turb']:
+        if 'SFR' in self.properties.keys():
+            self._nonRotationKeys.append('SFR')
+        for key in ['centers','fofradii','rotation_curve_rms','rotation_curve_turb','rotation_curve_rot', 'rotation_curve_rad', 'v_rms','v_rad','v_rot','v_turb','star_rot_radii','gas_rot_radii','gas_rotation_curve_rms','gas_rotation_curve_turb','gas_rotation_curve_rot', 'gas_rotation_curve_rad', 'gas_v_rms','gas_v_rad','gas_v_rot','gas_v_turb']:
             if key in self._nonRotationKeys:
                 self._nonRotationKeys.remove(key)
         if 'DM' in self.properties['prim']:
@@ -306,7 +311,7 @@ class processedFOF():
             resolution = f['Header'].attrs['MassTable'][1]*cutoff
             mask = self.properties['DMMass'] >resolution
             mask = np.array(mask.astype(bool))
-            for key in self._allKeys:
+            for key in self._nonRotationKeys:
                 if len(self.properties[key])>1.:
                     try: 
                         self.properties[key]= np.array(self.properties[key])[mask]
@@ -314,6 +319,7 @@ class processedFOF():
                         self.properties[key] = np.array(self.properties[key],dtype = object)[mask]
                     except IndexError:
                         print(str(key)+" is not the right length")
+
 
     def addEnvironment(self):
         """
