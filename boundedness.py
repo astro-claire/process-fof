@@ -455,15 +455,15 @@ def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_s
                 r = np.sqrt(r2)
                 
                 # Avoid division by zero by setting an effective minimum distance
-                r = np.where(r < 9e-6, 9e-6, r)
-                mask = r >= 1e-5
+                r = np.where(r < 1e-10, 1e-10, r)
+                mask = r >= 2e-10
                 valid_r = r[mask]
                 valid_masses_j = masses_j[mask]
 
                 # Sum up potential energy contributions
                 total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
 
-    return total_potential
+    return total_potential/2 #factor of two from the indexing
 
 # def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_size = 10000):
 #     """
@@ -556,14 +556,14 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs,
                 r = np.sqrt(r2)
                 
                 # Avoid division by zero by setting an effective minimum distance
-                r = np.where(r < 9e-6, 9e-6, r)
-                mask = r >= 1e-5
+                r = np.where(r < 1e-10, 1e-10, r)
+                mask = r >= 2e-10
                 valid_r = r[mask]
                 
                 # Sum up potential energy contributions using the same mass for all particles
                 total_potential += -G * np.sum(mass * mass / valid_r /UnitLength_in_cm)
 
-    return total_potential
+    return total_potential /2.
 
 # def chunked_potential_energy_between_sets(masses1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):
 #     """
@@ -668,15 +668,15 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
                 r = np.sqrt(r2) 
                 
                 # Avoid division by zero by setting an effective minimum distance
-                r = np.where(r < 9e-6, 9e-6, r)
-                mask = r >= 1e-5
+                r = np.where(r < 1e-10, 1e-10, r)
+                mask = r >= 2e-10
                 valid_r = r[mask]
                 valid_masses_j = masses2_chunk[mask]
 
                 # Sum up potential energy contributions
                 total_potential += -G * np.sum(mass1 * valid_masses_j / valid_r /UnitLength_in_cm)
 
-    return total_potential
+    return total_potential/2. 
 
 def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
@@ -697,6 +697,15 @@ def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, g
     tempvelstars = dx_wrap(starVel_inGroup-groupVelocity, boxSizeVel)
     velMagStars = np.sqrt((tempvelstars*tempvelstars).sum(axis=1))
     kineticEnergyStars = np.sum(starMass_inGroup/2 *velMagStars*velMagStars*UnitVelocity_in_cm_per_s*UnitVelocity_in_cm_per_s)
+    if 'inf' in str(kineticEnergyStars):
+        chunk_size = 500  # Process in smaller batches
+        kineticEnergyStars = 0.0
+        #doing this way to eliminate infinite error
+        for i in range(0, len(velMagStars), chunk_size):
+            chunk = velMagStars[i:i + chunk_size]
+            chunkstarmass = starMass_inGroup[i:i + chunk_size]
+            kineticEnergyStars += np.sum(chunkstarmass /UnitMass_in_g/ 2 * chunk**2 * UnitVelocity_in_cm_per_s**2)   
+        kineticEnergyStars = kineticEnergyStars*UnitMass_in_g #add back in the units
     potentialEnergyStars = 0
     massStars = np.sum(starMass_inGroup)
     print("stellarmass is " + str(massStars))
@@ -1055,7 +1064,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
     chunked_startAllStars.reverse()
     chunked_endAllStars.reverse()
     chunked_groupVelocities.reverse()
-    filepath = str(gofilename)+"/bounded"
+    filepath = str(gofilename)+"/bounded3"
     print("checking in the following file")
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
@@ -1152,7 +1161,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
                     indv_objs['virial_ratio']= virial_ratio
                     indv_objs['usedDM']= usedDM
                     print(f"Finished processing obj {j} in chunk starting with {chunk[0]}, saving progress...")
-                    with open(gofilename+"/bounded/indv_objs/indv_bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_object"+str(j)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
+                    with open(gofilename+"/bounded3/indv_objs/indv_bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_object"+str(j)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
                         pickle.dump(indv_objs, f)
             objs['bounded'] = np.array(bounded)
             objs['virialized'] = np.array(virialized)
@@ -1221,7 +1230,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
     chunked_startAllStars.reverse()
     chunked_endAllStars.reverse()
     chunked_groupVelocities.reverse()
-    filepath = str(gofilename)+"/bounded"
+    filepath = str(gofilename)+"/bounded3"
     print("checking in the following file")
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
@@ -1316,7 +1325,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
             objs['usedDM']  = np.array(usedDMs)
             objs['r200'] = np.array(groupRadii) *atime /hubbleparam *UnitLength_in_cm #just for comparison, let's include the original group radius as calculated by the halo finder
             print(f"Finished processing chunk starting with {chunk[0]}, saving progress...")
-            with open(gofilename+"/bounded/bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
+            with open(gofilename+"/bounded3/bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
                 pickle.dump(objs, f)
     return objs
 
