@@ -87,7 +87,7 @@ def chunked_calc_dm_boundedness(energyStars, starPos_inGroup, starMass_inGroup, 
     return boundedness, totEnergy, kineticEnergyDM*UnitMass_in_g, potentialEnergyStarsDM + potentialEnergyDM, massDM
 
 
-def get_fof_particles(filename, snapnum, sv):
+def get_fof_particles(filename, snapnum, sv, N=0):
     """
     Gets the particles from the snapshot
     """
@@ -109,7 +109,7 @@ def get_fof_particles(filename, snapnum, sv):
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     objs={}
     #DMIDs_inGroups, starIDs_inGroups, starMasses_inGroups = set_up_DM_fofs(str(filename),snapnum, sv)
-    bounded, virialized, usedDM = iterate_objs_savechunks(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAllStars, endAllStars,allStarPositions, allStarMasses,allStarVelocities, allDMPositions, allDMVelocities,boxSize,atime,massDMParticle* UnitMass_in_g / hubbleparam, str(filename))
+    bounded, virialized, usedDM = iterate_objs_savechunks(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAllStars, endAllStars,allStarPositions, allStarMasses,allStarVelocities, allDMPositions, allDMVelocities,boxSize,atime,massDMParticle* UnitMass_in_g / hubbleparam, str(filename),snapnum, N=N)
     objs['bounded'] = bounded
     objs['virialized'] = virialized
     objs['usedDM'] = usedDM
@@ -199,7 +199,7 @@ def check_if_exists(filepath, idx,snapnum):
             exists = True
     return exists
 
-def iterate_objs_savechunks(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAllStars, endAllStars,allStarPositions,allStarMasses, allStarVelocities, allDMPositions, allDMVelocities,boxSize, atime,massDMParticle,gofilename): 
+def iterate_objs_savechunks(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAllStars, endAllStars,allStarPositions,allStarMasses, allStarVelocities, allDMPositions, allDMVelocities,boxSize, atime,massDMParticle,gofilename,snapnum,N=0): 
     """
     Iterate over DM primary objects and return whether or not the objects are bounded and virialized, as well as whether or not they are virialized
     
@@ -259,7 +259,7 @@ def iterate_objs_savechunks(halo100_indices,groupPos,groupVel,startAllDM, endAll
     print("checking in the following file")
     print(filepath)
     for chunkidx, chunk in enumerate(chunked_indices):
-        if check_if_exists(filepath, chunkidx,snapnum)==False: 
+        if int(chunkidx) >int(N) and check_if_exists(filepath, chunkidx,snapnum)==False: 
             groupPos = chunked_groupPos[chunkidx]
             groupVel= chunked_groupVelocities[chunkidx]
             startAllStars = chunked_startAllStars[chunkidx]
