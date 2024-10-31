@@ -36,7 +36,10 @@ class processedFOF():
         self._findRotation() 
         self.properties['centers'], self.properties['fofradii'] = self._getFOFData()
         self._properties_notBounded = list(self.properties.keys())
-        self._findBounded(path = self.bounded_path)
+        if 'DM' in self.properties['prim']:  
+            self._findDMBounded(path = self.bounded_path)
+        else:
+            self._findBounded(path = self.bounded_path)
         self._allKeys = list(self.properties.keys())
         if 'prim' in self._allKeys: #remove non array properties for the unfinished/unbounded remover to work
             self._allKeys.remove('prim')
@@ -194,6 +197,51 @@ class processedFOF():
             self.properties['gas_rot_radii']= starrot['rot_radii']  
         #Can check the print statements to make sure the expected files have loaded. 
         
+    def _findDMBounded(self,path = "bounded2"): 
+        """
+        Opens bounded chunk files, concatenates, and adds their properties to the properties dict. 
+
+        Returns: 
+            None
+        """
+        filepath = self.path+"/" + str(path)
+        print(filepath)
+        if os.path.exists(filepath):
+            indices = list(range(700))
+            indices.reverse()
+            self.properties['bounded'] = []
+            self.properties['virialized']= []
+            self.properties['usedDM']= []
+            indexexists = 0
+            for j in indices:
+                fof_process_name = "bounded_portion_"+str(self.snapnum)+"_chunk"+str(j)+"_"
+                for filename in os.listdir(filepath):
+                    # Check if the file exists in that directory
+                    if fof_process_name in filename:
+                        if indexexists == 0: 
+                            biggestchunkfile = filename
+                            indexexists = 1
+                        fof_process_path = filepath+"/"+filename
+                    #if 'fof_process_path' in locals():
+                        with open(fof_process_path,'rb') as f: 
+                            chunk = pickle.load(f) 
+                        self.properties['bounded'] = np.concatenate((self.properties['bounded'], chunk['bounded']), axis = None)
+                        self.properties['virialized'] = np.concatenate((self.properties['virialized'], chunk['virialized']), axis = None)
+                        self.properties['usedDM'] = np.concatenate((self.properties['usedDM'], chunk['usedDM']), axis = None)
+            try:
+                self.boundedidx  = int(biggestchunkfile[-10:-7])
+            except ValueError:
+                try:
+                    self.boundedidx = int(biggestchunkfile[-9:-7])
+                except ValueError:
+                    self.boundedidx = int(biggestchunkfile[-8:-7])
+            except NameError:
+                self.boundedidx = 0
+            if self.verbose == True: 
+                print("highest bounded calculated is " + str(self.boundedidx))
+        else:
+            print("no bounded exists for this snap file")
+
     def _findBounded(self,path = "bounded2"): 
         """
         Opens bounded chunk files, concatenates, and adds their properties to the properties dict. 
