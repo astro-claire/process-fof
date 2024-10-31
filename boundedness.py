@@ -434,35 +434,41 @@ def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_s
     """
     N = len(masses)
     total_potential = 0.0
-    if chunk_size > (N/2):
-        chunk_size = int(N/100)  # Use chunking to avoid excessive memory usage
-
-    for i in range(0, N, chunk_size):
-        #print(f"starting potential chunk {i}")
-        for j in range(i + 1, N, chunk_size):
-            # Select smaller chunks to handle
-            masses_i = masses[i:i+chunk_size]
-            masses_j = masses[j:j+chunk_size]
-            pos_i = positions[i:i+chunk_size]
-            pos_j = positions[j:j+chunk_size]
-            
-            # Calculate pairwise distances between chunks
-            for k in range(len(masses_i)):
-                dx = pos_i[k, 0] - pos_j[:, 0]
-                dy = pos_i[k, 1] - pos_j[:, 1]
-                dz = pos_i[k, 2] - pos_j[:, 2]
+    if N<=1: #no potential energy if no particles in the group
+        total_potential =0
+    else: 
+        if chunk_size > (N/3):
+            chunk_size = int(N/100)  # Use chunking to avoid excessive memory usage
+            if chunk_size ==0 and N>20:
+                chunk_size =int(N/20)
+            elif chunk_size==0:
+                chunk_size =1
+        for i in range(0, N, chunk_size):
+            #print(f"starting potential chunk {i}")
+            for j in range(i + 1, N, chunk_size):
+                # Select smaller chunks to handle
+                masses_i = masses[i:i+chunk_size]
+                masses_j = masses[j:j+chunk_size]
+                pos_i = positions[i:i+chunk_size]
+                pos_j = positions[j:j+chunk_size]
                 
-                r2 = dist2(dx, dy, dz, box_size)
-                r = np.sqrt(r2)
-                
-                # Avoid division by zero by setting an effective minimum distance
-                r = np.where(r < 1e-10, 1e-10, r)
-                mask = r >= 2e-10
-                valid_r = r[mask]
-                valid_masses_j = masses_j[mask]
+                # Calculate pairwise distances between chunks
+                for k in range(len(masses_i)):
+                    dx = pos_i[k, 0] - pos_j[:, 0]
+                    dy = pos_i[k, 1] - pos_j[:, 1]
+                    dz = pos_i[k, 2] - pos_j[:, 2]
+                    
+                    r2 = dist2(dx, dy, dz, box_size)
+                    r = np.sqrt(r2)
+                    
+                    # Avoid division by zero by setting an effective minimum distance
+                    r = np.where(r < 1e-10, 1e-10, r)
+                    mask = r >= 2e-10
+                    valid_r = r[mask]
+                    valid_masses_j = masses_j[mask]
 
-                # Sum up potential energy contributions
-                total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
+                    # Sum up potential energy contributions
+                    total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
 
     return total_potential
 
@@ -487,35 +493,41 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs,
     N = len(positions)
     masses =np.ones(N)*mass
     total_potential = 0.0
-    if chunk_size >(N/2): #errors will occur if the chunks are too large
-        chunk_size = int(N/100)  # Use chunking to avoid excessive memory usage
-
-    for i in range(0, N, chunk_size):
-        #print(f"starting potential chunk {i}")
-        for j in range(i + 1, N, chunk_size):
-            # Select smaller chunks to handle
-            masses_i = masses[i:i+chunk_size]
-            masses_j = masses[j:j+chunk_size]
-            pos_i = positions[i:i+chunk_size]
-            pos_j = positions[j:j+chunk_size]
-            
-            # Calculate pairwise distances between chunks
-            for k in range(len(masses_i)):
-                dx = pos_i[k, 0] - pos_j[:, 0]
-                dy = pos_i[k, 1] - pos_j[:, 1]
-                dz = pos_i[k, 2] - pos_j[:, 2]
+    if N<=1:
+        total_potential =0.0
+    else: 
+        if chunk_size >(N/3): #errors will occur if the chunks are too large
+            chunk_size = int(N/100)  # Use chunking to avoid excessive memory usage
+            if chunk_size ==0 and N>20:
+                chunk_size =int(N/20)
+            elif chunk_size==0:
+                chunk_size =1
+        for i in range(0, N, chunk_size):
+            #print(f"starting potential chunk {i}")
+            for j in range(i + 1, N, chunk_size):
+                # Select smaller chunks to handle
+                masses_i = masses[i:i+chunk_size]
+                masses_j = masses[j:j+chunk_size]
+                pos_i = positions[i:i+chunk_size]
+                pos_j = positions[j:j+chunk_size]
                 
-                r2 = dist2(dx, dy, dz, box_size)
-                r = np.sqrt(r2)
-                
-                # Avoid division by zero by setting an effective minimum distance
-                r = np.where(r < 1e-10, 1e-10, r)
-                mask = r >= 2e-10
-                valid_r = r[mask]
-                valid_masses_j = masses_j[mask]
+                # Calculate pairwise distances between chunks
+                for k in range(len(masses_i)):
+                    dx = pos_i[k, 0] - pos_j[:, 0]
+                    dy = pos_i[k, 1] - pos_j[:, 1]
+                    dz = pos_i[k, 2] - pos_j[:, 2]
+                    
+                    r2 = dist2(dx, dy, dz, box_size)
+                    r = np.sqrt(r2)
+                    
+                    # Avoid division by zero by setting an effective minimum distance
+                    r = np.where(r < 1e-10, 1e-10, r)
+                    mask = r >= 2e-10
+                    valid_r = r[mask]
+                    valid_masses_j = masses_j[mask]
 
-                # Sum up potential energy contributions
-                total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
+                    # Sum up potential energy contributions
+                    total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
 
     return total_potential
 
@@ -602,35 +614,47 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
     N1 = len(positions1)
     N2 = len(masses2)
     total_potential = 0.0
-    if chunk_size >(N1/2): #errors will occur if the chunks are too large
-        chunk_size = int(N1/100)  # Use chunking to avoid excessive memory usage
-
-    # Loop over the first group of particles in chunks
-    for i in range(0, N1, chunk_size):
-        # Loop over the second group of particles in chunks
-        for j in range(0, N2, chunk_size):
-            # Select chunks of particles
-            positions1_chunk = positions1[i:i+chunk_size]
-            positions2_chunk = positions2[j:j+chunk_size]
-            masses2_chunk = masses2[j:j+chunk_size]
-            
-            # Calculate pairwise distances between the two groups
-            for k in range(len(positions1_chunk)):
-                dx = positions1_chunk[k, 0] - positions2_chunk[:, 0]
-                dy = positions1_chunk[k, 1] - positions2_chunk[:, 1]
-                dz = positions1_chunk[k, 2] - positions2_chunk[:, 2]
+    if N1==0 or N2 ==0: #edge case where one set of particles is empty
+        total_potential = 0.0
+    else: 
+        if chunk_size >(N1/3): #errors will occur if the chunks are too large
+            chunk_size = int(N1/100)  # Use chunking to avoid excessive memory usage
+            if chunk_size ==0 and N1>20:
+                chunk_size =int(N1/20)
+            elif chunk_size==0:
+                chunk_size =1
+        if chunk_size >(N2/3): #errors will occur if the chunks are too large
+            chunk_size = int(N2/100)  # Use chunking to avoid excessive memory usage
+            if chunk_size ==0 and N2>20:
+                chunk_size =int(N2/20)
+            elif chunk_size==0:
+                chunk_size =1
+        # Loop over the first group of particles in chunks
+        for i in range(0, N1, chunk_size):
+            # Loop over the second group of particles in chunks
+            for j in range(0, N2, chunk_size):
+                # Select chunks of particles
+                positions1_chunk = positions1[i:i+chunk_size]
+                positions2_chunk = positions2[j:j+chunk_size]
+                masses2_chunk = masses2[j:j+chunk_size]
                 
-                r2 = dist2(dx, dy, dz, box_size)
-                r = np.sqrt(r2) 
-                
-                # Avoid division by zero by setting an effective minimum distance
-                r = np.where(r < 1e-10, 1e-10, r)
-                mask = r >= 2e-10
-                valid_r = r[mask]
-                valid_masses_j = masses2_chunk[mask]
+                # Calculate pairwise distances between the two groups
+                for k in range(len(positions1_chunk)):
+                    dx = positions1_chunk[k, 0] - positions2_chunk[:, 0]
+                    dy = positions1_chunk[k, 1] - positions2_chunk[:, 1]
+                    dz = positions1_chunk[k, 2] - positions2_chunk[:, 2]
+                    
+                    r2 = dist2(dx, dy, dz, box_size)
+                    r = np.sqrt(r2) 
+                    
+                    # Avoid division by zero by setting an effective minimum distance
+                    r = np.where(r < 1e-10, 1e-10, r)
+                    mask = r >= 2e-10
+                    valid_r = r[mask]
+                    valid_masses_j = masses2_chunk[mask]
 
-                # Sum up potential energy contributions
-                total_potential += -G * np.sum(mass1 * valid_masses_j / valid_r /UnitLength_in_cm)
+                    # Sum up potential energy contributions
+                    total_potential += -G * np.sum(mass1 * valid_masses_j / valid_r /UnitLength_in_cm)
 
     return total_potential
 
