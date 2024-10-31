@@ -434,10 +434,11 @@ def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_s
     """
     N = len(masses)
     total_potential = 0.0
-    chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
+    if chunk_size > (N/2):
+        chunk_size = int(N/100)  # Use chunking to avoid excessive memory usage
 
     for i in range(0, N, chunk_size):
-        print(f"starting potential chunk {i}")
+        #print(f"starting potential chunk {i}")
         for j in range(i + 1, N, chunk_size):
             # Select smaller chunks to handle
             masses_i = masses[i:i+chunk_size]
@@ -463,60 +464,7 @@ def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_s
                 # Sum up potential energy contributions
                 total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
 
-    return total_potential/2 #factor of two from the indexing
-
-# def chunked_potential_energy(masses, positions, box_size, G=GRAVITY_cgs, chunk_size = 10000):
-#     """
-#     Calculate the total potential energy of a system of particles using pairwise interactions.
-    
-#     Parameters:
-#         masses : np.array
-#             1D array of particle masses.
-#         positions : np.array
-#             2D array of particle positions (shape: N x 3).
-#         box_size : float
-#             Size of the periodic box.
-#         G : float
-#             Gravitational constant,
-#     Returns:
-#         total_potential : float
-#             Total potential energy of the system.
-#     """
-#     N = len(masses)
-#     total_potential = 0.0
-#     chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
-
-#     for i in range(0, N, chunk_size):
-#         print(f"starting potential chunk {i}")
-#         j=i+1
-#         # Select smaller chunks to handle
-#         end = i+chunk_size
-#         if end>N:
-#             end = N
-#         masses_i = masses[i:end]
-#         masses_j = masses[j:N]
-#         pos_i = positions[i:end]
-#         pos_j = positions[j:N]
-        
-#         # Calculate pairwise distances between chunks
-#         for k in range(len(masses_i)):
-#             dx = pos_i[k, 0] - pos_j[:, 0]
-#             dy = pos_i[k, 1] - pos_j[:, 1]
-#             dz = pos_i[k, 2] - pos_j[:, 2]
-            
-#             r2 = dist2(dx, dy, dz, box_size)
-#             r = np.sqrt(r2)
-            
-#             # Avoid division by zero by setting an effective minimum distance
-#             r = np.where(r < 9e-6, 9e-6, r)
-#             mask = r >= 1e-5
-#             valid_r = r[mask]
-#             valid_masses_j = masses_j[mask]
-
-#             # Sum up potential energy contributions
-#             total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
-
-#     return total_potential
+    return total_potential
 
 def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs, chunk_size = 10000):
     """
@@ -537,20 +485,25 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs,
             Total potential energy of the system.
     """
     N = len(positions)
+    masses =np.ones(N)*mass
     total_potential = 0.0
-    chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
+    if chunk_size >(N/2): #errors will occur if the chunks are too large
+        chunk_size = int(N/100)  # Use chunking to avoid excessive memory usage
 
     for i in range(0, N, chunk_size):
+        #print(f"starting potential chunk {i}")
         for j in range(i + 1, N, chunk_size):
             # Select smaller chunks to handle
-            positions_i = positions[i:i+chunk_size]
-            positions_j = positions[j:j+chunk_size]
+            masses_i = masses[i:i+chunk_size]
+            masses_j = masses[j:j+chunk_size]
+            pos_i = positions[i:i+chunk_size]
+            pos_j = positions[j:j+chunk_size]
             
             # Calculate pairwise distances between chunks
-            for k in range(len(positions_i)):
-                dx = positions_i[k, 0] - positions_j[:, 0]
-                dy = positions_i[k, 1] - positions_j[:, 1]
-                dz = positions_i[k, 2] - positions_j[:, 2]
+            for k in range(len(masses_i)):
+                dx = pos_i[k, 0] - pos_j[:, 0]
+                dy = pos_i[k, 1] - pos_j[:, 1]
+                dz = pos_i[k, 2] - pos_j[:, 2]
                 
                 r2 = dist2(dx, dy, dz, box_size)
                 r = np.sqrt(r2)
@@ -559,11 +512,13 @@ def chunked_potential_energy_same_mass(mass, positions, box_size, G=GRAVITY_cgs,
                 r = np.where(r < 1e-10, 1e-10, r)
                 mask = r >= 2e-10
                 valid_r = r[mask]
-                
-                # Sum up potential energy contributions using the same mass for all particles
-                total_potential += -G * np.sum(mass * mass / valid_r /UnitLength_in_cm)
+                valid_masses_j = masses_j[mask]
 
-    return total_potential /2.
+                # Sum up potential energy contributions
+                total_potential += -G * np.sum(masses_i[k] * valid_masses_j / valid_r/UnitLength_in_cm)
+
+    return total_potential
+
 
 # def chunked_potential_energy_between_sets(masses1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):
 #     """
@@ -647,7 +602,8 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
     N1 = len(positions1)
     N2 = len(masses2)
     total_potential = 0.0
-    chunk_size = chunk_size  # Use chunking to avoid excessive memory usage
+    if chunk_size >(N1/2): #errors will occur if the chunks are too large
+        chunk_size = int(N1/100)  # Use chunking to avoid excessive memory usage
 
     # Loop over the first group of particles in chunks
     for i in range(0, N1, chunk_size):
@@ -676,7 +632,7 @@ def chunked_potential_energy_between_groups(mass1, positions1, masses2, position
                 # Sum up potential energy contributions
                 total_potential += -G * np.sum(mass1 * valid_masses_j / valid_r /UnitLength_in_cm)
 
-    return total_potential/2. 
+    return total_potential
 
 def chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos,groupVelocity,boxSize,boxSizeVel):
     """
