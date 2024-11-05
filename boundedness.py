@@ -1022,7 +1022,7 @@ def iterate_galaxies_chunked_resub_N_saveindv(N, gofilename,snapnum,atime, boxSi
     objs = {}
     #FIX THESE SO THEY AREN'T HARD CODED
     Omega0 = 0.27
-    OmegaLambda = 0.71
+    OmegaLambda = 0.73
     groupPos = groupPos *atime / hubbleparam 
     groupVelocities = groupVelocities /atime # convert to physical units
     #hubble flow correction
@@ -1188,7 +1188,7 @@ def iterate_galaxies_chunked_resub_N(N, gofilename,snapnum,atime, boxSize, halo1
     objs = {}
     #FIX THESE SO THEY AREN'T HARD CODED
     Omega0 = 0.27
-    OmegaLambda = 0.71
+    OmegaLambda = 0.73
     groupPos = groupPos *atime / hubbleparam 
     groupVelocities = groupVelocities /atime # convert to physical units
     #hubble flow correction
