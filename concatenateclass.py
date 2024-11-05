@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 import os
 from astropy import units as un
+from astropy import constants as c
 from astropy.cosmology import FlatLambdaCDM
 
 
@@ -36,6 +37,8 @@ class processedFOF():
         self._findRotation() 
         self.properties['centers'], self.properties['fofradii'] = self._getFOFData()
         self._properties_notBounded = list(self.properties.keys())
+        self.boundedidx=0.
+        self.properties['bounded'] =[]
         if 'DM' in self.properties['prim']:  
             self._findDMBounded(path = self.bounded_path)
         else:
@@ -50,7 +53,7 @@ class processedFOF():
         self.goodidx = []
         #self.chopUnfinished()
         #self.chopUnBounded()
-        self.setupCosmo()
+        # self.setupCosmo()
         
     def _findFOF(self): 
         """
@@ -155,14 +158,14 @@ class processedFOF():
             None
         """
         filepath = self.path 
-        star_rot_name = "stellar_rotation_"+ str(self.snapnum)+"_"+ str(self.sv) + "_" + self.directory +"_v4"  
+        star_rot_name = "stellar_rotation_"+ str(self.snapnum)+"_"+ str(self.sv) + "_" + self.directory +"_v5"  
         for filename in os.listdir(filepath):
             # Check if the file exists in that directory
             if star_rot_name in filename:
                 star_rot_path = filepath+"/"+filename
         #Now, also get the gas rotation file if it exists: 
         #NOTE WE ARE SPECIFYING VERSION NUMBER HERE
-        gas_rot_name = "gas_rotation_"+ str(self.snapnum)+"_"+ str(self.sv) + "_" + self.directory +"_v4"  
+        gas_rot_name = "gas_rotation_"+ str(self.snapnum)+"_"+ str(self.sv) + "_" + self.directory +"_v5"  
         for filename in os.listdir(filepath):
             # Check if the file exists in that directory
             if gas_rot_name in filename:
@@ -179,22 +182,26 @@ class processedFOF():
             self.properties['v_rms']= starrot['v_rms']   
             self.properties['v_rad']= starrot['v_rad']   
             self.properties['v_rot']= starrot['v_rot']   
-            self.properties['v_turb']= starrot['v_turb']   
+            self.properties['v_turb']= starrot['v_turb']
+            self.properties['avg_stellarMass'] = starrot['avg_mass']
+            self.properties['nstarsgroup'] = starrot['ngroup']
             self.properties['star_rot_radii']= starrot['rot_radii']                                              
         if 'gas_rot_path' in locals():
             if self.verbose ==True:
                 print(gas_rot_path)
             with open(str(gas_rot_path),'rb') as f: 
                 gasrot = pickle.load(f) 
-            self.properties['gas_rotation_curve_rms']= starrot['rotation_curve_rms']
-            self.properties['gas_rotation_curve_turb']= starrot['rotation_curve_turb']
-            self.properties['gas_rotation_curve_rot']= starrot['rotation_curve_rot']
-            self.properties['gas_rotation_curve_rad']= starrot['rotation_curve_rad']   
-            self.properties['gas_v_rms']= starrot['v_rms']   
-            self.properties['gas_v_rad']= starrot['v_rad']   
-            self.properties['gas_v_rot']= starrot['v_rot']   
-            self.properties['gas_v_turb']= starrot['v_turb']   
-            self.properties['gas_rot_radii']= starrot['rot_radii']  
+            self.properties['gas_rotation_curve_rms']= gasrot['rotation_curve_rms']
+            self.properties['gas_rotation_curve_turb']= gasrot['rotation_curve_turb']
+            self.properties['gas_rotation_curve_rot']= gasrot['rotation_curve_rot']
+            self.properties['gas_rotation_curve_rad']= gasrot['rotation_curve_rad']   
+            self.properties['gas_v_rms']= gasrot['v_rms']   
+            self.properties['gas_v_rad']= gasrot['v_rad']   
+            self.properties['gas_v_rot']= gasrot['v_rot']   
+            self.properties['gas_v_turb']= gasrot['v_turb']   
+            self.properties['gas_rot_radii']= gasrot['rot_radii']  
+            self.properties['avg_gasMass'] = gasrot['avg_mass']
+            self.properties['ngasgroup'] = gasrot['ngroup']
         #Can check the print statements to make sure the expected files have loaded. 
         
     def _findDMBounded(self,path = "bounded2"): 
@@ -290,6 +297,7 @@ class processedFOF():
             if self.verbose == True: 
                 print("highest bounded calculated is " + str(self.boundedidx))
         else:
+            self.boundedidx = 0
             print("no bounded exists for this snap file")
         
     def accessBoundedComplete(self,arr):
@@ -422,6 +430,7 @@ class processedFOF():
             self.parameters['SFR'] (arr): star formation rates
             self.M_uv
         """
+        self.setupCosmo()
         K_uv = 1.15*10.**(-28.) # kappa uv literature value
         if 'new_mStar' in self.properties.keys():
             self.properties['SFR'] = self.properties['new_mStar']*1e10/self.H0/self.deltat # star formation rate in solar masses per eyar
@@ -437,3 +446,35 @@ class processedFOF():
             if 'stellarMass' in self.properties.keys():
                 self.stellarMass_Muv = self.properties['stellarMass'][np.nonzero(L_uv)]*1e10 /self.H0
             # note this is a different length than most arrays because we've removed nonzero luminosity. 
+
+    def calcTRelax(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitVelocity_in_cm_per_s = 1.0e5 * un.cm / un.s
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        if 'nstarsgroup' in self.properties.keys():
+            print("relaxation timescale for stars (per coulomb logarithm)")
+            vel = self.properties['v_rms'] * UnitVelocity_in_cm_per_s
+            mass = self.properties['avg_stellarMass'] * UnitMass_in_g
+            N =self.properties['nstarsgroup']
+            r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+            return (vel**3 / (GRAVITY_cgs**2 * mass**2 * (N/(4./3. *np.pi * r**3 )))).to('Myr')
+    
+    def calcTRelaxGas(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitVelocity_in_cm_per_s = 1.0e5 * un.cm / un.s
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        if 'ngasgroup' in self.properties.keys():
+            print("relaxation timescale for gas (per coulomb logarithm)")
+            vel = self.properties['gas_v_rms'] * UnitVelocity_in_cm_per_s
+            mass = self.properties['avg_gasMass'] * UnitMass_in_g
+            N =self.properties['ngasgroup']
+            r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+            return (vel**3 / (GRAVITY_cgs**2 * mass**2 * (N/(4./3. *np.pi * r**3 )))).to('Myr')
+
+    def calcTSFR(self): 
+        UnitMass_in_g = 1.989e43 * un.g
+        if 'SFR' in self.properties.keys():
+            self.properties['SFRpermass'] = self.properties['SFR']*un.Msun/un.yr/ (self.properties['stellarMass'] * UnitMass_in_g/self.H0)
+            return (self.properties['SFRpermass'] **(-1.)).to('Myr')
