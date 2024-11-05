@@ -139,7 +139,9 @@ def set_config(f):
 		elif sec_type ==2: 
 			sec = "DM"
 		else: 
-			raise AttributeError("Unknown Secondary FOF type. Add support for your FOF!")
+			sec = "stars+gas" 
+			print("defaulted to secondary stars + gas although it was unknown "+str(sec_type))
+			#raise AttributeError("Unknown Secondary FOF type. Add support for your FOF!")
 	else: 
 		sec = "none"
 	return prim, sec
