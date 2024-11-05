@@ -149,6 +149,18 @@ class processedFOF():
             with open(str(max_rad_path),'rb') as f: 
                 maxrad = pickle.load(f) 
                 self.properties['maxradii']= maxrad['maxradii']
+        halfradname = "hmradii_"+str(self.snapnum)+"_V1.dat"
+        filepath = self.path 
+        for filename in os.listdir(filepath):
+            # Check if the file exists in that directory
+            if halfradname in filename:
+                half_rad_path = filepath+"/"+filename
+        if 'half_rad_path' in locals():
+            if self.verbose ==True: 
+                print(half_rad_path)
+            with open(str(half_rad_path),'rb') as f: 
+                halfrad = pickle.load(f) 
+                self.properties['hmradii']= halfrad['hmradii']
         return centers, fofradii
     
     def _findRotation(self): 
