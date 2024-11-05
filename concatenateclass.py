@@ -75,6 +75,7 @@ class processedFOF():
                 properties = objs
         else: 
             properties = {}
+            properties['prim']='DM' #set default to DM primary FOF 
         return properties
     
     def _setGroup(self):
@@ -106,7 +107,7 @@ class processedFOF():
         Sets: 
             properties['maxradii']: if file exists, adds array of max radii to properties dictionary 
         """
-        filepath = str(self.path) + "/fof_subhalo_tab_" + str(self.snapnum)+".hdf5"
+        filepath = str(self.path) + "/fof_subhalo_tab_" + str(self.snapnum).zfill(3)+".hdf5"
         f = h5py.File(filepath)
         centers = []
         fofradii = []
