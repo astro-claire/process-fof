@@ -22,7 +22,7 @@ def get_hmradii(allStarPositions,allStarMasses,startAllStars,endAllStars,baryon_
         cosmo (dict): dictionary of cosmological parameters. Here we only need H0 (hubble constant) and a (scale factor)
     
     Returns: 
-        np.ndarray: radius of maximum star particle in each object (in physical units) 
+        np.ndarray: radius of half mass star particle in each object (in physical units) 
         
     """ 
     hubbleparam = cosmo['H0']/100.
@@ -30,15 +30,15 @@ def get_hmradii(allStarPositions,allStarMasses,startAllStars,endAllStars,baryon_
     baryon_centers = baryon_centers *atime / hubbleparam 
     N = len(baryon_centers)
     print(str(N)+" objects")
-    maxradii = np.empty(N,dtype = np.ndarray)
+    hmradii = np.empty(N,dtype = np.ndarray)
     boxSize = boxSize * atime/hubbleparam
     for i in range(N):
         com = baryon_centers[i]
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
         starMass_inGroup = allStarMasses[startAllStars[i]:endAllStars[i]]
         np.array(starPos_inGroup) *atime / hubbleparam
-        maxradii[i] = calc_half_mass_radius(starPos_inGroup,starMass_inGroup,com,boxSize)/UnitLength_in_cm
-    return maxradii
+        hmradii[i] = calc_half_mass_radius(starPos_inGroup,starMass_inGroup,com,boxSize)/UnitLength_in_cm
+    return hmradii
 
 def calc_half_mass_radius(starPos_inGroup, starMass_inGroup, groupPos, boxSize):
     """
@@ -79,7 +79,7 @@ def calc_half_mass_radius(starPos_inGroup, starMass_inGroup, groupPos, boxSize):
 
 def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home/c/clairewi/project-snaoz/FOF_project/'):   
     """
-    Wrapper function. Currently there are some unused parameters nad the 
+    Wrapper function. Currently there are some unused parameters
 
     Parameters: 
         directory (str): name of directory where baryon output located (ie. "SP-", "SGP-")
@@ -105,7 +105,7 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
         objs = {}
         objs['hmradii'] = np.array(radii)
         print("Saving output!")
-        with open(str(path)+str(directory)+str(sv)+"/maxradii_"+str(snapnum)+"_V1.dat",'wb') as f:
+        with open(str(path)+str(directory)+str(sv)+"/hmradii_"+str(snapnum)+"_V1.dat",'wb') as f:
             pickle.dump(objs, f)
 
 if __name__=="__main__":
