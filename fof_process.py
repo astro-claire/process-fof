@@ -264,7 +264,7 @@ def get_obj_properties(cat, boxsize, halo100_indices, allStarIDs,allStarMasses, 
 		for i, j in enumerate(halo100_indices): #0-10 for testing mode only!
 			# starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]]
 			starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j])[0]
+			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j]**2)[0]
 			starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]][goodStars]
 			if Stars: #only need mass of each star particle for SFR
 				mStars_inGroup[j] = allStarMasses[startAllStars[i]:endAllStars[i]][goodStars] 
@@ -311,7 +311,7 @@ def get_DM(cat, boxsize, halo100_indices, massDMParticle,allStarIDs, allStarPosi
 		for i, j in enumerate(halo100_indices): #0-10 for testing mode only!
 			# starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]]
 			starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j])[0]
+			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j]**2)[0]
 			starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]][goodStars]
 			mDM_Group[j] = len(starIDs_inGroup[j])*massDMParticle
 	else:
