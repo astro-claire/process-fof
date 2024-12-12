@@ -36,7 +36,7 @@ def get_hmradii(allStarPositions,allStarMasses,startAllStars,endAllStars,baryon_
         com = baryon_centers[i]
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
         starMass_inGroup = allStarMasses[startAllStars[i]:endAllStars[i]]
-        np.array(starPos_inGroup) *atime / hubbleparam
+        starPos_inGroup= np.array(starPos_inGroup) *atime / hubbleparam
         hmradii[i] = calc_half_mass_radius(starPos_inGroup,starMass_inGroup,com,boxSize)/UnitLength_in_cm
     return hmradii
 
@@ -105,7 +105,7 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
         objs = {}
         objs['hmradii'] = np.array(radii)
         print("Saving output!")
-        with open(str(path)+str(directory)+str(sv)+"/hmradii_"+str(snapnum)+"_V1.dat",'wb') as f:
+        with open(str(path)+str(directory)+str(sv)+"/hmradii_"+str(snapnum)+"_V2.dat",'wb') as f:
             pickle.dump(objs, f)
 
 if __name__=="__main__":

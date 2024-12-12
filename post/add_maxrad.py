@@ -25,18 +25,21 @@ def get_maxradii(allStarPositions,startAllStars,endAllStars,baryon_centers,boxSi
         np.ndarray: radius of maximum star particle in each object (in physical units) 
         
     """ 
-    hubbleparam = cosmo['H0']/100.
-    atime = cosmo ['a']
+    # hubbleparam = cosmo['H0']/100.
+    #atime = cosmo ['a']
+    hubbleparam = 0.71
+    atime = cosmo['afromsnap']
     baryon_centers = baryon_centers *atime / hubbleparam 
     N = len(baryon_centers)
     print(str(N)+" objects")
-    maxradii = np.empty(N,dtype = np.ndarray)
+    maxradii = np.empty(N,dtype = float)
     boxSize = boxSize * atime/hubbleparam
     for i in range(N):
         com = baryon_centers[i]
         starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-        np.array(starPos_inGroup) *atime / hubbleparam
+        starPos_inGroup= np.array(starPos_inGroup) *atime / hubbleparam
         maxradii[i] = calc_max_radius(starPos_inGroup,com,boxSize)/UnitLength_in_cm
+    print(maxradii)
     return maxradii
 
 def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home/c/clairewi/project-snaoz/FOF_project/'):   
@@ -53,13 +56,14 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
     gofilename = str(path)+str(directory)+str(sv)
     gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))
     snap, fof = open_hdf5(gofilename, foffilename)
-    boxSize, _, _ = get_headerprops(snap)
+    boxSize, redshift, _ = get_headerprops(snap)
     cat = set_subfind_catalog(fof)
     halo100_indices=get_starGroups(cat)
     _,_, allStarPositions, _= get_starIDs(snap)
     startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
     cos = get_cosmo_props(snap)
+    cos['afromsnap'] = 1./(1.+redshift)
     print("calculating the radii")
     radii = get_maxradii(allStarPositions,startAllStars,endAllStars,halo100_pos,boxSize,cos)
     print("Got the radii")
@@ -67,7 +71,7 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
         objs = {}
         objs['maxradii'] = np.array(radii)
         print("Saving output!")
-        with open(str(path)+str(directory)+str(sv)+"/maxradii_"+str(snapnum)+"_V1.dat",'wb') as f:
+        with open(str(path)+str(directory)+str(sv)+"/maxradii_"+str(snapnum)+"_V3.dat",'wb') as f:
             pickle.dump(objs, f)
 
 if __name__=="__main__":
