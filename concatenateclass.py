@@ -137,7 +137,7 @@ class processedFOF():
         # Use the mask to select the centers and radii directly
         centers = group_pos[mask]
         fofradii = group_r_crit200[mask]
-        maxradname = "maxradii_"+str(self.snapnum)+"_V1.dat"
+        maxradname = "maxradii_"+str(self.snapnum)+"_V3.dat"
         filepath = self.path 
         for filename in os.listdir(filepath):
             # Check if the file exists in that directory
@@ -149,7 +149,7 @@ class processedFOF():
             with open(str(max_rad_path),'rb') as f: 
                 maxrad = pickle.load(f) 
                 self.properties['maxradii']= maxrad['maxradii']
-        halfradname = "hmradii_"+str(self.snapnum)+"_V1.dat"
+        halfradname = "hmradii_"+str(self.snapnum)+"_V2.dat"
         filepath = self.path 
         for filename in os.listdir(filepath):
             # Check if the file exists in that directory
@@ -395,7 +395,7 @@ class processedFOF():
         Search for environment output and add to properties. Must be run post bounded! Only available for baryonic primaries. 
         """
         filepath = self.path 
-        env_name = "environment_"+ str(self.snapnum)+"_V1"  
+        env_name = "environment_"+ str(self.snapnum)+"_V2"  
         for filename in os.listdir(filepath):
             # Check if the file exists in that directory
             if env_name in filename:
@@ -491,3 +491,43 @@ class processedFOF():
         if 'SFR' in self.properties.keys():
             self.properties['SFRpermass'] = self.properties['SFR']*un.Msun/un.yr/ (self.properties['stellarMass'] * UnitMass_in_g/self.H0)
             return (self.properties['SFRpermass'] **(-1.)).to('Myr')
+
+    def calcTdyn(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitVelocity_in_cm_per_s = 1.0e5 * un.cm / un.s
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+        vel = self.properties['v_rms'] * UnitVelocity_in_cm_per_s
+        return (r/vel).to('Myr')
+    
+    def calcTdynGas(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitVelocity_in_cm_per_s = 1.0e5 * un.cm / un.s
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+        vel = self.properties['gas_v_rms'] * UnitVelocity_in_cm_per_s
+        return (r/vel).to('Myr')
+    
+    def calcTCollapse(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        print("estimating mass from baryonic mass")
+        mass = 6*(self.properties['stellarMass'] + self.properties['gasMass']) * UnitMass_in_g
+        r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+        rhotot = mass/(4./3. *np.pi * r**3)
+        return (1/((GRAVITY_cgs * rhotot)**(1./2.))).to('Myr')
+    
+    def estGasDensity(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        print("estimating mass from baryonic mass")
+        mass = (self.properties['gasMass']) * UnitMass_in_g
+        massbaryons = (self.properties['stellarMass'] + self.properties['gasMass']) * UnitMass_in_g
+        r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+        rhogas = mass/(4./3. *np.pi * r**3)
+        rhobaryons = massbaryons/(4./3. *np.pi * r**3)
+        return rhogas, rhobaryons
