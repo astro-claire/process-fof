@@ -1,5 +1,4 @@
 import numpy as np
-import numpy as np
 import pickle
 from sys import argv
 import sys
@@ -8,11 +7,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-import config.configuration as config
 from modules.concatenateclass import processedFOF
 from modules.boundedness import chunks, get_starIDs, get_DMIDs, calc_boundedness,chunked_calc_boundedness,check_virialized,dist2_indv,chunked_potential_energy_same_mass,chunked_potential_energy_between_groups
 from modules.fof_process import dx_wrap, dist2, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, get_Halos, get_DMIDgroups, get_starIDgroups
-import os
+import config.configuration as config
 
 #Set units and parameters
 constants = config.load_constants()

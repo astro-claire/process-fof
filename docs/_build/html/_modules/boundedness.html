@@ -1,24 +1,23 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>boundedness &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -58,8 +57,10 @@
 <span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitVelocity_in_cm_per_s&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="get_allHalos"><a class="viewcode-back" href="../boundedness.html#boundedness.get_allHalos">[docs]</a><span class="k">def</span> <span class="nf">get_allHalos</span><span class="p">(</span><span class="n">cat</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_allHalos">
+<a class="viewcode-back" href="../boundedness.html#boundedness.get_allHalos">[docs]</a>
+<span class="k">def</span> <span class="nf">get_allHalos</span><span class="p">(</span><span class="n">cat</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Identify all halos containing more than 32 dark matter (DM) particles.</span>
 
 <span class="sd">    Parameters:</span>
@@ -73,8 +74,11 @@
 
     <span class="k">return</span> <span class="n">over300idx</span></div>
 
-<div class="viewcode-block" id="set_up_DM"><a class="viewcode-back" href="../boundedness.html#boundedness.set_up_DM">[docs]</a><span class="k">def</span> <span class="nf">set_up_DM</span><span class="p">(</span><span class="n">SV</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">):</span>   
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="set_up_DM">
+<a class="viewcode-back" href="../boundedness.html#boundedness.set_up_DM">[docs]</a>
+<span class="k">def</span> <span class="nf">set_up_DM</span><span class="p">(</span><span class="n">SV</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">):</span>   
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set up the dark matter (DM) halo catalog from the simulation snapshot.</span>
 
 <span class="sd">    Parameters:</span>
@@ -101,8 +105,11 @@
     <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span> <span class="o">=</span> <span class="n">get_DMIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">dmsnap</span></div>
 
-<div class="viewcode-block" id="nearby_DM"><a class="viewcode-back" href="../boundedness.html#boundedness.nearby_DM">[docs]</a><span class="k">def</span> <span class="nf">nearby_DM</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span><span class="n">limit</span> <span class="o">=</span><span class="mf">10.</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="nearby_DM">
+<a class="viewcode-back" href="../boundedness.html#boundedness.nearby_DM">[docs]</a>
+<span class="k">def</span> <span class="nf">nearby_DM</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span><span class="n">limit</span> <span class="o">=</span><span class="mf">10.</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find all halos and their DM particles within a certain distance from a specified center of mass (com).</span>
 
 <span class="sd">    Parameters:</span>
@@ -141,10 +148,13 @@
         <span class="n">len_counter</span> <span class="o">+=</span> <span class="n">num_dm_particles</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DM pos length is&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">len_counter</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">allnearbyDMPos</span><span class="p">,</span> <span class="n">allnearbyDMVel</span></div>
+
     
 
-<div class="viewcode-block" id="chunks"><a class="viewcode-back" href="../boundedness.html#boundedness.chunks">[docs]</a><span class="k">def</span> <span class="nf">chunks</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunks">
+<a class="viewcode-back" href="../boundedness.html#boundedness.chunks">[docs]</a>
+<span class="k">def</span> <span class="nf">chunks</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Yield successive n-sized chunks from lst.</span>
 <span class="sd">    Function from chat gpt lol</span>
 
@@ -156,8 +166,11 @@
         <span class="k">yield</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="dx_indv"><a class="viewcode-back" href="../boundedness.html#boundedness.dx_indv">[docs]</a><span class="k">def</span> <span class="nf">dx_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="dx_indv">
+<a class="viewcode-back" href="../boundedness.html#boundedness.dx_indv">[docs]</a>
+<span class="k">def</span> <span class="nf">dx_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply periodic boundary conditions to a coordinate difference.</span>
 
 <span class="sd">    Parameters:</span>
@@ -173,8 +186,11 @@
         <span class="n">dx</span> <span class="o">+=</span> <span class="n">box</span> 
     <span class="k">return</span> <span class="n">dx</span></div>
 
-<div class="viewcode-block" id="dist2_indv"><a class="viewcode-back" href="../boundedness.html#boundedness.dist2_indv">[docs]</a><span class="k">def</span> <span class="nf">dist2_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="dist2_indv">
+<a class="viewcode-back" href="../boundedness.html#boundedness.dist2_indv">[docs]</a>
+<span class="k">def</span> <span class="nf">dist2_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the squared distance between two points with periodic boundary conditions.</span>
 
 <span class="sd">    Parameters:</span>
@@ -188,26 +204,38 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">dx_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx_indv</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx_indv</span><span class="p">(</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span></div>
 
-<div class="viewcode-block" id="get_GroupRadii"><a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupRadii">[docs]</a><span class="k">def</span> <span class="nf">get_GroupRadii</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_GroupRadii">
+<a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupRadii">[docs]</a>
+<span class="k">def</span> <span class="nf">get_GroupRadii</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Group COM</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">Group_R_Crit200</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="get_GroupVel"><a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupVel">[docs]</a><span class="k">def</span> <span class="nf">get_GroupVel</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_GroupVel">
+<a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupVel">[docs]</a>
+<span class="k">def</span> <span class="nf">get_GroupVel</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Group COM</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupVel</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="get_GroupPos"><a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupPos">[docs]</a><span class="k">def</span> <span class="nf">get_GroupPos</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_GroupPos">
+<a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupPos">[docs]</a>
+<span class="k">def</span> <span class="nf">get_GroupPos</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Group COM</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="get_starIDs"><a class="viewcode-back" href="../boundedness.html#boundedness.get_starIDs">[docs]</a><span class="k">def</span> <span class="nf">get_starIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_starIDs">
+<a class="viewcode-back" href="../boundedness.html#boundedness.get_starIDs">[docs]</a>
+<span class="k">def</span> <span class="nf">get_starIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get particle IDs (groupordered snap)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">allStarIDs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/ParticleIDs&#39;</span><span class="p">]</span>
@@ -216,8 +244,11 @@
     <span class="n">allStarVelocities</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/Velocities&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">allStarIDs</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span> <span class="n">allStarVelocities</span></div>
 
-<div class="viewcode-block" id="get_DMIDs"><a class="viewcode-back" href="../boundedness.html#boundedness.get_DMIDs">[docs]</a><span class="k">def</span> <span class="nf">get_DMIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_DMIDs">
+<a class="viewcode-back" href="../boundedness.html#boundedness.get_DMIDs">[docs]</a>
+<span class="k">def</span> <span class="nf">get_DMIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Get particle IDs (groupordered snap)</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">allDMIDs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType1/ParticleIDs&#39;</span><span class="p">]</span>
@@ -226,8 +257,11 @@
 	
 	<span class="k">return</span> <span class="n">allDMIDs</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span></div>
 
-<div class="viewcode-block" id="check_virialized"><a class="viewcode-back" href="../boundedness.html#boundedness.check_virialized">[docs]</a><span class="k">def</span> <span class="nf">check_virialized</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="check_virialized">
+<a class="viewcode-back" href="../boundedness.html#boundedness.check_virialized">[docs]</a>
+<span class="k">def</span> <span class="nf">check_virialized</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if an object is virialized based on its kinetic and potential energy.</span>
 
 <span class="sd">    Parameters:</span>
@@ -246,8 +280,11 @@
         <span class="n">virialized</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">virialized</span><span class="p">,</span> <span class="n">ratio</span></div>
 
-<div class="viewcode-block" id="calc_virial_radius"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_virial_radius">[docs]</a><span class="k">def</span> <span class="nf">calc_virial_radius</span><span class="p">(</span><span class="n">potentialEnergy</span><span class="p">,</span> <span class="n">mass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="calc_virial_radius">
+<a class="viewcode-back" href="../boundedness.html#boundedness.calc_virial_radius">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_virial_radius</span><span class="p">(</span><span class="n">potentialEnergy</span><span class="p">,</span> <span class="n">mass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the virial radius given the mass and potential energy of an object (in cgs units).</span>
 
 <span class="sd">    Parameters:</span>
@@ -259,8 +296,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="o">-</span> <span class="n">GRAVITY_cgs</span> <span class="o">*</span> <span class="n">mass</span> <span class="o">*</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">potentialEnergy</span></div>
 
-<div class="viewcode-block" id="calc_max_radius"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_max_radius">[docs]</a><span class="k">def</span> <span class="nf">calc_max_radius</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="calc_max_radius">
+<a class="viewcode-back" href="../boundedness.html#boundedness.calc_max_radius">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_max_radius</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the maximum radial distance between a group of stars and the group&#39;s center.</span>
 
 <span class="sd">    Parameters:</span>
@@ -276,8 +316,11 @@
     <span class="k">return</span> <span class="n">UnitLength_in_cm</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">maxdist</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="calc_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_boundedness">[docs]</a><span class="k">def</span> <span class="nf">calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="calc_boundedness">
+<a class="viewcode-back" href="../boundedness.html#boundedness.calc_boundedness">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate whether a group of stars is gravitationally bound based on their velocities and positions.</span>
 
 <span class="sd">    Parameters:</span>
@@ -323,10 +366,13 @@
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">massStars</span></div>
 
+
 <span class="c1">#Functions for parallel tensor creation</span>
 
-<div class="viewcode-block" id="tensor_dist"><a class="viewcode-back" href="../boundedness.html#boundedness.tensor_dist">[docs]</a><span class="k">def</span> <span class="nf">tensor_dist</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">boxSize</span><span class="o">=</span><span class="mf">1776.</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="tensor_dist">
+<a class="viewcode-back" href="../boundedness.html#boundedness.tensor_dist">[docs]</a>
+<span class="k">def</span> <span class="nf">tensor_dist</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">boxSize</span><span class="o">=</span><span class="mf">1776.</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the distance between particles i and j</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -339,8 +385,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">UnitLength_in_cm</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dist2_indv</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">boxSize</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="tensor_dist_2type"><a class="viewcode-back" href="../boundedness.html#boundedness.tensor_dist_2type">[docs]</a><span class="k">def</span> <span class="nf">tensor_dist_2type</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">pDM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">boxSize</span><span class="o">=</span><span class="mf">1776.</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="tensor_dist_2type">
+<a class="viewcode-back" href="../boundedness.html#boundedness.tensor_dist_2type">[docs]</a>
+<span class="k">def</span> <span class="nf">tensor_dist_2type</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">pDM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">boxSize</span><span class="o">=</span><span class="mf">1776.</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the distance between particles i and j where i is a DM particle and j is a star particle</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -355,8 +404,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">UnitLength_in_cm</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dist2_indv</span><span class="p">(</span><span class="n">pDM</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">pDM</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">pDM</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">boxSize</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="compute_row"><a class="viewcode-back" href="../boundedness.html#boundedness.compute_row">[docs]</a><span class="k">def</span> <span class="nf">compute_row</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span><span class="n">J</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="compute_row">
+<a class="viewcode-back" href="../boundedness.html#boundedness.compute_row">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_row</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span><span class="n">J</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the distance tensor row for a given particle in a group.</span>
 
 <span class="sd">    Parameters:</span>
@@ -370,8 +422,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">tensor_dist</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span> <span class="n">j_elem</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="o">=</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">boxSize</span><span class="o">=</span><span class="n">boxSize</span><span class="p">)</span> <span class="k">for</span> <span class="n">j_elem</span> <span class="ow">in</span> <span class="n">J</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="compute_row_2type"><a class="viewcode-back" href="../boundedness.html#boundedness.compute_row_2type">[docs]</a><span class="k">def</span> <span class="nf">compute_row_2type</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span><span class="n">J</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">pDM</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="compute_row_2type">
+<a class="viewcode-back" href="../boundedness.html#boundedness.compute_row_2type">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_row_2type</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span><span class="n">J</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">pDM</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the distance tensor row for a given particle in a group, with respect to particles of a different type (e.g., dark matter).</span>
 
 <span class="sd">    Parameters:</span>
@@ -387,8 +442,11 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">tensor_dist_2type</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span> <span class="n">j_elem</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="o">=</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">pDM</span> <span class="o">=</span> <span class="n">pDM</span><span class="p">,</span><span class="n">boxSize</span><span class="o">=</span><span class="n">boxSize</span><span class="p">)</span> <span class="k">for</span> <span class="n">j_elem</span> <span class="ow">in</span> <span class="n">J</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="parallel_calc_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.parallel_calc_boundedness">[docs]</a><span class="k">def</span> <span class="nf">parallel_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="parallel_calc_boundedness">
+<a class="viewcode-back" href="../boundedness.html#boundedness.parallel_calc_boundedness">[docs]</a>
+<span class="k">def</span> <span class="nf">parallel_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group using parallel processing.</span>
 
 <span class="sd">    Parameters:</span>
@@ -458,8 +516,11 @@
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">massStars</span></div>
 
-<div class="viewcode-block" id="chunked_potential_energy"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy">[docs]</a><span class="k">def</span> <span class="nf">chunked_potential_energy</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="chunked_potential_energy">
+<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy">[docs]</a>
+<span class="k">def</span> <span class="nf">chunked_potential_energy</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the total potential energy of a system of particles using pairwise interactions.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters:</span>
@@ -515,8 +576,11 @@
 
     <span class="k">return</span> <span class="n">total_potential</span></div>
 
-<div class="viewcode-block" id="chunked_potential_energy_same_mass"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_same_mass">[docs]</a><span class="k">def</span> <span class="nf">chunked_potential_energy_same_mass</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="chunked_potential_energy_same_mass">
+<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_same_mass">[docs]</a>
+<span class="k">def</span> <span class="nf">chunked_potential_energy_same_mass</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the total potential energy of a system of particles with the same mass using pairwise interactions.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters:</span>
@@ -575,6 +639,7 @@
     <span class="k">return</span> <span class="n">total_potential</span></div>
 
 
+
 <span class="c1"># def chunked_potential_energy_between_sets(masses1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):</span>
 <span class="c1">#     &quot;&quot;&quot;</span>
 <span class="c1">#     Calculate the total potential energy between two different sets of particles using pairwise interactions.</span>
@@ -631,8 +696,10 @@
 
 <span class="c1">#     return total_potential</span>
 
-<div class="viewcode-block" id="chunked_potential_energy_between_groups"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_between_groups">[docs]</a><span class="k">def</span> <span class="nf">chunked_potential_energy_between_groups</span><span class="p">(</span><span class="n">mass1</span><span class="p">,</span> <span class="n">positions1</span><span class="p">,</span> <span class="n">masses2</span><span class="p">,</span> <span class="n">positions2</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunked_potential_energy_between_groups">
+<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_between_groups">[docs]</a>
+<span class="k">def</span> <span class="nf">chunked_potential_energy_between_groups</span><span class="p">(</span><span class="n">mass1</span><span class="p">,</span> <span class="n">positions1</span><span class="p">,</span> <span class="n">masses2</span><span class="p">,</span> <span class="n">positions2</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the total potential energy between two groups of particles, </span>
 <span class="sd">    where the first group has the same mass for all particles, and the second group has an array of masses.</span>
 <span class="sd">    </span>
@@ -701,8 +768,11 @@
 
     <span class="k">return</span> <span class="n">total_potential</span></div>
 
-<div class="viewcode-block" id="chunked_calc_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_calc_boundedness">[docs]</a><span class="k">def</span> <span class="nf">chunked_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="chunked_calc_boundedness">
+<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_calc_boundedness">[docs]</a>
+<span class="k">def</span> <span class="nf">chunked_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group using chunked processing to reduce memory usage.</span>
 
 <span class="sd">    Parameters:</span>
@@ -748,8 +818,11 @@
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">massStars</span></div>
 
 
-<div class="viewcode-block" id="parallel_calc_dm_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.parallel_calc_dm_boundedness">[docs]</a><span class="k">def</span> <span class="nf">parallel_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="parallel_calc_dm_boundedness">
+<a class="viewcode-back" href="../boundedness.html#boundedness.parallel_calc_dm_boundedness">[docs]</a>
+<span class="k">def</span> <span class="nf">parallel_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group with dark matter using parallel processing.</span>
 
 <span class="sd">    Parameters:</span>
@@ -828,8 +901,11 @@
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span></div>
 
-<div class="viewcode-block" id="chunked_calc_dm_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_calc_dm_boundedness">[docs]</a><span class="k">def</span> <span class="nf">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="chunked_calc_dm_boundedness">
+<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_calc_dm_boundedness">[docs]</a>
+<span class="k">def</span> <span class="nf">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group with dark matter using chunked processing to reduce memory usage.</span>
 
 <span class="sd">    Parameters:</span>
@@ -889,9 +965,12 @@
          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;not bound even after DM!&quot;</span><span class="p">)</span>
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span></div>
+
     
-<div class="viewcode-block" id="calc_dm_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_dm_boundedness">[docs]</a><span class="k">def</span> <span class="nf">calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-     <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="calc_dm_boundedness">
+<a class="viewcode-back" href="../boundedness.html#boundedness.calc_dm_boundedness">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+<span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     Calculate the boundedness of a stellar group with dark matter without any tricks to reduce memory usage</span>
 
 <span class="sd">     Parameters:</span>
@@ -953,8 +1032,11 @@
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
      <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span></div>
 
-<div class="viewcode-block" id="calc_DM_mass"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_DM_mass">[docs]</a><span class="k">def</span> <span class="nf">calc_DM_mass</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="calc_DM_mass">
+<a class="viewcode-back" href="../boundedness.html#boundedness.calc_DM_mass">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_DM_mass</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the mass of dark matter (DM) within a group.</span>
 
 <span class="sd">    Parameters:</span>
@@ -986,8 +1068,11 @@
     <span class="k">return</span> <span class="n">massDM</span></div>
 
 
-<div class="viewcode-block" id="check_if_exists"><a class="viewcode-back" href="../boundedness.html#boundedness.check_if_exists">[docs]</a><span class="k">def</span> <span class="nf">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="check_if_exists">
+<a class="viewcode-back" href="../boundedness.html#boundedness.check_if_exists">[docs]</a>
+<span class="k">def</span> <span class="nf">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a file corresponding to a particular snapshot and chunk exists in the specified directory.</span>
 
 <span class="sd">    Parameters:</span>
@@ -1008,8 +1093,11 @@
             <span class="n">exists</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="n">exists</span></div>
 
-<div class="viewcode-block" id="check_if_exists_indv"><a class="viewcode-back" href="../boundedness.html#boundedness.check_if_exists_indv">[docs]</a><span class="k">def</span> <span class="nf">check_if_exists_indv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">obj</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="check_if_exists_indv">
+<a class="viewcode-back" href="../boundedness.html#boundedness.check_if_exists_indv">[docs]</a>
+<span class="k">def</span> <span class="nf">check_if_exists_indv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">obj</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if an individual file corresponding to a particular snapshot, chunk, and object exists in the specified directory.</span>
 
 <span class="sd">    Parameters:</span>
@@ -1033,8 +1121,11 @@
 
 
 
-<div class="viewcode-block" id="iterate_galaxies_chunked_resub_N_saveindv"><a class="viewcode-back" href="../boundedness.html#boundedness.iterate_galaxies_chunked_resub_N_saveindv">[docs]</a><span class="k">def</span> <span class="nf">iterate_galaxies_chunked_resub_N_saveindv</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">groupRadii</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocities</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="iterate_galaxies_chunked_resub_N_saveindv">
+<a class="viewcode-back" href="../boundedness.html#boundedness.iterate_galaxies_chunked_resub_N_saveindv">[docs]</a>
+<span class="k">def</span> <span class="nf">iterate_galaxies_chunked_resub_N_saveindv</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">groupRadii</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocities</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over galaxies in chunks, checking for boundedness and virialization, and calculating dark matter mass for each galaxy.</span>
 <span class="sd">    Saves results for individual objects.</span>
 
@@ -1199,8 +1290,11 @@
             <span class="c1">#     pickle.dump(objs, f)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 
-<div class="viewcode-block" id="iterate_galaxies_chunked_resub_N"><a class="viewcode-back" href="../boundedness.html#boundedness.iterate_galaxies_chunked_resub_N">[docs]</a><span class="k">def</span> <span class="nf">iterate_galaxies_chunked_resub_N</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">groupRadii</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocities</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="iterate_galaxies_chunked_resub_N">
+<a class="viewcode-back" href="../boundedness.html#boundedness.iterate_galaxies_chunked_resub_N">[docs]</a>
+<span class="k">def</span> <span class="nf">iterate_galaxies_chunked_resub_N</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">groupRadii</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocities</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over galaxies in chunks, checking for boundedness and virialization, and calculating dark matter mass for each galaxy.</span>
 <span class="sd">    Saves results for chunks of  objects.</span>
 
@@ -1355,8 +1449,11 @@
 
 
 
-<div class="viewcode-block" id="add_bounded_calculation_N"><a class="viewcode-back" href="../boundedness.html#boundedness.add_bounded_calculation_N">[docs]</a><span class="k">def</span> <span class="nf">add_bounded_calculation_N</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="add_bounded_calculation_N">
+<a class="viewcode-back" href="../boundedness.html#boundedness.add_bounded_calculation_N">[docs]</a>
+<span class="k">def</span> <span class="nf">add_bounded_calculation_N</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper function to calculate boundedness and virialization for galaxy groups.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters:</span>
@@ -1401,8 +1498,11 @@
     <span class="n">objs</span> <span class="o">=</span> <span class="n">iterate_galaxies_chunked_resub_N</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">halo100_rad</span><span class="p">,</span><span class="n">halo100_pos</span><span class="p">,</span> <span class="n">halo100_vel</span><span class="p">,</span><span class="n">massDMParticle</span><span class="o">*</span> <span class="n">UnitMass_in_g</span> <span class="o">/</span> <span class="n">hubbleparam</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">dmsnap</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 
-<div class="viewcode-block" id="add_bounded_calculation_N_indv"><a class="viewcode-back" href="../boundedness.html#boundedness.add_bounded_calculation_N_indv">[docs]</a><span class="k">def</span> <span class="nf">add_bounded_calculation_N_indv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="add_bounded_calculation_N_indv">
+<a class="viewcode-back" href="../boundedness.html#boundedness.add_bounded_calculation_N_indv">[docs]</a>
+<span class="k">def</span> <span class="nf">add_bounded_calculation_N_indv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper function to calculate boundedness and virialization and save individual galaxy groups.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters:</span>
@@ -1448,8 +1548,11 @@
     <span class="k">return</span> <span class="n">objs</span></div>
 
 
-<div class="viewcode-block" id="boundedness_mode"><a class="viewcode-back" href="../boundedness.html#boundedness.boundedness_mode">[docs]</a><span class="k">def</span> <span class="nf">boundedness_mode</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="boundedness_mode">
+<a class="viewcode-back" href="../boundedness.html#boundedness.boundedness_mode">[docs]</a>
+<span class="k">def</span> <span class="nf">boundedness_mode</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Starts full boundedness calculation for either save as group or individual</span>
 
 <span class="sd">    Parameters: </span>
@@ -1476,8 +1579,9 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ModeError: mode </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> is unsupported, sorry.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 
+
 <span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Routine if running as a script</span>
 
 <span class="sd">    Parameters: </span>
@@ -1545,7 +1649,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1559,11 +1663,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2024, Claire Williams.
+      &#169;2024, Claire Williams.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>
 

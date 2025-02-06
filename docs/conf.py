@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath('../modules'))
 sys.path.insert(0, os.path.abspath('../config'))
 sys.path.insert(0, os.path.abspath('../scripts'))
 
-autodoc_mock_imports = ['h5py', 'numpy', 'pickle'] 
+autodoc_mock_imports = ['h5py', 'numpy', 'pickle','numpy.core','numpy.core.multiarray'] 
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
