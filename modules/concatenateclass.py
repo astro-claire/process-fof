@@ -22,9 +22,10 @@ hubbleparam = constants['hubbleparam'] #hubble constant
 GRAVITY_cgs = constants['GRAVITY_cgs']
 UnitVelocity_in_cm_per_s = constants['UnitVelocity_in_cm_per_s']
 
+inputdir, outputdir = config.set_directories()
 
 class processedFOF(): 
-    def __init__(self,snapnum, directory, sv, path = '/u/home/c/clairewi/project-snaoz/FOF_project', verbose = True, maxidx = 300, **kwargs): 
+    def __init__(self,snapnum, directory, sv, path = str(inputdir), verbose = True, maxidx = 300, **kwargs): 
         """
         Initializes fof post processing  concatenator
         

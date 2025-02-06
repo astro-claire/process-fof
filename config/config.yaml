@@ -4,3 +4,7 @@ directories:
   output_dir: /u/home/c/clairewi/project-snaoz/FOF_project
   code_dir: /u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof
 
+files: 
+  newstars_sig0: './newstars_Sig0_25Mpc.dat'
+  newstars_sig2: './newstars_Sig2_25Mpc.dat'
+

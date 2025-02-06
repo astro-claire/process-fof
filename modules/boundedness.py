@@ -56,7 +56,9 @@ def set_up_DM(SV, snapnum):
             - endAllDM (np.ndarray): Ending indices for DM particles in each halo.
             - dmsnap (h5py snapshot): The opened HDF5 snapshot file containing DM data.
     """
-    gofilename = '/u/home/c/clairewi/project-snaoz/FOF_project/DMP-GS-' + str(SV) 
+    inputdir, outputdir = config.set_directories()
+    # gofilename = '/u/home/c/clairewi/project-snaoz/FOF_project/DMP-GS-' + str(SV) 
+    gofilename = str(inputdir)+ '/DMP-GS-' + str(SV) 
     dmgofile, dmfoffile  = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename) )
     dmsnap, dmfof = open_hdf5(dmgofile, dmfoffile)
     cat = set_subfind_catalog(dmfof)

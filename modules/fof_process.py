@@ -2,6 +2,12 @@ import h5py
 import numpy as np
 from sys import argv
 import pickle
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import config.configuration as config
+
 
 
 def dx_wrap(dx, box):
@@ -430,13 +436,16 @@ if __name__=="__main__":
 		snapnum (float)
 	"""
 	script, gofilename, snapnum, SV = argv
+	newstarssig0, newstarssig2 = config.get_newstarsfile()
 	if float(SV) == 2: 
 		print("Two sigma stream velocity")
-		with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
+		# with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
+		with open(str(newstarssig2),'rb') as f:
 			newstars = pickle.load(f,encoding = "latin1")
 	if float(SV) == 0: 
 		print("No stream velocity")
-		with open("/u/home/c/clairewi/project-snaoz/SF_MolSig0/newstars_Sig0_25Mpc.dat",'rb') as f:
+		# with open("/u/home/c/clairewi/project-snaoz/SF_MolSig0/newstars_Sig0_25Mpc.dat",'rb') as f:
+		with open(str(newstarssig0),'rb') as f:
 			newstars = pickle.load(f,encoding = "latin1")		
 	objs = calc_all_stellarprops(str(gofilename), snapnum, newstars, group="DM", SFR=True, r200 =True)
 	print(objs['new_mStar'][0:10]*10.**10/0.71/3e7)
