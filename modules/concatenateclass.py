@@ -10,6 +10,8 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 import config.configuration as config
 
 #Set units and parameters

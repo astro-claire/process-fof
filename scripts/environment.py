@@ -6,6 +6,8 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from modules.concatenateclass import processedFOF
 from modules.boundedness import get_allHalos, set_up_DM
 from modules.fof_process import dx_wrap, dist2, set_snap_directories, open_hdf5, get_headerprops

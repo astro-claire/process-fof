@@ -6,6 +6,8 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 import config.configuration as config
 from modules.concatenateclass import processedFOF
 from modules.boundedness import chunks, get_starIDs, get_DMIDs, calc_boundedness,chunked_calc_boundedness,check_virialized,dist2_indv,chunked_potential_energy_same_mass,chunked_potential_energy_between_groups

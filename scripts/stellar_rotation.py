@@ -6,6 +6,8 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from modules.fof_process import dx_wrap,get_starGroups, get_gasIDgroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_Halos
 from modules.boundedness import get_GroupPos,get_GroupRadii,get_GroupVel, get_starIDs
 import config.configuration as config
