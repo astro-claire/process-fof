@@ -11,5 +11,5 @@ If bounded objects needed, must have chunked bounded files located at:
 
 where USER_PATH is the directory of the process-fof ouput.
 
-.. automodule:: concatenateclass
+.. autoclass:: concatenateclass.processedFOF
    :members:
