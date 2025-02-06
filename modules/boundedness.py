@@ -12,14 +12,17 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from fof_process import dx_wrap, dist2, get_DMIDgroups, get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
+from modules.fof_process import dx_wrap, dist2, get_DMIDgroups, get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
+
+import config.configuration as config
 
 #Set units and parameters
-UnitMass_in_g = 1.989e43     
-UnitLength_in_cm = 3.085678e21 
-hubbleparam = .71 #hubble constant
-GRAVITY_cgs = 6.672e-8
-UnitVelocity_in_cm_per_s = 1.0e5
+constants = config.load_constants()
+UnitMass_in_g = constants['UnitMass_in_g']     
+UnitLength_in_cm = constants['UnitLength_in_cm']
+hubbleparam = constants['hubbleparam'] #hubble constant
+GRAVITY_cgs = constants['GRAVITY_cgs']
+UnitVelocity_in_cm_per_s = constants['UnitVelocity_in_cm_per_s']
 
 
 def get_allHalos(cat):
