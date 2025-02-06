@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dm_virialization &#8212; process-fof 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for dm_virialization</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">argv</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../config&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../modules&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;..&#39;</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">modules.concatenateclass</span> <span class="kn">import</span> <span class="n">processedFOF</span>
+<span class="kn">from</span> <span class="nn">modules.boundedness</span> <span class="kn">import</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">get_starIDs</span><span class="p">,</span> <span class="n">get_DMIDs</span><span class="p">,</span> <span class="n">calc_boundedness</span><span class="p">,</span><span class="n">chunked_calc_boundedness</span><span class="p">,</span><span class="n">check_virialized</span><span class="p">,</span><span class="n">dist2_indv</span><span class="p">,</span><span class="n">chunked_potential_energy_same_mass</span><span class="p">,</span><span class="n">chunked_potential_energy_between_groups</span>
+<span class="kn">from</span> <span class="nn">modules.fof_process</span> <span class="kn">import</span> <span class="n">dx_wrap</span><span class="p">,</span> <span class="n">dist2</span><span class="p">,</span> <span class="n">set_snap_directories</span><span class="p">,</span> <span class="n">open_hdf5</span><span class="p">,</span> <span class="n">get_headerprops</span><span class="p">,</span> <span class="n">set_subfind_catalog</span><span class="p">,</span> <span class="n">get_Halos</span><span class="p">,</span> <span class="n">get_DMIDgroups</span><span class="p">,</span> <span class="n">get_starIDgroups</span>
+<span class="kn">import</span> <span class="nn">config.configuration</span> <span class="k">as</span> <span class="nn">config</span>
+
+<span class="c1">#Set units and parameters</span>
+<span class="n">constants</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">load_constants</span><span class="p">()</span>
+<span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitMass_in_g&#39;</span><span class="p">]</span>     
+<span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitLength_in_cm&#39;</span><span class="p">]</span>
+<span class="n">hubbleparam</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;hubbleparam&#39;</span><span class="p">]</span> <span class="c1">#hubble constant</span>
+<span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;GRAVITY_cgs&#39;</span><span class="p">]</span>
+<span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitVelocity_in_cm_per_s&#39;</span><span class="p">]</span>
+
+
+<span class="c1"># def set_up_DM_fofs(filename, snapnum,sv):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Grabs FOF data using processed FOF class</span>
+    
+<span class="c1">#     Parameters: </span>
+<span class="c1">#         fileame (str): path to FOF directory</span>
+<span class="c1">#         snapnum (str or int): </span>
+    
+<span class="c1">#     Returns:</span>
+<span class="c1">#         tuple: centers of bounded objs, radii (from boundedness) of bounded objects</span>
+
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     if &quot;DMP-GS-&quot; in filename:</span>
+<span class="c1">#         directory = &quot;DMP-GS-&quot;</span>
+<span class="c1">#     fof = processedFOF(snapnum,directory,sv, path = &#39;/u/home/c/clairewi/project-snaoz/FOF_project/&#39;) #call processed fof class </span>
+<span class="c1">#     return fof.properties[&#39;DMIDs&#39;], fof.properties[&#39;starIDs&#39;], fof.properties[&#39;starMasses&#39;]</span>
+
+<div class="viewcode-block" id="chunked_calc_dm_boundedness"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.chunked_calc_dm_boundedness">[docs]</a><span class="k">def</span> <span class="nf">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the boundedness of a stellar group with dark matter using chunked processing to reduce memory usage.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        energyStars (float): Total energy of the stellar group.</span>
+<span class="sd">        starVel_inGroup (ndarray): Array of star velocities in the group.</span>
+<span class="sd">        starPos_inGroup (ndarray): Array of star positions in the group.</span>
+<span class="sd">        starMass_inGroup (ndarray): Array of star masses in the group.</span>
+<span class="sd">        groupPos (ndarray): Position of the group.</span>
+<span class="sd">        groupVelocity (ndarray): Velocity of the group.</span>
+<span class="sd">        boxSize (float): Size of the simulation box for positions.</span>
+<span class="sd">        boxSizeVel (float): Size of the simulation box for velocities.</span>
+<span class="sd">        pDM (ndarray): Array of dark matter particle positions in the group.</span>
+<span class="sd">        vDM (ndarray): Array of dark matter particle velocities in the group.</span>
+<span class="sd">        groupRadius (float): Radius of the group.</span>
+<span class="sd">        atime (float): Scale factor at the snapshot time.</span>
+<span class="sd">        massDMParticle (float): Mass of a dark matter particle.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: Boundedness </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pDM</span><span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pDM</span><span class="p">)</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span>
+    <span class="n">vDM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vDM</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span> 
+    <span class="n">tempvelDM</span> <span class="o">=</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">vDM</span><span class="o">-</span><span class="n">groupVelocity</span><span class="p">,</span> <span class="n">boxSizeVel</span><span class="p">)</span>
+    <span class="n">velMagDM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">tempvelDM</span><span class="o">*</span><span class="n">tempvelDM</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">lengroup</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pDM</span><span class="p">)</span>
+    <span class="n">massDM</span> <span class="o">=</span> <span class="n">lengroup</span><span class="o">*</span> <span class="n">massDMParticle</span>
+    <span class="c1">#Kinetic energy component</span>
+    <span class="c1"># max_velocity = np.max(velMagDM)</span>
+    <span class="c1"># print(&quot;Max velocity:&quot;, max_velocity)</span>
+    <span class="c1"># kineticEnergyDM = np.sum(massDMParticle/2 *velMagDM*velMagDM)</span>
+    <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">500</span>  <span class="c1"># Process in smaller batches</span>
+    <span class="n">kineticEnergyDM</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="c1">#doing this way to elimatine infinite error</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">velMagDM</span><span class="p">),</span> <span class="n">chunk_size</span><span class="p">):</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">velMagDM</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">]</span>
+        <span class="n">kineticEnergyDM</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">massDMParticle</span> <span class="o">/</span><span class="n">UnitMass_in_g</span><span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">chunk</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">UnitVelocity_in_cm_per_s</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>    
+    <span class="n">potentialEnergyDM</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">potentialEnergyStarsDM</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#DM self potential energy</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;chunked DM potential calculation&quot;</span><span class="p">)</span>
+    <span class="n">potentialEnergyDM</span> <span class="o">=</span> <span class="n">chunked_potential_energy_same_mass</span><span class="p">(</span><span class="n">massDMParticle</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;chunked stars and dm potential calculation&quot;</span><span class="p">)</span>
+    <span class="n">potentialEnergyStarsDM</span> <span class="o">=</span> <span class="n">chunked_potential_energy_between_groups</span><span class="p">(</span><span class="n">massDMParticle</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">boxSize</span> <span class="p">,</span><span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="n">totEnergy</span> <span class="o">=</span> <span class="n">energyStars</span> <span class="o">+</span> <span class="n">kineticEnergyDM</span><span class="o">*</span><span class="n">UnitMass_in_g</span> <span class="o">+</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span>
+    <span class="k">if</span> <span class="n">totEnergy</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;object is bound after DM!&quot;</span><span class="p">)</span>
+         <span class="n">boundedness</span> <span class="o">=</span>  <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;not bound even after DM!&quot;</span><span class="p">)</span>
+         <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="o">*</span><span class="n">UnitMass_in_g</span><span class="p">,</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span></div>
+
+
+<div class="viewcode-block" id="get_fof_particles"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.get_fof_particles">[docs]</a><span class="k">def</span> <span class="nf">get_fof_particles</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;indv&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the particles from the snapshot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gofilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">gofilename</span><span class="p">,</span> <span class="n">foffilename</span> <span class="o">=</span> <span class="n">set_snap_directories</span><span class="p">(</span><span class="n">gofilename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">foffilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">))</span>
+    <span class="n">snap</span><span class="p">,</span> <span class="n">fof</span> <span class="o">=</span> <span class="n">open_hdf5</span><span class="p">(</span><span class="n">gofilename</span><span class="p">,</span> <span class="n">foffilename</span><span class="p">)</span>
+    <span class="n">boxSize</span><span class="p">,</span> <span class="n">redshift</span><span class="p">,</span> <span class="n">massDMParticle</span> <span class="o">=</span> <span class="n">get_headerprops</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+    <span class="n">atime</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">redshift</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;redshift is &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">redshift</span><span class="p">))</span>
+    <span class="n">cat</span> <span class="o">=</span> <span class="n">set_subfind_catalog</span><span class="p">(</span><span class="n">fof</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;used groups of 300 or more DM&quot;</span><span class="p">)</span>
+    <span class="n">halo100_indices</span><span class="o">=</span><span class="n">get_Halos</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">))</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span> <span class="n">allStarVelocities</span> <span class="o">=</span> <span class="n">get_starIDs</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span> <span class="o">=</span> <span class="n">get_DMIDs</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+    <span class="n">groupPos</span> <span class="o">=</span>  <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span>
+    <span class="n">groupVel</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupVel</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span>
+    <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span> <span class="o">=</span> <span class="n">get_DMIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="n">halo100_indices</span><span class="p">)</span>
+    <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span> <span class="o">=</span> <span class="n">get_starIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">)</span>
+    <span class="n">objs</span><span class="o">=</span><span class="p">{}</span>
+    <span class="c1">#DMIDs_inGroups, starIDs_inGroups, starMasses_inGroups = set_up_DM_fofs(str(filename),snapnum, sv)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span><span class="s2">&quot;indv&quot;</span><span class="p">:</span>
+        <span class="n">bounded</span><span class="p">,</span> <span class="n">virialized</span><span class="p">,</span> <span class="n">usedDM</span> <span class="o">=</span> <span class="n">iterate_objs_saveindv</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="o">*</span> <span class="n">UnitMass_in_g</span> <span class="o">/</span> <span class="n">hubbleparam</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;chunk&quot;</span><span class="p">:</span>
+        <span class="n">bounded</span><span class="p">,</span> <span class="n">virialized</span><span class="p">,</span> <span class="n">usedDM</span> <span class="o">=</span> <span class="n">iterate_objs_savechunks</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="o">*</span> <span class="n">UnitMass_in_g</span> <span class="o">/</span> <span class="n">hubbleparam</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bounded</span>
+    <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">virialized</span>
+    <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">usedDM</span>
+    <span class="c1"># print(&quot;saving output at&quot; + str(gofilename))</span>
+    <span class="c1"># with open( str(filename)+&quot;/boundedDM_&quot;+str(snapnum)+&quot;_V1.dat&quot;,&#39;wb&#39;) as f:   </span>
+    <span class="c1">#     pickle.dump(objs, f)</span>
+    <span class="k">return</span> </div>
+
+<div class="viewcode-block" id="iterate_objs"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs">[docs]</a><span class="k">def</span> <span class="nf">iterate_objs</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Iterate over DM primary objects and return whether or not the objects are bounded and virialized, as well as whether or not they are virialized</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters: </span>
+<span class="sd">        halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.</span>
+<span class="sd">        allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.</span>
+<span class="sd">        allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.</span>
+<span class="sd">        allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.</span>
+<span class="sd">        startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.</span>
+<span class="sd">        endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.</span>
+<span class="sd">        atime (float): Scale factor for the current snapshot.</span>
+<span class="sd">        boxSize (float): Size of the simulation box in comoving units.</span>
+<span class="sd">        startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.</span>
+<span class="sd">        endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.</span>
+<span class="sd">        massDMParticle (float): Dark matter particle mass.</span>
+
+
+<span class="sd">    Returns: </span>
+<span class="sd">        (int) whether or not the objects are bounded, (int) whether or not the objects are virialized, (int) whether or not DM was used to establish virialization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Omega0</span> <span class="o">=</span> <span class="mf">0.27</span>
+    <span class="n">OmegaLambda</span> <span class="o">=</span> <span class="mf">0.73</span>
+    <span class="n">groupPos</span> <span class="o">=</span> <span class="n">groupPos</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span> 
+    <span class="n">groupVel</span> <span class="o">=</span> <span class="n">groupVel</span> <span class="o">/</span><span class="n">atime</span> <span class="c1"># convert to physical units</span>
+    <span class="c1">#hubble flow correction</span>
+    <span class="n">boxSizeVel</span> <span class="o">=</span> <span class="n">boxSize</span> <span class="o">*</span> <span class="n">hubbleparam</span> <span class="o">*</span> <span class="mf">.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Omega0</span><span class="o">/</span><span class="n">atime</span><span class="o">/</span><span class="n">atime</span><span class="o">/</span><span class="n">atime</span> <span class="o">+</span> <span class="n">OmegaLambda</span><span class="p">)</span>
+    <span class="n">boxSize</span> <span class="o">=</span> <span class="n">boxSize</span> <span class="o">*</span> <span class="n">atime</span><span class="o">/</span><span class="n">hubbleparam</span>
+    <span class="n">boundednessgroups</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">virialgroups</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">usedDMgroups</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">):</span>
+        <span class="n">usedDM</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">allStarPositions</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">starVel_inGroup</span> <span class="o">=</span> <span class="n">allStarVelocities</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">starMass_inGroup</span> <span class="o">=</span> <span class="n">allStarMasses</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">starMass_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starMass_inGroup</span><span class="p">)</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span> <span class="o">/</span> <span class="n">hubbleparam</span> <span class="c1">#convert masses</span>
+        <span class="n">starVel_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span> <span class="c1">#unit conversions on the particle coordinates </span>
+        <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">)</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span>
+        <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="n">chunked_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">groupVel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">)</span>
+        <span class="n">virialized</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">check_virialized</span><span class="p">(</span><span class="n">kineticEnergyStars</span><span class="p">,</span><span class="n">potentialEnergyStars</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">virialized</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">usedDM</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">pDM</span> <span class="o">=</span> <span class="n">allDMPositions</span><span class="p">[</span><span class="n">startAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="n">vDM</span> <span class="o">=</span> <span class="n">allDMVelocities</span><span class="p">[</span><span class="n">startAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="n">boundednessDM</span><span class="p">,</span><span class="n">_</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span>  <span class="n">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupVel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">)</span>
+            <span class="n">kineticEnergy</span> <span class="o">=</span> <span class="n">kineticEnergyDM</span> <span class="o">+</span><span class="n">kineticEnergyStars</span>
+            <span class="n">potentialEnergy</span> <span class="o">=</span> <span class="n">potentialEnergyDM</span> <span class="o">+</span><span class="n">potentialEnergyStars</span>
+            <span class="n">virialized</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">check_virialized</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">boundedness</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">boundednessDM</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">boundednessgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">virialgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">virialized</span>
+        <span class="k">if</span> <span class="n">virialized</span> <span class="o">==</span><span class="mi">1</span><span class="p">:</span> 
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OMG VIRIALIZED&quot;</span><span class="p">)</span>
+        <span class="n">usedDMgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">usedDM</span>
+    <span class="k">return</span> <span class="n">boundednessgroups</span><span class="p">,</span> <span class="n">virialgroups</span><span class="p">,</span> <span class="n">usedDMgroups</span></div>
+
+<div class="viewcode-block" id="check_if_exists"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.check_if_exists">[docs]</a><span class="k">def</span> <span class="nf">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a file corresponding to a particular snapshot and chunk exists in the specified directory.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        filepath (str): Path to the directory.</span>
+<span class="sd">        idx (int): Chunk index.</span>
+<span class="sd">        snapnum (int): Snapshot number.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool): True if the file exists, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fof_process_name</span> <span class="o">=</span> <span class="s2">&quot;bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span>
+    <span class="n">exists</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+        <span class="c1"># Check if the file exists in that directory</span>
+        <span class="k">if</span> <span class="n">fof_process_name</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File has already been created!&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">exists</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">exists</span></div>
+
+<div class="viewcode-block" id="iterate_objs_savechunks"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs_savechunks">[docs]</a><span class="k">def</span> <span class="nf">iterate_objs_savechunks</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Iterate over DM primary objects and return whether or not the objects are bounded and virialized, as well as whether or not they are virialized</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters: </span>
+<span class="sd">        halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.</span>
+<span class="sd">        allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.</span>
+<span class="sd">        allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.</span>
+<span class="sd">        allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.</span>
+<span class="sd">        startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.</span>
+<span class="sd">        endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.</span>
+<span class="sd">        atime (float): Scale factor for the current snapshot.</span>
+<span class="sd">        boxSize (float): Size of the simulation box in comoving units.</span>
+<span class="sd">        startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.</span>
+<span class="sd">        endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.</span>
+<span class="sd">        massDMParticle (float): Dark matter particle mass.</span>
+
+
+<span class="sd">    Returns: </span>
+<span class="sd">        (int) whether or not the objects are bounded, (int) whether or not the objects are virialized, (int) whether or not DM was used to establish virialization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Omega0</span> <span class="o">=</span> <span class="mf">0.27</span>
+    <span class="n">OmegaLambda</span> <span class="o">=</span> <span class="mf">0.73</span>
+    <span class="n">groupPos</span> <span class="o">=</span> <span class="n">groupPos</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span> 
+    <span class="n">groupVel</span> <span class="o">=</span> <span class="n">groupVel</span> <span class="o">/</span><span class="n">atime</span> <span class="c1"># convert to physical units</span>
+    <span class="c1">#hubble flow correction</span>
+    <span class="n">boxSizeVel</span> <span class="o">=</span> <span class="n">boxSize</span> <span class="o">*</span> <span class="n">hubbleparam</span> <span class="o">*</span> <span class="mf">.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Omega0</span><span class="o">/</span><span class="n">atime</span><span class="o">/</span><span class="n">atime</span><span class="o">/</span><span class="n">atime</span> <span class="o">+</span> <span class="n">OmegaLambda</span><span class="p">)</span>
+    <span class="n">boxSize</span> <span class="o">=</span> <span class="n">boxSize</span> <span class="o">*</span> <span class="n">atime</span><span class="o">/</span><span class="n">hubbleparam</span>
+    <span class="n">boundednessgroups</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">virialgroups</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">usedDMgroups</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+
+    <span class="c1">#break into chunks and go through objects in reverse order, saving as we go. </span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;We&#39;ll need to do &quot;</span> <span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">)</span><span class="o">/</span><span class="mf">50.</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; chunks.&quot;</span><span class="p">)</span>
+    <span class="n">chunked_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_groupPos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">groupPos</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_startAllStars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">startAllStars</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_endAllStars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">endAllStars</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_startAllDM</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">startAllDM</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_endAllDM</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">endAllDM</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_groupVelocities</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">groupVel</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_boundednessgroups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">boundednessgroups</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_virialgroups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">virialgroups</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_usedDMgroups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">usedDMgroups</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+
+    <span class="c1">#Reversing because the earlier ones will take less time</span>
+    <span class="n">chunked_indices</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_groupPos</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_startAllStars</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_endAllStars</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_startAllDM</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_endAllDM</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_groupVelocities</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_boundednessgroups</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_virialgroups</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_usedDMgroups</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;/bounded3&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;checking in the following file&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">chunkidx</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunked_indices</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span> <span class="o">&gt;</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">chunkidx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">)</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span> 
+            <span class="n">groupPos</span> <span class="o">=</span> <span class="n">chunked_groupPos</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">groupVel</span><span class="o">=</span> <span class="n">chunked_groupVelocities</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">startAllStars</span> <span class="o">=</span> <span class="n">chunked_startAllStars</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">endAllStars</span> <span class="o">=</span> <span class="n">chunked_endAllStars</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">startAllDM</span> <span class="o">=</span> <span class="n">chunked_startAllDM</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">endAllDM</span> <span class="o">=</span> <span class="n">chunked_endAllDM</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">boundednessgroups</span> <span class="o">=</span> <span class="n">chunked_boundednessgroups</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">virialgroups</span> <span class="o">=</span> <span class="n">chunked_virialgroups</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">usedDMgroups</span> <span class="o">=</span> <span class="n">chunked_usedDMgroups</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunk</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing index </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2"> in chunk starting with </span><span class="si">{</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">usedDM</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">allStarPositions</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">starVel_inGroup</span> <span class="o">=</span> <span class="n">allStarVelocities</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">starMass_inGroup</span> <span class="o">=</span> <span class="n">allStarMasses</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">starMass_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starMass_inGroup</span><span class="p">)</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span> <span class="o">/</span> <span class="n">hubbleparam</span> <span class="c1">#convert masses</span>
+                <span class="n">starVel_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span> <span class="c1">#unit conversions on the particle coordinates </span>
+                <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">)</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span>
+                <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="n">chunked_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">groupVel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">)</span>
+                <span class="n">virialized</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">check_virialized</span><span class="p">(</span><span class="n">kineticEnergyStars</span><span class="p">,</span><span class="n">potentialEnergyStars</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">virialized</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">usedDM</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">pDM</span> <span class="o">=</span> <span class="n">allDMPositions</span><span class="p">[</span><span class="n">startAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                    <span class="n">vDM</span> <span class="o">=</span> <span class="n">allDMVelocities</span><span class="p">[</span><span class="n">startAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                    <span class="n">boundednessDM</span><span class="p">,</span><span class="n">_</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span>  <span class="n">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupVel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">)</span>
+                    <span class="n">kineticEnergy</span> <span class="o">=</span> <span class="n">kineticEnergyDM</span> <span class="o">+</span><span class="n">kineticEnergyStars</span>
+                    <span class="n">potentialEnergy</span> <span class="o">=</span> <span class="n">potentialEnergyDM</span> <span class="o">+</span><span class="n">potentialEnergyStars</span>
+                    <span class="n">virialized</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">check_virialized</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">boundedness</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">boundednessDM</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">boundednessgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">virialgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">virialized</span>
+                <span class="k">if</span> <span class="n">virialized</span> <span class="o">==</span><span class="mi">1</span><span class="p">:</span> 
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OMG VIRIALIZED&quot;</span><span class="p">)</span>
+                <span class="n">usedDMgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">usedDM</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished processing chunk starting with </span><span class="si">{</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, saving progress...&quot;</span><span class="p">)</span>
+            <span class="n">objs</span><span class="o">=</span><span class="p">{}</span>
+            <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundednessgroups</span>
+            <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">virialgroups</span>
+            <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">usedDMgroups</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gofilename</span><span class="o">+</span><span class="s2">&quot;/bounded3/bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_startidx&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;_V1.dat&quot;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>   
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">boundednessgroups</span><span class="p">,</span> <span class="n">virialgroups</span><span class="p">,</span> <span class="n">usedDMgroups</span></div>
+
+<div class="viewcode-block" id="iterate_objs_saveindv"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs_saveindv">[docs]</a><span class="k">def</span> <span class="nf">iterate_objs_saveindv</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Iterate over DM primary objects and return whether or not the objects are bounded and virialized, as well as whether or not they are virialized</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters: </span>
+<span class="sd">        halo100_indices (Numpy.ndarray): Indices of halos containing 100 or more star particles.</span>
+<span class="sd">        allStarMasses (Numpy.ndarray):  Array of stellar masses for all particles.</span>
+<span class="sd">        allStarPositions (Numpy.ndarray): Array of stellar positions for all particles.</span>
+<span class="sd">        allStarVelocities (Numpy.ndarray): Array of stellar velocities for all particles.</span>
+<span class="sd">        startAllStars (Numpy.ndarray): Start indices of star particles for each galaxy.</span>
+<span class="sd">        endAllStars (Numpy.ndarray): End indices of star particles for each galaxy.</span>
+<span class="sd">        atime (float): Scale factor for the current snapshot.</span>
+<span class="sd">        boxSize (float): Size of the simulation box in comoving units.</span>
+<span class="sd">        startAllDM (Numpy.ndarray):  Start indices of dark matter particles for each galaxy.</span>
+<span class="sd">        endAllDM (Numpy.ndarray):  End indices of dark matter particles for each galaxy.</span>
+<span class="sd">        massDMParticle (float): Dark matter particle mass.</span>
+
+
+<span class="sd">    Returns: </span>
+<span class="sd">        (int) whether or not the objects are bounded, (int) whether or not the objects are virialized, (int) whether or not DM was used to establish virialization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Omega0</span> <span class="o">=</span> <span class="mf">0.27</span>
+    <span class="n">OmegaLambda</span> <span class="o">=</span> <span class="mf">0.73</span>
+    <span class="n">groupPos</span> <span class="o">=</span> <span class="n">groupPos</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span> 
+    <span class="n">groupVel</span> <span class="o">=</span> <span class="n">groupVel</span> <span class="o">/</span><span class="n">atime</span> <span class="c1"># convert to physical units</span>
+    <span class="c1">#hubble flow correction</span>
+    <span class="n">boxSizeVel</span> <span class="o">=</span> <span class="n">boxSize</span> <span class="o">*</span> <span class="n">hubbleparam</span> <span class="o">*</span> <span class="mf">.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Omega0</span><span class="o">/</span><span class="n">atime</span><span class="o">/</span><span class="n">atime</span><span class="o">/</span><span class="n">atime</span> <span class="o">+</span> <span class="n">OmegaLambda</span><span class="p">)</span>
+    <span class="n">boxSize</span> <span class="o">=</span> <span class="n">boxSize</span> <span class="o">*</span> <span class="n">atime</span><span class="o">/</span><span class="n">hubbleparam</span>
+    <span class="n">boundednessgroups</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">virialgroups</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">usedDMgroups</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+
+    <span class="c1">#break into chunks and go through objects in reverse order, saving as we go. </span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;We&#39;ll need to do &quot;</span> <span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">)</span><span class="o">/</span><span class="mf">50.</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; chunks.&quot;</span><span class="p">)</span>
+    <span class="n">chunked_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_groupPos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">groupPos</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_startAllStars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">startAllStars</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_endAllStars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">endAllStars</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_startAllDM</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">startAllDM</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_endAllDM</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">endAllDM</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_groupVelocities</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">groupVel</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_boundednessgroups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">boundednessgroups</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_virialgroups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">virialgroups</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">chunked_usedDMgroups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">usedDMgroups</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+
+    <span class="c1">#Reversing because the earlier ones will take less time</span>
+    <span class="n">chunked_indices</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_groupPos</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_startAllStars</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_endAllStars</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_startAllDM</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_endAllDM</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_groupVelocities</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_boundednessgroups</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_virialgroups</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">chunked_usedDMgroups</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;/bounded3&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;checking in the following file&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">chunkidx</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunked_indices</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span> <span class="o">&gt;</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">chunkidx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">)</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span> 
+            <span class="n">groupPos</span> <span class="o">=</span> <span class="n">chunked_groupPos</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">groupVel</span><span class="o">=</span> <span class="n">chunked_groupVelocities</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">startAllStars</span> <span class="o">=</span> <span class="n">chunked_startAllStars</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">endAllStars</span> <span class="o">=</span> <span class="n">chunked_endAllStars</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">startAllDM</span> <span class="o">=</span> <span class="n">chunked_startAllDM</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">endAllDM</span> <span class="o">=</span> <span class="n">chunked_endAllDM</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">boundednessgroups</span> <span class="o">=</span> <span class="n">chunked_boundednessgroups</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">virialgroups</span> <span class="o">=</span> <span class="n">chunked_virialgroups</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="n">usedDMgroups</span> <span class="o">=</span> <span class="n">chunked_usedDMgroups</span><span class="p">[</span><span class="n">chunkidx</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunk</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing index </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2"> in chunk starting with </span><span class="si">{</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">usedDM</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">allStarPositions</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">starVel_inGroup</span> <span class="o">=</span> <span class="n">allStarVelocities</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">starMass_inGroup</span> <span class="o">=</span> <span class="n">allStarMasses</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">starMass_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starMass_inGroup</span><span class="p">)</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span> <span class="o">/</span> <span class="n">hubbleparam</span> <span class="c1">#convert masses</span>
+                <span class="n">starVel_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span> <span class="c1">#unit conversions on the particle coordinates </span>
+                <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">)</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span>
+                <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">_</span><span class="o">=</span><span class="n">chunked_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">groupVel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">)</span>
+                <span class="n">virialized</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">check_virialized</span><span class="p">(</span><span class="n">kineticEnergyStars</span><span class="p">,</span><span class="n">potentialEnergyStars</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">virialized</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">usedDM</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">pDM</span> <span class="o">=</span> <span class="n">allDMPositions</span><span class="p">[</span><span class="n">startAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                    <span class="n">vDM</span> <span class="o">=</span> <span class="n">allDMVelocities</span><span class="p">[</span><span class="n">startAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllDM</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                    <span class="n">boundednessDM</span><span class="p">,</span><span class="n">_</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span>  <span class="n">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupVel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">)</span>
+                    <span class="n">kineticEnergy</span> <span class="o">=</span> <span class="n">kineticEnergyDM</span> <span class="o">+</span><span class="n">kineticEnergyStars</span>
+                    <span class="n">potentialEnergy</span> <span class="o">=</span> <span class="n">potentialEnergyDM</span> <span class="o">+</span><span class="n">potentialEnergyStars</span>
+                    <span class="n">virialized</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">check_virialized</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">boundedness</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">boundednessDM</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">boundednessgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">virialgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">virialized</span>
+                <span class="k">if</span> <span class="n">virialized</span> <span class="o">==</span><span class="mi">1</span><span class="p">:</span> 
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OMG VIRIALIZED&quot;</span><span class="p">)</span>
+                <span class="n">usedDMgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">usedDM</span>
+                <span class="n">indv_objs</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">indv_objs</span><span class="p">[</span><span class="s1">&#39;boundedness&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">boundedness</span>
+                <span class="n">indv_objs</span><span class="p">[</span><span class="s1">&#39;virialization&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">virialized</span>
+                <span class="n">indv_objs</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">usedDM</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished processing obj </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2"> in chunk starting with </span><span class="si">{</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, saving progress...&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gofilename</span><span class="o">+</span><span class="s2">&quot;/bounded3/indv_objs/indv_bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_object&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_startidx&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;_V1.dat&quot;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>   
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">indv_objs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished processing chunk starting with </span><span class="si">{</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, saving progress...&quot;</span><span class="p">)</span>
+            <span class="n">objs</span><span class="o">=</span><span class="p">{}</span>
+            <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundednessgroups</span>
+            <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">virialgroups</span>
+            <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">usedDMgroups</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gofilename</span><span class="o">+</span><span class="s2">&quot;/bounded3/bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_startidx&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;_V1.dat&quot;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>   
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">boundednessgroups</span><span class="p">,</span> <span class="n">virialgroups</span><span class="p">,</span> <span class="n">usedDMgroups</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">script</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">SV</span> <span class="o">=</span> <span class="n">argv</span>
+    <span class="n">get_fof_particles</span><span class="p">(</span><span class="n">gofilename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">SV</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">process-fof</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fof_process.html">FOF Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../boundedness.html">Boundedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stellar_rotation.html">Stellar Rotation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concatenateclass.html">processedFOF Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dm_virialization.html">DM virialization</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, Claire Williams.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,16 +1,18 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Environment &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="DM virialization" href="dm_virialization.html" />
@@ -18,9 +20,8 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-
   
-  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
   
@@ -33,10 +34,138 @@
           <div class="body" role="main">
             
   <section id="environment">
-<span id="id1"></span><h1>Environment<a class="headerlink" href="#environment" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1>Environment<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h1>
 <p>Functions to investigate environment of star clusters.</p>
-<section id="functions">
-<h2>Functions:<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<section id="module-environment">
+<span id="functions"></span><h2>Functions:<a class="headerlink" href="#module-environment" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="environment.compare_baryon_dm_fof">
+<span class="sig-prename descclassname"><span class="pre">environment.</span></span><span class="sig-name descname"><span class="pre">compare_baryon_dm_fof</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baryon_centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm_centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmmass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmradii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1775.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#compare_baryon_dm_fof"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#environment.compare_baryon_dm_fof" title="Permalink to this definition">¶</a></dt>
+<dd><p>For every baryon FOF object, finds the nearest DM halos (closest one and within 5, 10 ckpc)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>baryon_centers</strong> (<em>arr Nx3</em>) – centers of mass of the baryon primary objects</p></li>
+<li><p><strong>dm_centers</strong> (<em>arr</em><em>, </em><em>Mx3</em>) – centers of mass of the DM objects</p></li>
+<li><p><strong>dmmmass</strong> (<em>arr</em><em>, </em><em>M</em>) – dark matter mass of the DM objects</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – box size in code units</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>indices of closest DM object;
+arr, dtype = float : distances to closest DM object in code units;
+arr, dtype = float: masses of closest DM object in code mass;
+arr, dtype = bool: whether or not the object is within R200 of the closest DM;
+arr, dtype = int: number of DM object within 10 code units;
+arr, dtype = int: number of DM object within 5 code units;</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>arr, dtype = int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="environment.compare_baryon_env">
+<span class="sig-prename descclassname"><span class="pre">environment.</span></span><span class="sig-name descname"><span class="pre">compare_baryon_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baryon_centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1775.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#compare_baryon_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#environment.compare_baryon_env" title="Permalink to this definition">¶</a></dt>
+<dd><p>For every baryon FOF object, finds the nearest other baryon objects (closest one and within 5, 10 ckpc)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>baryon_centers</strong> (<em>arr Nx3</em>) – centers of mass of the baryon primary objects</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – box size in code units</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>indices of closest baryon object;
+arr, dtype = float : distances to closest baryon object in code units;
+arr, dtype = int: number of baryon object within 10 code units;
+arr, dtype = int: number of baryon object within 5 code units;</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>arr, dtype = int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="environment.dict_calculate">
+<span class="sig-prename descclassname"><span class="pre">environment.</span></span><span class="sig-name descname"><span class="pre">dict_calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baryon_centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm_centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmmass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmradii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1775.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#dict_calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#environment.dict_calculate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates dictionary of</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>baryon_centers</strong> (<em>arr Nx3</em>) – centers of mass of the baryon primary objects</p></li>
+<li><p><strong>dm_centers</strong> (<em>arr</em><em>, </em><em>Mx3</em>) – centers of mass of the DM objects</p></li>
+<li><p><strong>dmmmass</strong> (<em>arr</em><em>, </em><em>M</em>) – dark matter mass of the DM objects</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – box size in code units</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary containing all the output parameters of compare_baryon_env, compare_baryon_dm_fof</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="environment.set_up_baryon_fofs">
+<span class="sig-prename descclassname"><span class="pre">environment.</span></span><span class="sig-name descname"><span class="pre">set_up_baryon_fofs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sv</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#set_up_baryon_fofs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#environment.set_up_baryon_fofs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grabs FOF data using processed FOF class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileame</strong> (<em>str</em>) – path to FOF directory</p></li>
+<li><p><strong>snapnum</strong> (<em>str</em><em> or </em><em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>centers of bounded objs, radii (from boundedness) of bounded objects</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="environment.set_up_dm_fofs">
+<span class="sig-prename descclassname"><span class="pre">environment.</span></span><span class="sig-name descname"><span class="pre">set_up_dm_fofs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config.configuration.set_directories.0DMP-GS-'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#set_up_dm_fofs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#environment.set_up_dm_fofs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grabs halo data corresponding to DM primary FOF with same snapnum and SV
+:param snapnum:
+:type snapnum: int or str
+:param sv:
+:type sv: str
+:param path: path of DM primary files WITHOUT the stream velocity indicator
+:type path: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array of total group mass, np.ndarray: array of dm group mass, array of group position [x,y,z], np.ndarray: array of group radii</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="environment.wrapper">
+<span class="sig-prename descclassname"><span class="pre">environment.</span></span><span class="sig-name descname"><span class="pre">wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1775.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config.configuration.set_directories.0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#environment.wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function. Currently there are some unused parameters and the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – name of directory where baryon output located (ie. “SP-”, “SGP-“)</p></li>
+<li><p><strong>sv</strong> (<em>str</em>) – Value of stream velocity - options “Sig0” or “Sig2”</p></li>
+<li><p><strong>snapnum</strong> (<em>str</em><em> or </em><em>int</em>) – hdf5 snap output.</p></li>
+<li><p><strong>save</strong> (<em>bool</em>) – whether or not to save the output at path + directory + sv</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -64,7 +193,7 @@
 <li class="toctree-l1"><a class="reference internal" href="stellar_rotation.html">Stellar Rotation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concatenateclass.html">processedFOF Class</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Environment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#functions">Functions:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-environment">Functions:</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dm_virialization.html">DM virialization</a></li>
@@ -88,7 +217,7 @@
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -102,11 +231,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Claire Williams.
+      &copy;2024, Claire Williams.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/environment.rst.txt"
