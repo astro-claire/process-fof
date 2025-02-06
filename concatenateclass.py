@@ -35,7 +35,8 @@ class processedFOF():
         self.group = self._setGroup()
         self.properties = self._findFOF()
         self._findRotation() 
-        self.properties['centers'], self.properties['fofradii'] = self._getFOFData()
+        ### TO DO : convert these to numpy arrays for easier plotting
+        self.properties['centers'], self.properties['fofradii'], self.properties['fofvel'] = self._getFOFData()
         self._properties_notBounded = list(self.properties.keys())
         self.boundedidx=0.
         self.properties['bounded'] =[]
@@ -128,6 +129,7 @@ class processedFOF():
         group_pos = np.array(f['Group']['GroupPos'])
         group_len_type = np.array(f['Group']['GroupLenType'])
         group_r_crit200 = np.array(f['Group']['Group_R_Crit200'])
+        group_vel = np.array(f['Group']['GroupVel'])
         self.atime = f['Header'].attrs['Time']
         self.omegaLambda = f['Header'].attrs['OmegaLambda']
         self.H0 = f['Header'].attrs['HubbleParam']
@@ -137,6 +139,12 @@ class processedFOF():
         # Use the mask to select the centers and radii directly
         centers = group_pos[mask]
         fofradii = group_r_crit200[mask]
+        fofvel = group_vel[mask]
+        if self.group == "DM":
+            mask2 = fofradii > 0
+            centers = centers[mask2]
+            fofradii = fofradii[mask2]
+            fofvel = fofvel[mask2]
         maxradname = "maxradii_"+str(self.snapnum)+"_V3.dat"
         filepath = self.path 
         for filename in os.listdir(filepath):
@@ -161,7 +169,7 @@ class processedFOF():
             with open(str(half_rad_path),'rb') as f: 
                 halfrad = pickle.load(f) 
                 self.properties['hmradii']= halfrad['hmradii']
-        return centers, fofradii
+        return centers, fofradii,fofvel
     
     def _findRotation(self): 
         """
@@ -371,7 +379,7 @@ class processedFOF():
         self._nonRotationKeys = self._allKeys
         if 'SFR' in self.properties.keys():
             self._nonRotationKeys.append('SFR')
-        for key in ['centers','fofradii','rotation_curve_rms','rotation_curve_turb','rotation_curve_rot', 'rotation_curve_rad', 'v_rms','v_rad','v_rot','v_turb','star_rot_radii','gas_rot_radii','gas_rotation_curve_rms','gas_rotation_curve_turb','gas_rotation_curve_rot', 'gas_rotation_curve_rad', 'gas_v_rms','gas_v_rad','gas_v_rot','gas_v_turb']:
+        for key in ['centers','fofradii','fofvel','rotation_curve_rms','rotation_curve_turb','rotation_curve_rot', 'rotation_curve_rad', 'v_rms','v_rad','v_rot','v_turb','star_rot_radii','gas_rot_radii','gas_rotation_curve_rms','gas_rotation_curve_turb','gas_rotation_curve_rot', 'gas_rotation_curve_rad', 'gas_v_rms','gas_v_rad','gas_v_rot','gas_v_turb']:
             if key in self._nonRotationKeys:
                 self._nonRotationKeys.remove(key)
         if 'DM' in self.properties['prim']:
