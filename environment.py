@@ -18,7 +18,7 @@ def set_up_baryon_fofs(filename, snapnum,sv):
         tuple: centers of bounded objs, radii (from boundedness) of bounded objects
 
     """
-    fof = processedFOF(snapnum,filename,sv, path = "/u/home/c/clairewi/project-snaoz/FOF_project") #call processed fof class 
+    fof = processedFOF(snapnum,filename,sv, path = "/u/home/c/clairewi/project-snaoz/FOF_project",bounded_path = "bounded3") #call processed fof class 
     fof.chopUnBounded() #remove any unbounded objects 
     if 'recalcRadii' in fof.properties.keys():
         print("using the recalculated radii")
@@ -165,7 +165,7 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
     objs = dict_calculate(baryon_centers, groupPos, groupDMmass, groupRadii, boxSize = boxSize)
     if save ==True: 
         print("Saving output!")
-        with open(str(path)+str(directory)+str(sv)+"/environment_"+str(snapnum)+"_V1.dat",'wb') as f:
+        with open(str(path)+str(directory)+str(sv)+"/environment_"+str(snapnum)+"_V2.dat",'wb') as f:
             pickle.dump(objs, f)
 
 if __name__=="__main__":

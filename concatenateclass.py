@@ -35,7 +35,8 @@ class processedFOF():
         self.group = self._setGroup()
         self.properties = self._findFOF()
         self._findRotation() 
-        self.properties['centers'], self.properties['fofradii'] = self._getFOFData()
+        ### TO DO : convert these to numpy arrays for easier plotting
+        self.properties['centers'], self.properties['fofradii'], self.properties['fofvel'] = self._getFOFData()
         self._properties_notBounded = list(self.properties.keys())
         self.boundedidx=0.
         self.properties['bounded'] =[]
@@ -128,6 +129,7 @@ class processedFOF():
         group_pos = np.array(f['Group']['GroupPos'])
         group_len_type = np.array(f['Group']['GroupLenType'])
         group_r_crit200 = np.array(f['Group']['Group_R_Crit200'])
+        group_vel = np.array(f['Group']['GroupVel'])
         self.atime = f['Header'].attrs['Time']
         self.omegaLambda = f['Header'].attrs['OmegaLambda']
         self.H0 = f['Header'].attrs['HubbleParam']
@@ -137,7 +139,13 @@ class processedFOF():
         # Use the mask to select the centers and radii directly
         centers = group_pos[mask]
         fofradii = group_r_crit200[mask]
-        maxradname = "maxradii_"+str(self.snapnum)+"_V1.dat"
+        fofvel = group_vel[mask]
+        if self.group == "DM":
+            mask2 = fofradii > 0
+            centers = centers[mask2]
+            fofradii = fofradii[mask2]
+            fofvel = fofvel[mask2]
+        maxradname = "maxradii_"+str(self.snapnum)+"_V3.dat"
         filepath = self.path 
         for filename in os.listdir(filepath):
             # Check if the file exists in that directory
@@ -149,7 +157,19 @@ class processedFOF():
             with open(str(max_rad_path),'rb') as f: 
                 maxrad = pickle.load(f) 
                 self.properties['maxradii']= maxrad['maxradii']
-        return centers, fofradii
+        halfradname = "hmradii_"+str(self.snapnum)+"_V2.dat"
+        filepath = self.path 
+        for filename in os.listdir(filepath):
+            # Check if the file exists in that directory
+            if halfradname in filename:
+                half_rad_path = filepath+"/"+filename
+        if 'half_rad_path' in locals():
+            if self.verbose ==True: 
+                print(half_rad_path)
+            with open(str(half_rad_path),'rb') as f: 
+                halfrad = pickle.load(f) 
+                self.properties['hmradii']= halfrad['hmradii']
+        return centers, fofradii,fofvel
     
     def _findRotation(self): 
         """
@@ -359,7 +379,7 @@ class processedFOF():
         self._nonRotationKeys = self._allKeys
         if 'SFR' in self.properties.keys():
             self._nonRotationKeys.append('SFR')
-        for key in ['centers','fofradii','rotation_curve_rms','rotation_curve_turb','rotation_curve_rot', 'rotation_curve_rad', 'v_rms','v_rad','v_rot','v_turb','star_rot_radii','gas_rot_radii','gas_rotation_curve_rms','gas_rotation_curve_turb','gas_rotation_curve_rot', 'gas_rotation_curve_rad', 'gas_v_rms','gas_v_rad','gas_v_rot','gas_v_turb']:
+        for key in ['centers','fofradii','fofvel','rotation_curve_rms','rotation_curve_turb','rotation_curve_rot', 'rotation_curve_rad', 'v_rms','v_rad','v_rot','v_turb','star_rot_radii','gas_rot_radii','gas_rotation_curve_rms','gas_rotation_curve_turb','gas_rotation_curve_rot', 'gas_rotation_curve_rad', 'gas_v_rms','gas_v_rad','gas_v_rot','gas_v_turb']:
             if key in self._nonRotationKeys:
                 self._nonRotationKeys.remove(key)
         if 'DM' in self.properties['prim']:
@@ -383,7 +403,7 @@ class processedFOF():
         Search for environment output and add to properties. Must be run post bounded! Only available for baryonic primaries. 
         """
         filepath = self.path 
-        env_name = "environment_"+ str(self.snapnum)+"_V1"  
+        env_name = "environment_"+ str(self.snapnum)+"_V2"  
         for filename in os.listdir(filepath):
             # Check if the file exists in that directory
             if env_name in filename:
@@ -479,3 +499,43 @@ class processedFOF():
         if 'SFR' in self.properties.keys():
             self.properties['SFRpermass'] = self.properties['SFR']*un.Msun/un.yr/ (self.properties['stellarMass'] * UnitMass_in_g/self.H0)
             return (self.properties['SFRpermass'] **(-1.)).to('Myr')
+
+    def calcTdyn(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitVelocity_in_cm_per_s = 1.0e5 * un.cm / un.s
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+        vel = self.properties['v_rms'] * UnitVelocity_in_cm_per_s
+        return (r/vel).to('Myr')
+    
+    def calcTdynGas(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitVelocity_in_cm_per_s = 1.0e5 * un.cm / un.s
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+        vel = self.properties['gas_v_rms'] * UnitVelocity_in_cm_per_s
+        return (r/vel).to('Myr')
+    
+    def calcTCollapse(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        print("estimating mass from baryonic mass")
+        mass = 6*(self.properties['stellarMass'] + self.properties['gasMass']) * UnitMass_in_g
+        r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+        rhotot = mass/(4./3. *np.pi * r**3)
+        return (1/((GRAVITY_cgs * rhotot)**(1./2.))).to('Myr')
+    
+    def estGasDensity(self, radiuskey = 'maxradii', radiusfactor = 1.):
+        UnitLength_in_cm = 3.085678e21 *un.cm
+        GRAVITY_cgs = c.G.cgs
+        UnitMass_in_g = 1.989e43 * un.g
+        print("estimating mass from baryonic mass")
+        mass = (self.properties['gasMass']) * UnitMass_in_g
+        massbaryons = (self.properties['stellarMass'] + self.properties['gasMass']) * UnitMass_in_g
+        r = self.properties[radiuskey] * UnitLength_in_cm * radiusfactor
+        rhogas = mass/(4./3. *np.pi * r**3)
+        rhobaryons = massbaryons/(4./3. *np.pi * r**3)
+        return rhogas, rhobaryons
