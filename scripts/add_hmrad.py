@@ -10,8 +10,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from modules.boundedness import get_GroupPos, get_starIDs
 from modules.fof_process import dist2, set_subfind_catalog,get_cosmo_props,get_starIDgroups,get_starGroups, set_snap_directories, open_hdf5, get_headerprops
+import config.configuration as config
 
-UnitLength_in_cm = 3.085678e21 
+constants = config.load_constants()
+UnitLength_in_cm = constants['UnitLength_in_cm']
+# UnitLength_in_cm = 3.085678e21 
+inputdir = config.set_directories()[0]
 
 def get_hmradii(allStarPositions,allStarMasses,startAllStars,endAllStars,baryon_centers,boxSize,cosmo):
     """
@@ -81,7 +85,7 @@ def calc_half_mass_radius(starPos_inGroup, starMass_inGroup, groupPos, boxSize):
 
 
 
-def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home/c/clairewi/project-snaoz/FOF_project/'):   
+def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path =str(inputdir)):   
     """
     Wrapper function. Currently there are some unused parameters
 
