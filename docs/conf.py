@@ -8,6 +8,9 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../modules'))
+sys.path.insert(0, os.path.abspath('../config'))
+
 autodoc_mock_imports = ['h5py', 'numpy', 'pickle'] 
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
