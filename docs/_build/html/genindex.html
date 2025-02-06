@@ -1,23 +1,24 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-
   
-  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
   
@@ -102,10 +103,10 @@
 </li>
       <li><a href="boundedness.html#boundedness.check_if_exists_indv">check_if_exists_indv() (in module boundedness)</a>
 </li>
-      <li><a href="boundedness.html#boundedness.check_virialized">check_virialized() (in module boundedness)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="boundedness.html#boundedness.check_virialized">check_virialized() (in module boundedness)</a>
+</li>
       <li><a href="boundedness.html#boundedness.chunked_calc_boundedness">chunked_calc_boundedness() (in module boundedness)</a>
 </li>
       <li><a href="boundedness.html#boundedness.chunked_calc_dm_boundedness">chunked_calc_dm_boundedness() (in module boundedness)</a>
@@ -113,8 +114,6 @@
       <li><a href="boundedness.html#boundedness.chunked_potential_energy">chunked_potential_energy() (in module boundedness)</a>
 </li>
       <li><a href="boundedness.html#boundedness.chunked_potential_energy_between_groups">chunked_potential_energy_between_groups() (in module boundedness)</a>
-</li>
-      <li><a href="boundedness.html#boundedness.chunked_potential_energy_between_sets">chunked_potential_energy_between_sets() (in module boundedness)</a>
 </li>
       <li><a href="boundedness.html#boundedness.chunked_potential_energy_same_mass">chunked_potential_energy_same_mass() (in module boundedness)</a>
 </li>
@@ -124,24 +123,21 @@
 </li>
       <li><a href="boundedness.html#boundedness.compute_row_2type">compute_row_2type() (in module boundedness)</a>
 </li>
-      <li>
-    concatenateclass
-
-      <ul>
-        <li><a href="concatenate.html#module-concatenateclass">module</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="fof_process.html#fof_process.dist2">dist2() (in module fof_process)</a>
+</li>
       <li><a href="boundedness.html#boundedness.dist2_indv">dist2_indv() (in module boundedness)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="boundedness.html#boundedness.dx_indv">dx_indv() (in module boundedness)</a>
+</li>
+      <li><a href="fof_process.html#fof_process.dx_wrap">dx_wrap() (in module fof_process)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -240,8 +236,6 @@
       <ul>
         <li><a href="boundedness.html#module-boundedness">boundedness</a>
 </li>
-        <li><a href="concatenate.html#module-concatenateclass">concatenateclass</a>
-</li>
         <li><a href="fof_process.html#module-fof_process">fof_process</a>
 </li>
         <li><a href="stellar_rotation.html#module-stellar_rotation">stellar_rotation</a>
@@ -332,7 +326,9 @@
 <li class="toctree-l1"><a class="reference internal" href="fof_process.html">FOF Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="boundedness.html">Boundedness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stellar_rotation.html">Stellar Rotation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concatenate.html">processedFOF Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concatenateclass.html">processedFOF Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dm_virialization.html">DM virialization</a></li>
 </ul>
 
 <div class="relations">
@@ -351,7 +347,7 @@
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -365,11 +361,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Claire Williams.
+      &copy;2024, Claire Williams.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 
