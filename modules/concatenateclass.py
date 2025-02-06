@@ -6,6 +6,19 @@ import os
 from astropy import units as un
 from astropy import constants as c
 from astropy.cosmology import FlatLambdaCDM
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+import config.configuration as config
+
+#Set units and parameters
+constants = config.load_constants()
+UnitMass_in_g = constants['UnitMass_in_g']     
+UnitLength_in_cm = constants['UnitLength_in_cm']
+hubbleparam = constants['hubbleparam'] #hubble constant
+GRAVITY_cgs = constants['GRAVITY_cgs']
+UnitVelocity_in_cm_per_s = constants['UnitVelocity_in_cm_per_s']
 
 
 class processedFOF(): 

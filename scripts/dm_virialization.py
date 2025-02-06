@@ -12,14 +12,13 @@ from modules.boundedness import chunks, get_starIDs, get_DMIDs, calc_boundedness
 from modules.fof_process import dx_wrap, dist2, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, get_Halos, get_DMIDgroups, get_starIDgroups
 import os
 
-constants = config.load_constants()
-
 #Set units and parameters
+constants = config.load_constants()
 UnitMass_in_g = constants['UnitMass_in_g']     
-UnitLength_in_cm = 3.085678e21 
-hubbleparam = .71 #hubble constant
-GRAVITY_cgs = 6.672e-8
-UnitVelocity_in_cm_per_s = 1.0e5
+UnitLength_in_cm = constants['UnitLength_in_cm']
+hubbleparam = constants['hubbleparam'] #hubble constant
+GRAVITY_cgs = constants['GRAVITY_cgs']
+UnitVelocity_in_cm_per_s = constants['UnitVelocity_in_cm_per_s']
 
 
 # def set_up_DM_fofs(filename, snapnum,sv):
