@@ -1,0 +1,6 @@
+# Configuration 
+directories:
+  input_dir: /u/home/c/clairewi/project-snaoz/FOF_project
+  output_dir: /u/home/c/clairewi/project-snaoz/FOF_project
+  code_dir: /u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof
+
