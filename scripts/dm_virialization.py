@@ -1,14 +1,21 @@
 import numpy as np
 import numpy as np
 import pickle
-from concatenateclass import processedFOF
 from sys import argv
-from boundedness import chunks, get_starIDs, get_DMIDs, calc_boundedness,chunked_calc_boundedness,check_virialized,dist2_indv,chunked_potential_energy_same_mass,chunked_potential_energy_between_groups
-from fof_process import dx_wrap, dist2, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, get_Halos, get_DMIDgroups, get_starIDgroups
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+import config.configuration as config
+from modules.concatenateclass import processedFOF
+from modules.boundedness import chunks, get_starIDs, get_DMIDs, calc_boundedness,chunked_calc_boundedness,check_virialized,dist2_indv,chunked_potential_energy_same_mass,chunked_potential_energy_between_groups
+from modules.fof_process import dx_wrap, dist2, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, get_Halos, get_DMIDgroups, get_starIDgroups
 import os
 
+constants = config.load_constants()
+
 #Set units and parameters
-UnitMass_in_g = 1.989e43     
+UnitMass_in_g = constants['UnitMass_in_g']     
 UnitLength_in_cm = 3.085678e21 
 hubbleparam = .71 #hubble constant
 GRAVITY_cgs = 6.672e-8

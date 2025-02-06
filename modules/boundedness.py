@@ -6,7 +6,10 @@ import sys
 import os
 import concurrent.futures
 from functools import partial
-sys.path.append('/u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof')
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
 from fof_process import dx_wrap, dist2, get_DMIDgroups, get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_headerprops
 
 #Set units and parameters

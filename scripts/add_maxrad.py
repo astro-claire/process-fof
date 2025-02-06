@@ -3,9 +3,13 @@ import numpy as np
 import pickle
 from sys import argv
 import sys
-sys.path.append('../')
-from boundedness import calc_max_radius, get_GroupPos, get_starIDs
-from fof_process import set_subfind_catalog,get_cosmo_props,get_starIDgroups,get_starGroups, set_snap_directories, open_hdf5, get_headerprops
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+
+from modules.boundedness import calc_max_radius, get_GroupPos, get_starIDs
+from modules.fof_process import set_subfind_catalog,get_cosmo_props,get_starIDgroups,get_starGroups, set_snap_directories, open_hdf5, get_headerprops
 
 UnitLength_in_cm = 3.085678e21 
 
