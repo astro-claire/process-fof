@@ -207,6 +207,29 @@ def check_if_exists(filepath, idx,snapnum):
             print(filename)
             exists = True
     return exists
+def check_if_exists_indv(filepath, idx,j,snapnum): 
+    """
+    Check if a file corresponding to a particular snapshot and chunk exists in the specified directory.
+
+    Parameters:
+        filepath (str): Path to the directory.
+        idx (int): Chunk index.
+        snapnum (int): Snapshot number.
+
+    Returns:
+        (bool): True if the file exists, False otherwise.
+    """
+    filepath = filepath + '/indv_objs'
+    fof_process_name = "indv_bounded_portion_"+str(snapnum)+"_chunk"+str(idx)+"_object"+str(j)
+    exists = False
+    for filename in os.listdir(filepath):
+        # Check if the file exists in that directory
+        if fof_process_name in filename:
+            print("File has already been created!")
+            print(filename)
+            exists = True
+    return exists
+
 
 def iterate_objs_savechunks(halo100_indices,groupPos,groupVel,startAllDM, endAllDM, startAllStars, endAllStars,allStarPositions,allStarMasses, allStarVelocities, allDMPositions, allDMVelocities,boxSize, atime,massDMParticle,gofilename,snapnum,N=0): 
     """
@@ -386,38 +409,50 @@ def iterate_objs_saveindv(halo100_indices,groupPos,groupVel,startAllDM, endAllDM
             usedDMgroups = chunked_usedDMgroups[chunkidx]
             for i,j in enumerate(chunk):
                 print(f"Processing index {j} in chunk starting with {chunk[0]}")
-                usedDM = 0
-                starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-                starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
-                starMass_inGroup = allStarMasses[startAllStars[i]:endAllStars[i]]
-                starMass_inGroup = np.array(starMass_inGroup) * UnitMass_in_g / hubbleparam #convert masses
-                starVel_inGroup = np.array(starVel_inGroup) * np.sqrt(atime) #unit conversions on the particle coordinates 
-                starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
-                boundedness, energyStars, kineticEnergyStars, potentialEnergyStars, _=chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVel[i],boxSize,boxSizeVel)
-                virialized, _ = check_virialized(kineticEnergyStars,potentialEnergyStars)
-                print(kineticEnergyStars, potentialEnergyStars)
-                if virialized ==0:
-                    usedDM = 1
-                    pDM = allDMPositions[startAllDM[i]:endAllDM[i]]
-                    vDM = allDMVelocities[startAllDM[i]:endAllDM[i]]
-                    boundednessDM,_, kineticEnergyDM, potentialEnergyDM, _ =  chunked_calc_dm_boundedness(energyStars, starPos_inGroup, starMass_inGroup, groupVel[i],boxSize,boxSizeVel, pDM, vDM ,atime,massDMParticle)
-                    kineticEnergy = kineticEnergyDM +kineticEnergyStars
-                    potentialEnergy = potentialEnergyDM +potentialEnergyStars
-                    virialized,_ = check_virialized(kineticEnergy, potentialEnergy)
-                    print(kineticEnergy, potentialEnergy)
-                if (boundedness == 1) or (boundednessDM == 1):
-                    boundednessgroups[i] = 1
-                virialgroups[i]=virialized
-                if virialized ==1: 
-                    print("OMG VIRIALIZED")
-                usedDMgroups[i]= usedDM
-                indv_objs = {}
-                indv_objs['boundedness']= boundedness
-                indv_objs['virialization']= virialized
-                indv_objs['usedDM']= usedDM
-                print(f"Finished processing obj {j} in chunk starting with {chunk[0]}, saving progress...")
-                with open(gofilename+"/bounded3/indv_objs/indv_bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_object"+str(j)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
-                    pickle.dump(indv_objs, f)
+                if check_if_exists_indv(filepath, chunkidx, j, snapnum)==False: 
+                    print("Individual object hasn't been done yet!")
+                    usedDM = 0
+                    starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
+                    starVel_inGroup = allStarVelocities[startAllStars[i]:endAllStars[i]]
+                    starMass_inGroup = allStarMasses[startAllStars[i]:endAllStars[i]]
+                    starMass_inGroup = np.array(starMass_inGroup) * UnitMass_in_g / hubbleparam #convert masses
+                    starVel_inGroup = np.array(starVel_inGroup) * np.sqrt(atime) #unit conversions on the particle coordinates 
+                    starPos_inGroup = np.array(starPos_inGroup) *atime / hubbleparam
+                    boundedness, energyStars, kineticEnergyStars, potentialEnergyStars, _=chunked_calc_boundedness(starVel_inGroup,starPos_inGroup,starMass_inGroup, groupPos[i],groupVel[i],boxSize,boxSizeVel)
+                    virialized, _ = check_virialized(kineticEnergyStars,potentialEnergyStars)
+                    print(kineticEnergyStars, potentialEnergyStars)
+                    if virialized ==0:
+                        usedDM = 1
+                        pDM = allDMPositions[startAllDM[i]:endAllDM[i]]
+                        vDM = allDMVelocities[startAllDM[i]:endAllDM[i]]
+                        boundednessDM,_, kineticEnergyDM, potentialEnergyDM, _ =  chunked_calc_dm_boundedness(energyStars, starPos_inGroup, starMass_inGroup, groupVel[i],boxSize,boxSizeVel, pDM, vDM ,atime,massDMParticle)
+                        kineticEnergy = kineticEnergyDM +kineticEnergyStars
+                        potentialEnergy = potentialEnergyDM +potentialEnergyStars
+                        virialized,_ = check_virialized(kineticEnergy, potentialEnergy)
+                        print(kineticEnergy, potentialEnergy)
+                    if (boundedness == 1) or (boundednessDM == 1):
+                        boundednessgroups[i] = 1
+                    virialgroups[i]=virialized
+                    if virialized ==1: 
+                        print("OMG VIRIALIZED")
+                    usedDMgroups[i]= usedDM
+                    indv_objs = {}
+                    indv_objs['boundedness']= boundedness
+                    indv_objs['virialization']= virialized
+                    indv_objs['usedDM']= usedDM
+                    print(f"Finished processing obj {j} in chunk starting with {chunk[0]}, saving progress...")
+                    with open(gofilename+"/bounded3/indv_objs/indv_bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_object"+str(j)+"_startidx"+str(chunk[0])+"_V1.dat",'wb') as f:   
+                        pickle.dump(indv_objs, f)
+                else: 
+                    print("object"+str(j)+" was already done! Getting the info from that")
+                    with open(gofilename+"/bounded3/indv_objs/indv_bounded_portion_"+str(snapnum)+"_chunk"+str(chunkidx)+"_object"+str(j)+"_startidx"+str(chunk[0])+"_V1.dat",'rb') as f:   
+                        indv_objs = pickle.load(f)
+                    boundednessgroups[i] = indv_objs['boundedness']
+                    # massStars.append(indv_objs['massStar'])
+                    # virialRatios.append(indv_objs['virial_ratio'])
+                    # recalcRadii.append(indv_objs['virial_radius'])
+                    virialgroups[i] = indv_objs['virialization']
+                    usedDMgroups[i] = indv_objs['usedDM']
             print(f"Finished processing chunk starting with {chunk[0]}, saving progress...")
             objs={}
             objs['bounded'] = boundednessgroups
