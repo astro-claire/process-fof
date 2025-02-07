@@ -20,6 +20,8 @@ run_hoffman10.sh
 
 #Testing script
 boundedness2.py
+config/config.yaml
+config/constants.yaml
 
 # Distribution / packaging
 .Python
