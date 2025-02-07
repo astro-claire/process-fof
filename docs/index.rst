@@ -97,10 +97,10 @@ The ``setup.py`` script should result in the following file structure inside the
 
     .
     ├── DMP-GS-Sig0
-    │   ├── bounded3
+    │   └── bounded3
     │       └── indv_objs
     ├── SGP-Sig0
-    │   ├── bounded3
+    │   └── bounded3
     │       └── indv_objs
     |── additional FOF directories...
 
@@ -113,12 +113,12 @@ The file strucutre should look like this:
     .
     ├── DMP-GS-Sig0
     │   ├── bounded3
-    │       └── indv_objs
+    │   │   └── indv_objs
     │   ├── snap-groupordered-<snap>.hdf5
     │   └── fof-subhalo-tab-<snap>.hdf5
     ├── SGP-Sig0
     │   ├── bounded3
-    │       └── indv_objs
+    │   │   └── indv_objs
     │   ├── snap-groupordered-<snap>.hdf5
     │   └── fof-subhalo-tab-<snap>.hdf5
     |── additional FOF directories...
