@@ -1,23 +1,24 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>environment &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-
   
-  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
   
@@ -47,10 +48,8 @@
 
 <span class="n">inputdir</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">set_directories</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
-<div class="viewcode-block" id="set_up_baryon_fofs">
-<a class="viewcode-back" href="../environment.html#environment.set_up_baryon_fofs">[docs]</a>
-<span class="k">def</span> <span class="nf">set_up_baryon_fofs</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span><span class="n">sv</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="set_up_baryon_fofs"><a class="viewcode-back" href="../environment.html#environment.set_up_baryon_fofs">[docs]</a><span class="k">def</span> <span class="nf">set_up_baryon_fofs</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span><span class="n">sv</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Grabs FOF data using processed FOF class</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -71,11 +70,8 @@
     <span class="k">else</span><span class="p">:</span> 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: No radii associated with this fof! This should not happen.&quot;</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="set_up_dm_fofs">
-<a class="viewcode-back" href="../environment.html#environment.set_up_dm_fofs">[docs]</a>
-<span class="k">def</span> <span class="nf">set_up_dm_fofs</span><span class="p">(</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">inputdir</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;DMP-GS-&#39;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="set_up_dm_fofs"><a class="viewcode-back" href="../environment.html#environment.set_up_dm_fofs">[docs]</a><span class="k">def</span> <span class="nf">set_up_dm_fofs</span><span class="p">(</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">inputdir</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;DMP-GS-&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Grabs halo data corresponding to DM primary FOF with same snapnum and SV</span>
 <span class="sd">    Parameters: </span>
 <span class="sd">        snapnum (int or str)</span>
@@ -97,11 +93,8 @@
     <span class="n">groupRadii</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dmfof</span><span class="p">[</span><span class="s1">&#39;Group/Group_R_Crit200&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">groupMass</span><span class="p">,</span> <span class="n">groupDMmass</span> <span class="o">*</span> <span class="n">massDMParticle</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupRadii</span></div>
 
-
-<div class="viewcode-block" id="compare_baryon_dm_fof">
-<a class="viewcode-back" href="../environment.html#environment.compare_baryon_dm_fof">[docs]</a>
-<span class="k">def</span> <span class="nf">compare_baryon_dm_fof</span><span class="p">(</span><span class="n">baryon_centers</span><span class="p">,</span> <span class="n">dm_centers</span><span class="p">,</span> <span class="n">dmmass</span><span class="p">,</span> <span class="n">dmradii</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="mf">1775.</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="compare_baryon_dm_fof"><a class="viewcode-back" href="../environment.html#environment.compare_baryon_dm_fof">[docs]</a><span class="k">def</span> <span class="nf">compare_baryon_dm_fof</span><span class="p">(</span><span class="n">baryon_centers</span><span class="p">,</span> <span class="n">dm_centers</span><span class="p">,</span> <span class="n">dmmass</span><span class="p">,</span> <span class="n">dmradii</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="mf">1775.</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For every baryon FOF object, finds the nearest DM halos (closest one and within 5, 10 ckpc)</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -142,11 +135,8 @@
         <span class="n">closestdm_dmmass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dmmass</span><span class="p">[</span><span class="n">closestdm</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">closestdm</span><span class="p">,</span> <span class="n">closestdm_dist</span><span class="p">,</span> <span class="n">closestdm_dmmass</span><span class="p">,</span> <span class="n">closestdm_inr200</span><span class="p">,</span> <span class="n">num_within10</span><span class="p">,</span> <span class="n">num_within5</span></div>
 
-
-<div class="viewcode-block" id="compare_baryon_env">
-<a class="viewcode-back" href="../environment.html#environment.compare_baryon_env">[docs]</a>
-<span class="k">def</span> <span class="nf">compare_baryon_env</span><span class="p">(</span><span class="n">baryon_centers</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="mf">1775.</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="compare_baryon_env"><a class="viewcode-back" href="../environment.html#environment.compare_baryon_env">[docs]</a><span class="k">def</span> <span class="nf">compare_baryon_env</span><span class="p">(</span><span class="n">baryon_centers</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="mf">1775.</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For every baryon FOF object, finds the nearest other baryon objects (closest one and within 5, 10 ckpc)</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -181,11 +171,8 @@
         <span class="n">closest_dist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="n">closest</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
     <span class="k">return</span> <span class="n">closest</span><span class="p">,</span> <span class="n">closest_dist</span><span class="p">,</span> <span class="n">num_within10</span><span class="p">,</span> <span class="n">num_within5</span></div>
 
-
-<div class="viewcode-block" id="dict_calculate">
-<a class="viewcode-back" href="../environment.html#environment.dict_calculate">[docs]</a>
-<span class="k">def</span> <span class="nf">dict_calculate</span><span class="p">(</span><span class="n">baryon_centers</span><span class="p">,</span> <span class="n">dm_centers</span><span class="p">,</span> <span class="n">dmmass</span><span class="p">,</span> <span class="n">dmradii</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="mf">1775.</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dict_calculate"><a class="viewcode-back" href="../environment.html#environment.dict_calculate">[docs]</a><span class="k">def</span> <span class="nf">dict_calculate</span><span class="p">(</span><span class="n">baryon_centers</span><span class="p">,</span> <span class="n">dm_centers</span><span class="p">,</span> <span class="n">dmmass</span><span class="p">,</span> <span class="n">dmradii</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="mf">1775.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates dictionary of </span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -204,11 +191,8 @@
     <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;closestdm&#39;</span><span class="p">],</span> <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;closestdm_dist&#39;</span><span class="p">],</span> <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;closestdm_dmmass&#39;</span><span class="p">],</span> <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;closestdm_inr200&#39;</span><span class="p">],</span> <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;num_within10dm&#39;</span><span class="p">],</span> <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;num_within5dm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">compare_baryon_dm_fof</span><span class="p">(</span><span class="n">baryon_centers</span><span class="p">,</span> <span class="n">dm_centers</span><span class="p">,</span> <span class="n">dmmass</span><span class="p">,</span> <span class="n">dmradii</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="n">boxSize</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 
-
-<div class="viewcode-block" id="wrapper">
-<a class="viewcode-back" href="../environment.html#environment.wrapper">[docs]</a>
-<span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">save</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="mf">1775.</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">inputdir</span><span class="p">)):</span>   
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="wrapper"><a class="viewcode-back" href="../environment.html#environment.wrapper">[docs]</a><span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">save</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">boxSize</span> <span class="o">=</span> <span class="mf">1775.</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">inputdir</span><span class="p">)):</span>   
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper function. Currently there are some unused parameters and the </span>
 
 <span class="sd">    Parameters: </span>
@@ -226,9 +210,8 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;/environment_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_V2.dat&quot;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
 
-
 <span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Routine if running as a script</span>
 
 <span class="sd">    Arguments: </span>
@@ -288,7 +271,7 @@
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -302,11 +285,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Claire Williams.
+      &copy;2024, Claire Williams.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

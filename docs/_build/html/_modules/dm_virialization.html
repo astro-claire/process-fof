@@ -1,23 +1,24 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>dm_virialization &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-
   
-  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
   
@@ -70,10 +71,8 @@
 <span class="c1">#     fof = processedFOF(snapnum,directory,sv, path = &#39;/u/home/c/clairewi/project-snaoz/FOF_project/&#39;) #call processed fof class </span>
 <span class="c1">#     return fof.properties[&#39;DMIDs&#39;], fof.properties[&#39;starIDs&#39;], fof.properties[&#39;starMasses&#39;]</span>
 
-<div class="viewcode-block" id="chunked_calc_dm_boundedness">
-<a class="viewcode-back" href="../dm_virialization.html#dm_virialization.chunked_calc_dm_boundedness">[docs]</a>
-<span class="k">def</span> <span class="nf">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunked_calc_dm_boundedness"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.chunked_calc_dm_boundedness">[docs]</a><span class="k">def</span> <span class="nf">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group with dark matter using chunked processing to reduce memory usage.</span>
 
 <span class="sd">    Parameters:</span>
@@ -127,11 +126,8 @@
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="o">*</span><span class="n">UnitMass_in_g</span><span class="p">,</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span></div>
 
 
-
-<div class="viewcode-block" id="get_fof_particles">
-<a class="viewcode-back" href="../dm_virialization.html#dm_virialization.get_fof_particles">[docs]</a>
-<span class="k">def</span> <span class="nf">get_fof_particles</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;indv&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_fof_particles"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.get_fof_particles">[docs]</a><span class="k">def</span> <span class="nf">get_fof_particles</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;indv&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the particles from the snapshot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">gofilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -164,11 +160,8 @@
     <span class="c1">#     pickle.dump(objs, f)</span>
     <span class="k">return</span> </div>
 
-
-<div class="viewcode-block" id="iterate_objs">
-<a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs">[docs]</a>
-<span class="k">def</span> <span class="nf">iterate_objs</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="iterate_objs"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs">[docs]</a><span class="k">def</span> <span class="nf">iterate_objs</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over DM primary objects and return whether or not the objects are bounded and virialized, as well as whether or not they are virialized</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -226,11 +219,8 @@
         <span class="n">usedDMgroups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">usedDM</span>
     <span class="k">return</span> <span class="n">boundednessgroups</span><span class="p">,</span> <span class="n">virialgroups</span><span class="p">,</span> <span class="n">usedDMgroups</span></div>
 
-
-<div class="viewcode-block" id="check_if_exists">
-<a class="viewcode-back" href="../dm_virialization.html#dm_virialization.check_if_exists">[docs]</a>
-<span class="k">def</span> <span class="nf">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="check_if_exists"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.check_if_exists">[docs]</a><span class="k">def</span> <span class="nf">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a file corresponding to a particular snapshot and chunk exists in the specified directory.</span>
 
 <span class="sd">    Parameters:</span>
@@ -251,11 +241,8 @@
             <span class="n">exists</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="n">exists</span></div>
 
-
-<div class="viewcode-block" id="iterate_objs_savechunks">
-<a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs_savechunks">[docs]</a>
-<span class="k">def</span> <span class="nf">iterate_objs_savechunks</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="iterate_objs_savechunks"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs_savechunks">[docs]</a><span class="k">def</span> <span class="nf">iterate_objs_savechunks</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over DM primary objects and return whether or not the objects are bounded and virialized, as well as whether or not they are virialized</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -360,11 +347,8 @@
                 <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">boundednessgroups</span><span class="p">,</span> <span class="n">virialgroups</span><span class="p">,</span> <span class="n">usedDMgroups</span></div>
 
-
-<div class="viewcode-block" id="iterate_objs_saveindv">
-<a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs_saveindv">[docs]</a>
-<span class="k">def</span> <span class="nf">iterate_objs_saveindv</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="iterate_objs_saveindv"><a class="viewcode-back" href="../dm_virialization.html#dm_virialization.iterate_objs_saveindv">[docs]</a><span class="k">def</span> <span class="nf">iterate_objs_saveindv</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">groupVel</span><span class="p">,</span><span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span><span class="p">,</span><span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over DM primary objects and return whether or not the objects are bounded and virialized, as well as whether or not they are virialized</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters: </span>
@@ -477,7 +461,6 @@
     <span class="k">return</span> <span class="n">boundednessgroups</span><span class="p">,</span> <span class="n">virialgroups</span><span class="p">,</span> <span class="n">usedDMgroups</span></div>
 
 
-
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">script</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">SV</span> <span class="o">=</span> <span class="n">argv</span>
     <span class="n">get_fof_particles</span><span class="p">(</span><span class="n">gofilename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">SV</span><span class="p">)</span>
@@ -527,7 +510,7 @@
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -541,11 +524,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Claire Williams.
+      &copy;2024, Claire Williams.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

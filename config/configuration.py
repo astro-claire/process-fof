@@ -39,14 +39,30 @@ def get_code_dir(config_file='config.yaml'):
     code_dir= config['directories']['code_dir']
     return code_dir
 
-def get_newstarsfile():
+def get_newstarsfile(config_file='config.yaml'):
     """
     Returns the newstars file
     """
-    config = load_config()
+    config = load_config(config_file=config_file)
     newstars_sig0 = config['files']['newstars_sig0']
     newstars_sig2 = config['files']['newstars_sig2']
     return newstars_sig0, newstars_sig2
+
+def get_snaps(config_file='config.yaml'):
+    """
+    Return the list of simulation snapshots from the configuration file.
+    """
+    config = load_config(config_file=config_file)
+    snapshots = config['simulation_parameters']['snapshots']
+    return snapshots
+
+def get_box_size(config_file='config.yaml'):
+    """
+    Return the box size from the configuration file.
+    """
+    config = load_config(config_file=config_file)
+    box_size = config['simulation_parameters']['boxsize']
+    return box_size
 
 # Example usage
 if __name__ == '__main__':

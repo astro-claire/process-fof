@@ -1,25 +1,26 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Welcome to process-fof’s documentation! &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="FOF Process" href="fof_process.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-
   
-  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
   
@@ -32,11 +33,120 @@
           <div class="body" role="main">
             
   <section id="welcome-to-process-fof-s-documentation">
-<h1>Welcome to process-fof’s documentation!<a class="headerlink" href="#welcome-to-process-fof-s-documentation" title="Link to this heading">¶</a></h1>
+<h1>Welcome to process-fof’s documentation!<a class="headerlink" href="#welcome-to-process-fof-s-documentation" title="Permalink to this headline">¶</a></h1>
 <section id="overview">
-<h2>Overview:<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<h2>Overview:<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>process-fof is a set of python scripts to post-process AREPO FOF runs.
-Instructions to get started will be added here soon!</p>
+Instructions for getting started are currently a template–do not actually use them!</p>
+</section>
+</section>
+<section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>This section will guide you through the steps to set up and start using the repository.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Before you begin, ensure you have the following installed:
+- Python 3.x
+- Git</p>
+</section>
+<section id="clone-the-repository">
+<h2>Clone the Repository<a class="headerlink" href="#clone-the-repository" title="Permalink to this headline">¶</a></h2>
+<p>First, clone the repository to your machine using Git:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/your-username/your-repo.git
+<span class="nb">cd</span> your-repo
+</pre></div>
+</div>
+</section>
+<section id="install-dependencies">
+<h2>Install Dependencies<a class="headerlink" href="#install-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Install the required dependencies using <cite>pip</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
+</pre></div>
+</div>
+<p><cite>Note that this file doesn’t exist yet!</cite></p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>You will need two configuration files to run the scripts. <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> provides information about the simulation settings and directories for I/O. <code class="docutils literal notranslate"><span class="pre">constants.yaml</span></code> contains the cgs values of the units used in your simulation. Copy the example configuration files and edit with your settings:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp config/example_config.yaml config/config.yaml
+<span class="c1"># Edit config/config.yaml with your settings</span>
+cp config/example_constants.yaml config/constants.yaml
+<span class="c1"># Edit config/config.yaml with your settings</span>
+</pre></div>
+</div>
+<p><cite>Note that these files don’t exist yet! Make a file explaining the config parameters as well.</cite></p>
+</section>
+<section id="new-stars">
+<h2>New Stars<a class="headerlink" href="#new-stars" title="Permalink to this headline">¶</a></h2>
+<p>For some scripts, the code requires a database of new star particles at each snapshot.
+This will need to be generated to use the SFR/ Muv functionality for those scripts.
+The location of the newstars files should be specified in <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
+</section>
+<section id="fof-algorithms">
+<h2>FOF Algorithms<a class="headerlink" href="#fof-algorithms" title="Permalink to this headline">¶</a></h2>
+<p>The scripts contained here are designed to post-process outputs from multiple FOF alorithm types in AREPO.
+In Williams et al (in prep), we compare the results of baryon-focused FOF algorithms to dark-matter focused algorithms.
+Currently, four versions are supported:</p>
+<ul class="simple">
+<li><p><cite>DMP-GS</cite> - Dark Matter Primary, Gas and Stars secondary (standard)</p></li>
+<li><p><cite>SGDMP</cite> - Dark matter, gas, and stars primary</p></li>
+<li><p><cite>SP</cite> - Star Primary</p></li>
+<li><p><cite>SGP</cite> - Stars and gas primary.</p></li>
+</ul>
+</section>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>For the code to work, the output files of AREPO’s FOF algorithms must be provided in specified directories.
+After the configuration files have been edited to reflect the current settings, run <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> to generate the appropriate directories for the output files.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py
+</pre></div>
+</div>
+<p>Within each FOF directory, empty directories will be created called <code class="docutils literal notranslate"><span class="pre">bounded3</span></code> and <code class="docutils literal notranslate"><span class="pre">bounded3/indv_objs</span></code>.
+These directories will be used to store the output files of the boundedness/virialization scripts.
+The <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script should result in the following file structure inside the directory given under <code class="docutils literal notranslate"><span class="pre">input_dir</span></code> in <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.
+├── DMP-GS-Sig0
+│   ├── bounded3
+│       └── indv_objs
+├── SGP-Sig0
+│   ├── bounded3
+│       └── indv_objs
+<span class="p">|</span>── additional FOF directories...
+</pre></div>
+</div>
+<p>Once the directories are created, move the output files to the appropriate directories.
+These should be called <code class="docutils literal notranslate"><span class="pre">snap-groupordered-&lt;snap&gt;.hdf5</span></code> and <code class="docutils literal notranslate"><span class="pre">fof-subhalo-tab_&lt;snap&gt;.hdf5</span></code>.
+The file strucutre should look like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.
+├── DMP-GS-Sig0
+│   ├── bounded3
+│       └── indv_objs
+│   ├── snap-groupordered-&lt;snap&gt;.hdf5
+│   └── fof-subhalo-tab-&lt;snap&gt;.hdf5
+├── SGP-Sig0
+│   ├── bounded3
+│       └── indv_objs
+│   ├── snap-groupordered-&lt;snap&gt;.hdf5
+│   └── fof-subhalo-tab-&lt;snap&gt;.hdf5
+<span class="p">|</span>── additional FOF directories...
+</pre></div>
+</div>
+<p>Once this has run, the setup is complete. You can check to ensure the setup is correct by running <code class="docutils literal notranslate"><span class="pre">test_setup.py</span></code>.</p>
+<p><cite>Note that the setup files don’t exist yet!</cite></p>
+</section>
+<section id="run-the-code">
+<h2>Run the Code<a class="headerlink" href="#run-the-code" title="Permalink to this headline">¶</a></h2>
+<p>You can now run the scripts in the <cite>scripts</cite> directory. For example, to run <cite>dm_virialization.py</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python scripts/dm_virialization.py
+</pre></div>
+</div>
+</section>
+<section id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
+<p>If you encounter any issues or have questions, please open an issue on GitHub or contact the maintainers.</p>
+</section>
+<section id="available-scripts-and-modules">
+<h2>Available scripts and modules:<a class="headerlink" href="#available-scripts-and-modules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -53,10 +163,7 @@ Instructions to get started will be added here soon!</p>
 <li class="toctree-l2"><a class="reference internal" href="stellar_rotation.html#module-stellar_rotation">Functions:</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="concatenateclass.html">processedFOF Class</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="concatenateclass.html#concatenateclass.processedFOF"><code class="docutils literal notranslate"><span class="pre">processedFOF</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="concatenateclass.html">processedFOF Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="environment.html">Environment</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="environment.html#module-environment">Functions:</a></li>
 </ul>
@@ -70,7 +177,7 @@ Instructions to get started will be added here soon!</p>
 </section>
 </section>
 <section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
@@ -122,7 +229,7 @@ Instructions to get started will be added here soon!</p>
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -136,11 +243,11 @@ Instructions to get started will be added here soon!</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Claire Williams.
+      &copy;2024, Claire Williams.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/index.rst.txt"

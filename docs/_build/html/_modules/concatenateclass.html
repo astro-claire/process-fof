@@ -1,23 +1,24 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>concatenateclass &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-
   
-  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
   
@@ -56,11 +57,9 @@
 
 
 
-<div class="viewcode-block" id="processedFOF">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF">[docs]</a>
-<span class="k">class</span> <span class="nc">processedFOF</span><span class="p">():</span> 
+<div class="viewcode-block" id="processedFOF"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF">[docs]</a><span class="k">class</span> <span class="nc">processedFOF</span><span class="p">():</span> 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;../../FOF_project&#39;</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">maxidx</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes fof post processing  concatenator</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters: </span>
@@ -107,7 +106,7 @@
         <span class="c1"># self.setupCosmo()</span>
         
     <span class="k">def</span> <span class="nf">_findFOF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens fof_postprocess file and load in the objects</span>
 
 <span class="sd">        Returns: </span>
@@ -130,7 +129,7 @@
         <span class="k">return</span> <span class="n">properties</span>
     
     <span class="k">def</span> <span class="nf">_setGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets which type of particle was used for groups in the fof postprocessing</span>
 
 <span class="sd">        Returns: </span>
@@ -144,7 +143,7 @@
             <span class="k">return</span> <span class="s2">&quot;gas&quot;</span>
         
     <span class="k">def</span> <span class="nf">_getFOFData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the centers of mass and R_crit_200 derived by fof </span>
 
 <span class="sd">        Attributes: </span>
@@ -222,7 +221,7 @@
         <span class="k">return</span> <span class="n">centers</span><span class="p">,</span> <span class="n">fofradii</span><span class="p">,</span><span class="n">fofvel</span>
     
     <span class="k">def</span> <span class="nf">_findRotation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens the stellar rotation output file and adds rotational properties to self.properties dictionary</span>
 
 <span class="sd">        Returns: </span>
@@ -276,7 +275,7 @@
         <span class="c1">#Can check the print statements to make sure the expected files have loaded. </span>
         
     <span class="k">def</span> <span class="nf">_findDMBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;bounded2&quot;</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens bounded chunk files, concatenates, and adds their properties to the properties dict. </span>
 
 <span class="sd">        Returns: </span>
@@ -321,7 +320,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;no bounded exists for this snap file&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_findBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;bounded2&quot;</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens bounded chunk files, concatenates, and adds their properties to the properties dict. </span>
 
 <span class="sd">        Returns: </span>
@@ -371,10 +370,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;no bounded exists for this snap file&quot;</span><span class="p">)</span>
         
-<div class="viewcode-block" id="processedFOF.accessBoundedComplete">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.accessBoundedComplete">[docs]</a>
-    <span class="k">def</span> <span class="nf">accessBoundedComplete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arr</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="processedFOF.accessBoundedComplete"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.accessBoundedComplete">[docs]</a>    <span class="k">def</span> <span class="nf">accessBoundedComplete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function can be used when the chunking hasn&#39;t finished running to ensure that only systems with a known bounded calculation are being used</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments: </span>
@@ -384,12 +381,9 @@
 <span class="sd">            Numpy.ndarray: array with only the bounded completed indices</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">arr</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span><span class="p">:]</span></div>
-
     
-<div class="viewcode-block" id="processedFOF.accessBounded">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.accessBounded">[docs]</a>
-    <span class="k">def</span> <span class="nf">accessBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="processedFOF.accessBounded"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.accessBounded">[docs]</a>    <span class="k">def</span> <span class="nf">accessBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns the array but only of systems which are bounded</span>
 
 <span class="sd">        Arguments: </span>
@@ -400,11 +394,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">arr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">)]</span></div>
 
-
-<div class="viewcode-block" id="processedFOF.chopUnfinished">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopUnfinished">[docs]</a>
-    <span class="k">def</span> <span class="nf">chopUnfinished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="processedFOF.chopUnfinished"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopUnfinished">[docs]</a>    <span class="k">def</span> <span class="nf">chopUnfinished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For all the parameters not calculated in the bounded script, removes the indices of the objects which do not have a bounded calculation. </span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -413,11 +404,8 @@
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties_notBounded</span><span class="p">:</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accessBoundedComplete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">])</span></div>
 
-
-<div class="viewcode-block" id="processedFOF.chopUnBounded">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopUnBounded">[docs]</a>
-    <span class="k">def</span> <span class="nf">chopUnBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="processedFOF.chopUnBounded"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopUnBounded">[docs]</a>    <span class="k">def</span> <span class="nf">chopUnBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For all the parameters in self.properties, removes all unbounded objects</span>
 
 <span class="sd">        Returns: </span>
@@ -431,12 +419,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">],</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)[</span><span class="n">boundedidx</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">+</span> <span class="s2">&quot; is not the right length&quot;</span><span class="p">)</span></div>
-
     
-<div class="viewcode-block" id="processedFOF.chopResolutionHalos">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopResolutionHalos">[docs]</a>
-    <span class="k">def</span> <span class="nf">chopResolutionHalos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">=</span> <span class="mi">300</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="processedFOF.chopResolutionHalos"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopResolutionHalos">[docs]</a>    <span class="k">def</span> <span class="nf">chopResolutionHalos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">=</span> <span class="mi">300</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        if the list contains DM halos beyond the resolution limit, chop them off</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#TODO: Claire: rerun the rotations with correct DM group and then remove </span>
@@ -462,11 +447,8 @@
                         <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is not the right length&quot;</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="processedFOF.addEnvironment">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.addEnvironment">[docs]</a>
-    <span class="k">def</span> <span class="nf">addEnvironment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="processedFOF.addEnvironment"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.addEnvironment">[docs]</a>    <span class="k">def</span> <span class="nf">addEnvironment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search for environment output and add to properties. Must be run post bounded! Only available for baryonic primaries. </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> 
@@ -496,11 +478,8 @@
             <span class="k">else</span><span class="p">:</span> 
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: number of objects in environment directory doesn&#39;t match number of objects in FOF bounded. &quot;</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="processedFOF.setupCosmo">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.setupCosmo">[docs]</a>
-    <span class="k">def</span> <span class="nf">setupCosmo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="processedFOF.setupCosmo"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.setupCosmo">[docs]</a>    <span class="k">def</span> <span class="nf">setupCosmo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates relevant cosmology properties. ASSUMES SNAPS ARE SEPARATED BY 1 redshift!!!!!!</span>
 <span class="sd">        </span>
 <span class="sd">        Sets: </span>
@@ -512,12 +491,9 @@
         <span class="n">t1</span><span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">age</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redshift</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
         <span class="n">t2</span><span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">age</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redshift</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deltat</span> <span class="o">=</span> <span class="p">((</span><span class="n">t1</span><span class="o">-</span><span class="n">t2</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;yr&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">value</span>  <span class="c1">#</span></div>
-
     
-<div class="viewcode-block" id="processedFOF.calcMUV">
-<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.calcMUV">[docs]</a>
-    <span class="k">def</span> <span class="nf">calcMUV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="processedFOF.calcMUV"><a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.calcMUV">[docs]</a>    <span class="k">def</span> <span class="nf">calcMUV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates absolute uv magnitude</span>
 <span class="sd">        </span>
 <span class="sd">        Sets: </span>
@@ -539,7 +515,6 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No suitable DM key for Muv DM masses. Skipping it.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s1">&#39;stellarMass&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stellarMass_Muv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;stellarMass&#39;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">L_uv</span><span class="p">)]</span><span class="o">*</span><span class="mf">1e10</span> <span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">H0</span></div>
-
             <span class="c1"># note this is a different length than most arrays because we&#39;ve removed nonzero luminosity. </span>
 
     <span class="k">def</span> <span class="nf">calcTRelax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radiuskey</span> <span class="o">=</span> <span class="s1">&#39;maxradii&#39;</span><span class="p">,</span> <span class="n">radiusfactor</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">):</span>
@@ -614,7 +589,6 @@
         <span class="n">rhobaryons</span> <span class="o">=</span> <span class="n">massbaryons</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="mf">3.</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rhogas</span><span class="p">,</span> <span class="n">rhobaryons</span></div>
 
-
 </pre></div>
 
           </div>
@@ -661,7 +635,7 @@
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -675,11 +649,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Claire Williams.
+      &copy;2024, Claire Williams.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 
