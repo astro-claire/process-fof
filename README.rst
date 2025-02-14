@@ -1,15 +1,12 @@
-.. process-fof documentation master file, created by
-   sphinx-quickstart on Wed Oct  2 13:33:24 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+process-fof
+-----------
+Post processing scripts for AREPO friends-of-friends output. 
 
-Welcome to process-fof's documentation!
-=======================================
 
 Overview:
 ---------
-process-fof is a set of python scripts to post-process AREPO FOF runs. 
-Instructions for getting started are currently a template--do not actually use them! 
+process-fof is a set of python scripts to post-process AREPO FOF runs. Original paper: `Williams et al (2025)`.
+Public version is still somewhat in development. Reach out to Claire (clairewilliams@astro.ucla.edu) for help. 
 
 Getting Started
 ===============
@@ -19,6 +16,7 @@ This section will guide you through the steps to set up and start using the repo
 Prerequisites
 -------------
 Before you begin, ensure you have the following installed:
+
 - Python 3.x
 - Git
 
@@ -129,48 +127,3 @@ Once this has run, the setup is complete. You can check to ensure the setup is c
 Run the Code
 ------------
 You can now run the scripts in the `scripts` and `modules` directory!
-.. You can now run the scripts in the `scripts` directory. For example, to run `dm_virialization.py`:
-
-.. .. code-block:: bash
-
-..     python scripts/dm_virialization.py
-
-.. Running Tests
-.. -------------
-.. To ensure everything is set up correctly, run the tests:
-
-.. .. code-block:: bash
-
-..     pytest tests/
-
-
-.. Contributing
-.. ------------
-.. If you would like to contribute, please read the `CONTRIBUTING.md` file for guidelines on how to contribute to this project.
-
-Support
--------
-If you encounter any issues or have questions, please open an issue on GitHub or contact the maintainers.
-
-
-Available scripts and modules:
-------------------------------
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-   fof_process.rst
-   boundedness.rst
-   stellar_rotation.rst
-   concatenateclass.rst
-   environment.rst
-   dm_virialization.rst
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
