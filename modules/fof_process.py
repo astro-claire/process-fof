@@ -2,6 +2,12 @@ import h5py
 import numpy as np
 from sys import argv
 import pickle
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import config.configuration as config
+
 
 
 def dx_wrap(dx, box):
@@ -139,7 +145,9 @@ def set_config(f):
 		elif sec_type ==2: 
 			sec = "DM"
 		else: 
-			raise AttributeError("Unknown Secondary FOF type. Add support for your FOF!")
+			sec = "stars+gas" 
+			print("defaulted to secondary stars + gas although it was unknown "+str(sec_type))
+			#raise AttributeError("Unknown Secondary FOF type. Add support for your FOF!")
 	else: 
 		sec = "none"
 	return prim, sec
@@ -262,7 +270,7 @@ def get_obj_properties(cat, boxsize, halo100_indices, allStarIDs,allStarMasses, 
 		for i, j in enumerate(halo100_indices): #0-10 for testing mode only!
 			# starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]]
 			starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j])[0]
+			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j]**2)[0]
 			starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]][goodStars]
 			if Stars: #only need mass of each star particle for SFR
 				mStars_inGroup[j] = allStarMasses[startAllStars[i]:endAllStars[i]][goodStars] 
@@ -309,7 +317,7 @@ def get_DM(cat, boxsize, halo100_indices, massDMParticle,allStarIDs, allStarPosi
 		for i, j in enumerate(halo100_indices): #0-10 for testing mode only!
 			# starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]]
 			starPos_inGroup = allStarPositions[startAllStars[i]:endAllStars[i]]
-			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j])[0]
+			goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize)<r_200[j]**2)[0]
 			starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]][goodStars]
 			mDM_Group[j] = len(starIDs_inGroup[j])*massDMParticle
 	else:
@@ -428,13 +436,16 @@ if __name__=="__main__":
 		snapnum (float)
 	"""
 	script, gofilename, snapnum, SV = argv
+	newstarssig0, newstarssig2 = config.get_newstarsfile()
 	if float(SV) == 2: 
 		print("Two sigma stream velocity")
-		with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
+		# with open("/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat",'rb') as f:
+		with open(str(newstarssig2),'rb') as f:
 			newstars = pickle.load(f,encoding = "latin1")
 	if float(SV) == 0: 
 		print("No stream velocity")
-		with open("/u/home/c/clairewi/project-snaoz/SF_MolSig0/newstars_Sig0_25Mpc.dat",'rb') as f:
+		# with open("/u/home/c/clairewi/project-snaoz/SF_MolSig0/newstars_Sig0_25Mpc.dat",'rb') as f:
+		with open(str(newstarssig0),'rb') as f:
 			newstars = pickle.load(f,encoding = "latin1")		
 	objs = calc_all_stellarprops(str(gofilename), snapnum, newstars, group="DM", SFR=True, r200 =True)
 	print(objs['new_mStar'][0:10]*10.**10/0.71/3e7)

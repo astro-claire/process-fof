@@ -2,16 +2,23 @@ import h5py
 import numpy as np
 from sys import argv
 import pickle
-import sys 
-sys.path.append('/home/x-cwilliams/FOF_calculations/process-fof')
-from fof_process import dx_wrap,get_starGroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_Halos
-from boundedness import get_GroupPos,get_GroupRadii,get_GroupVel, get_starIDs
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-UnitMass_in_g = 1.989e43     
-UnitLength_in_cm = 3.085678e21 
-hubbleparam = .71 #hubble constant
-GRAVITY_cgs = 6.672e-8
-UnitVelocity_in_cm_per_s = 1.0e5
+from modules.fof_process import dx_wrap,get_starGroups, get_gasIDgroups, set_snap_directories, open_hdf5, get_headerprops, set_subfind_catalog, set_config,get_gasGroups, get_cosmo_props,get_starIDgroups, get_Halos
+from modules.boundedness import get_GroupPos,get_GroupRadii,get_GroupVel, get_starIDs
+import config.configuration as config
+
+#Set units and parameters
+constants = config.load_constants()
+UnitMass_in_g = constants['UnitMass_in_g']     
+UnitLength_in_cm = constants['UnitLength_in_cm']
+hubbleparam = constants['hubbleparam'] #hubble constant
+GRAVITY_cgs = constants['GRAVITY_cgs']
+UnitVelocity_in_cm_per_s = constants['UnitVelocity_in_cm_per_s']
 
 
 def get_gasIDs(f):
@@ -143,7 +150,7 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
     objs = {}
     hubbleparam= 0.71 #FIX THESE SO THEY AREN'T HARD CODED
     Omega0 = 0.27
-    OmegaLambda = 0.71
+    OmegaLambda = 0.73
     groupPos = groupPos *atime / hubbleparam 
     groupVelocities = groupVelocities  /atime # convert to physical units
     # groupPos = groupPos * UnitLength_in_cm*atime / hubbleparam 
@@ -157,7 +164,8 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
     v_rad = []
     v_turb = []
     radii = []
-    dispersions = []
+    avg_masses = []
+    ngroup = []
     #hubble flow correction
     boxSizeVel = boxSize * hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
     # boxSizeVel = boxSize * UnitVelocity_in_cm_per_s* hubbleparam * .1 * np.sqrt(Omega0/atime/atime/atime + OmegaLambda)
@@ -174,7 +182,20 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
         # starMass_inGroup = np.array(starMass_inGroup)  * UnitMass_in_g / hubbleparam #convert masses
         # starVel_inGroup = np.array(starVel_inGroup) * UnitVelocity_in_cm_per_s * np.sqrt(atime) #unit conversions on the particle coordinates 
         # starPos_inGroup = np.array(starPos_inGroup) *UnitLength_in_cm *atime / hubbleparam
-        rotation_curve_rms,rotation_curve_rad,rotation_curve_rot, rotation_curve_turb,rotation_radii,v_rmstot,v_radtot,v_rottot, v_turbtot  = calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
+        rotation_curve_rms = []
+        rotation_curve_rad = []
+        rotation_curve_rot = []
+        rotation_curve_turb = []
+        rotation_radii = []
+        v_rmstot = 0
+        v_radtot = 0
+        v_rottot = 0
+        v_turbtot = 0
+        n_ingroup = len(starMass_inGroup)
+        avg_mass = 0
+        if n_ingroup >0: 
+            avg_mass = np.mean(starMass_inGroup)
+            rotation_curve_rms,rotation_curve_rad,rotation_curve_rot, rotation_curve_turb,rotation_radii,v_rmstot,v_radtot,v_rottot, v_turbtot  = calc_stellar_rotation(starMass_inGroup,starVel_inGroup,starPos_inGroup, groupPos[i],groupVelocities[i],boxSize,boxSizeVel)
         rotation_rms.append(rotation_curve_rms)
         rotation_rad.append(rotation_curve_rad)
         rotation_rot.append(rotation_curve_rot)
@@ -184,6 +205,8 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
         v_rad.append(v_radtot)
         v_rot.append(v_rottot)
         v_turb.append(v_turbtot)
+        avg_masses.append(avg_mass)
+        ngroup.append(n_ingroup)
     # objs['rot_curves'] = np.array(rotation,dtype=object)
     objs['rot_radii'] =np.array(radii,dtype=object)
     # objs['vel_dispersion'] = np.array(dispersions)
@@ -195,6 +218,8 @@ def iterate_galaxies(atime, boxSize, halo100_indices, allStarMasses, allStarPosi
     objs['v_rad'] = v_rad
     objs['v_rot'] = v_rot
     objs['v_turb'] = v_turb
+    objs['avg_mass'] = avg_masses
+    objs['ngroup'] = ngroup
     return objs
 
 def add_rotation_curves(filename, snapnum, group = "Stars"):
@@ -262,13 +287,13 @@ def add_rotation_curves_gas(filename, snapnum, group = "Stars"):
     # TESTING MODE: UNCOMMENT below!!
     #halo100_indices = halo100_indices[-20:-1]
     _,allGasMasses, allGasPositions, allGasVelocities= get_gasIDs(snap)
-    startAllStars, endAllStars = get_starIDgroups(cat, halo100_indices)
+    startAllGas, endAllGas = get_gasIDgroups(cat, halo100_indices)
     halo100_pos = get_GroupPos(cat, halo100_indices)
     halo100_rad = get_GroupRadii(cat, halo100_indices)
     halo100_vel = get_GroupVel(cat,halo100_indices)
     atime = 1./(1.+redshift)
     print("calculating rotation curves for all objects")
-    objs = iterate_galaxies(atime, boxSize, halo100_indices, allGasMasses,allGasPositions,allGasVelocities, startAllStars,endAllStars, halo100_rad,halo100_pos, halo100_vel)
+    objs = iterate_galaxies(atime, boxSize, halo100_indices, allGasMasses,allGasPositions,allGasVelocities, startAllGas,endAllGas, halo100_rad,halo100_pos, halo100_vel)
     print(objs)
     return objs
 
@@ -285,7 +310,7 @@ if __name__=="__main__":
     script, gofilename, snapnum = argv
     # with open("/home/x-cwilliams/FOF_calculations/newstars_Sig2_25Mpc.dat",'rb') as f:
     # 	newstars = pickle.load(f,encoding = "latin1")
-    objs = add_rotation_curves_gas(gofilename, snapnum)
+    objs = add_rotation_curves(gofilename, snapnum)
     # with open(gofilename+"/test_stellar_rotation_"+str(snapnum)+"_v2.dat",'wb') as f:   
     #     pickle.dump(objs, f)
     # with open("/anvil/projects/x-ast180056/FOF_project/test_stellar_rotation_"+str(snapnum)+"_v2.dat",'wb') as f:   

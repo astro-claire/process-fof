@@ -1,16 +1,18 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Boundedness &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Stellar Rotation" href="stellar_rotation.html" />
@@ -18,9 +20,8 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-
   
-  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
   
@@ -33,46 +34,72 @@
           <div class="body" role="main">
             
   <section id="boundedness">
-<span id="id1"></span><h1>Boundedness<a class="headerlink" href="#boundedness" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1>Boundedness<a class="headerlink" href="#boundedness" title="Permalink to this headline">¶</a></h1>
 <p>Functions to check if halos are bounded and virialized, as well as calculate DM mass within virial radius.</p>
-<dl class="py function" id="module-boundedness">
+<section id="output">
+<h2>Output:<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p>Creates chunked bounded files located at:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USER_PATH</span><span class="o">/</span><span class="n">bounded2</span>
+</pre></div>
+</div>
+<p>If individual mode is used, individual object files are created at:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USER_PATH</span><span class="o">/</span><span class="n">bounded2</span><span class="o">/</span><span class="n">indv_objs</span>
+</pre></div>
+</div>
+<p>Note that these directories must be created by the user before running the script.</p>
+</section>
+<section id="module-boundedness">
+<span id="functions"></span><h2>Functions:<a class="headerlink" href="#module-boundedness" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="boundedness.add_bounded_calculation_N">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">add_bounded_calculation_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#add_bounded_calculation_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.add_bounded_calculation_N" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">add_bounded_calculation_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#add_bounded_calculation_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.add_bounded_calculation_N" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper function to calculate boundedness and virialization for galaxy groups.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>files.</strong> (<em>filename -- Path to the input</em>) – </p></li>
-<li><p><strong>chunks.</strong> (<em>N -- Index to start iterating over</em>) – </p></li>
-<li><p><strong>simulation.</strong> (<em>snapnum -- Snapshot number for the</em>) – </p></li>
-<li><p><strong>for</strong> (<em>group -- Group type to calculate boundedness</em>) – </p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Path to the input files.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Index to start iterating over chunks.</p></li>
+<li><p><strong>snapnum</strong> (<em>int</em><em> or </em><em>str</em>) – Snapshot number for the simulation.</p></li>
+<li><p><strong>group</strong> (<em>str</em>) – Group type to calculate boundedness for (‘Stars’, ‘Gas’, or ‘DM’).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>objs – Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.add_bounded_calculation_N_indv">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">add_bounded_calculation_N_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#add_bounded_calculation_N_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.add_bounded_calculation_N_indv" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">add_bounded_calculation_N_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#add_bounded_calculation_N_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.add_bounded_calculation_N_indv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper function to calculate boundedness and virialization and save individual galaxy groups.</p>
-<p>Arguments:
-filename – Path to the input files.
-N – Index to start iterating over chunks.
-snapnum – Snapshot number for the simulation.
-group – Group type to calculate boundedness for (‘Stars’, ‘Gas’, or ‘DM’).</p>
-<p>Returns:
-objs – Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – Path to the input files.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Index to start iterating over chunks.</p></li>
+<li><p><strong>snapnum</strong> (<em>int</em><em> or </em><em>str</em>) – Snapshot number for the simulation.</p></li>
+<li><p><strong>group</strong> (<em>str</em>) – Group type to calculate boundedness for (‘Stars’, ‘Gas’, or ‘DM’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.boundedness_mode">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">boundedness_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'group'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#boundedness_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.boundedness_mode" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">boundedness_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'group'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#boundedness_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.boundedness_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts full boundedness calculation for either save as group or individual</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> (<em>str</em>) – path to FOF files</p></li>
 <li><p><strong>N</strong> (<em>int</em>) – chunk at which to start the calculation</p></li>
@@ -81,7 +108,7 @@ objs – Dictionary containing the boundedness, virialization status, dark matte
 Options:</p>
 <blockquote>
 <div><p>Default: “group” - saves the group in chunks
-“indv”: saves each individual object. Requires a directory named “indv_objs” in bounded2 directory.</p>
+“indv”: saves each individual object. Requires a directory named “indv_objs” in bounded directory.</p>
 </div></blockquote>
 </p></li>
 </ul>
@@ -95,45 +122,47 @@ Options:</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.calc_DM_mass">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_DM_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_DM_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_DM_mass" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_DM_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_DM_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_DM_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the mass of dark matter (DM) within a group.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>starPos_inGroup (ndarray): Positions of stars in the group.
-groupPos (ndarray): Position of the center of the group.
-boxSize (float): Size of the simulation box for periodic boundary conditions.
-pDM (ndarray): Positions of dark matter particles.
-groupRadius (float): Radius of the group (physical or comoving).
-atime (float): Scale factor for the simulation.
-massDMParticle (float): Mass of each dark matter particle.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Total mass of the dark matter particles within the group.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>starPos_inGroup</strong> (<em>ndarray</em>) – Positions of stars in the group.</p></li>
+<li><p><strong>groupPos</strong> (<em>ndarray</em>) – Position of the center of the group.</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – Size of the simulation box for periodic boundary conditions.</p></li>
+<li><p><strong>pDM</strong> (<em>ndarray</em>) – Positions of dark matter particles.</p></li>
+<li><p><strong>groupRadius</strong> (<em>float</em>) – Radius of the group (physical or comoving).</p></li>
+<li><p><strong>atime</strong> (<em>float</em>) – Scale factor for the simulation.</p></li>
+<li><p><strong>massDMParticle</strong> (<em>float</em>) – Mass of each dark matter particle.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>massDM (float)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Total mass of the dark matter particles within the group.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>massDM (float)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.calc_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_boundedness" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_boundedness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate whether a group of stars is gravitationally bound based on their velocities and positions.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>starVel_inGroup (np.ndarray): The velocities of the stars in the group (shape: N x 3).
-starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
-starMass_inGroup (np.ndarray): The masses of the stars in the group (shape: N).
-groupPos (np.ndarray): The position of the group’s center (shape: 3).
-groupVelocity (np.ndarray): The velocity of the group’s center (shape: 3).
-boxSize (float): The size of the simulation box.
-boxSizeVel (float): The simulation velocity to offset.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>starVel_inGroup</strong> (<em>np.ndarray</em>) – The velocities of the stars in the group (shape: N x 3).</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>np.ndarray</em>) – The positions of the stars in the group (shape: N x 3).</p></li>
+<li><p><strong>starMass_inGroup</strong> (<em>np.ndarray</em>) – The masses of the stars in the group (shape: N).</p></li>
+<li><p><strong>groupPos</strong> (<em>np.ndarray</em>) – The position of the group’s center (shape: 3).</p></li>
+<li><p><strong>groupVelocity</strong> (<em>np.ndarray</em>) – The velocity of the group’s center (shape: 3).</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – The size of the simulation box.</p></li>
+<li><p><strong>boxSizeVel</strong> (<em>float</em>) – The simulation velocity to offset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
 <dt>A tuple containing:</dt><dd><ul class="simple">
 <li><p>boundedness (int): 1 if the group is gravitationally bound, 0 otherwise.</p></li>
 <li><p>energyStars (float): The total energy (kinetic + potential) of the stars in the group.</p></li>
@@ -145,108 +174,111 @@ boxSizeVel (float): The simulation velocity to offset.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.calc_dm_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_dm_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_dm_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_dm_boundedness" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_dm_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_dm_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_dm_boundedness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the boundedness of a stellar group with dark matter without any tricks to reduce memory usage</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>energyStars (float): Total energy of the stellar group.
-starVel_inGroup (ndarray): Array of star velocities in the group.
-starPos_inGroup (ndarray): Array of star positions in the group.
-starMass_inGroup (ndarray): Array of star masses in the group.
-groupPos (ndarray): Position of the group.
-groupVelocity (ndarray): Velocity of the group.
-boxSize (float): Size of the simulation box for positions.
-boxSizeVel (float): Size of the simulation box for velocities.
-pDM (ndarray): Array of dark matter particle positions.
-vDM (ndarray): Array of dark matter particle velocities.
-groupRadius (float): Radius of the group.
-atime (float): Scale factor at the snapshot time.
-massDMParticle (float): Mass of a dark matter particle.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Boundedness</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>energyStars</strong> (<em>float</em>) – Total energy of the stellar group.</p></li>
+<li><p><strong>starVel_inGroup</strong> (<em>ndarray</em>) – Array of star velocities in the group.</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>ndarray</em>) – Array of star positions in the group.</p></li>
+<li><p><strong>starMass_inGroup</strong> (<em>ndarray</em>) – Array of star masses in the group.</p></li>
+<li><p><strong>groupPos</strong> (<em>ndarray</em>) – Position of the group.</p></li>
+<li><p><strong>groupVelocity</strong> (<em>ndarray</em>) – Velocity of the group.</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – Size of the simulation box for positions.</p></li>
+<li><p><strong>boxSizeVel</strong> (<em>float</em>) – Size of the simulation box for velocities.</p></li>
+<li><p><strong>pDM</strong> (<em>ndarray</em>) – Array of dark matter particle positions.</p></li>
+<li><p><strong>vDM</strong> (<em>ndarray</em>) – Array of dark matter particle velocities.</p></li>
+<li><p><strong>groupRadius</strong> (<em>float</em>) – Radius of the group.</p></li>
+<li><p><strong>atime</strong> (<em>float</em>) – Scale factor at the snapshot time.</p></li>
+<li><p><strong>massDMParticle</strong> (<em>float</em>) – Mass of a dark matter particle.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boundedness</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.calc_max_radius">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_max_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_max_radius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_max_radius" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_max_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_max_radius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_max_radius" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the maximum radial distance between a group of stars and the group’s center.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>starPos_inGroup (np.ndarray): The positions of stars in the group (shape: N x 3).
-groupPos (np.ndarray): The position of the group’s center (shape: 3).
-boxSize (float): The size of the simulation box.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The maximum distance between the stars and the group’s center, in cm.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>starPos_inGroup</strong> (<em>np.ndarray</em>) – The positions of stars in the group (shape: N x 3).</p></li>
+<li><p><strong>groupPos</strong> (<em>np.ndarray</em>) – The position of the group’s center (shape: 3).</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – The size of the simulation box.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The maximum distance between the stars and the group’s center, in cm.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.calc_virial_radius">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_virial_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">potentialEnergy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_virial_radius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_virial_radius" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">calc_virial_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">potentialEnergy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#calc_virial_radius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.calc_virial_radius" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the virial radius given the mass and potential energy of an object (in cgs units).</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>potentialEnergy (float): The potential energy of the object.
-mass (float): The mass of the object.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The virial radius of the object.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>potentialEnergy</strong> (<em>float</em>) – The potential energy of the object.</p></li>
+<li><p><strong>mass</strong> (<em>float</em>) – The mass of the object.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The virial radius of the object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.check_if_exists">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">check_if_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#check_if_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.check_if_exists" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">check_if_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#check_if_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.check_if_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a file corresponding to a particular snapshot and chunk exists in the specified directory.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<em>str</em>) – Path to the directory.</p></li>
 <li><p><strong>idx</strong> (<em>int</em>) – Chunk index.</p></li>
 <li><p><strong>snapnum</strong> (<em>int</em>) – Snapshot number.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>True if the file exists, False otherwise.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>exists (bool)</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(bool)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.check_if_exists_indv">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">check_if_exists_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#check_if_exists_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.check_if_exists_indv" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">check_if_exists_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#check_if_exists_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.check_if_exists_indv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if an individual file corresponding to a particular snapshot, chunk, and object exists in the specified directory.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<em>str</em>) – Path to the directory.</p></li>
 <li><p><strong>idx</strong> (<em>int</em>) – Chunk index.</p></li>
@@ -254,10 +286,10 @@ mass (float): The mass of the object.</p>
 <li><p><strong>snapnum</strong> (<em>int</em>) – Snapshot number.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>True if the file exists, False otherwise.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>exists (bool)</p>
 </dd>
 </dl>
@@ -265,16 +297,17 @@ mass (float): The mass of the object.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.check_virialized">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">check_virialized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kineticEnergy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentialEnergy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#check_virialized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.check_virialized" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">check_virialized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kineticEnergy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potentialEnergy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#check_virialized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.check_virialized" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if an object is virialized based on its kinetic and potential energy.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>kineticEnergy (float): The kinetic energy of the object.
-potentialEnergy (float): The potential energy of the object.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kineticEnergy</strong> (<em>float</em>) – The kinetic energy of the object.</p></li>
+<li><p><strong>potentialEnergy</strong> (<em>float</em>) – The potential energy of the object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
 <dt>A tuple containing:</dt><dd><ul class="simple">
 <li><p>virialized (int): 1 if the object is virialized (virial ratio between 1.5 and 2.5), 0 otherwise.</p></li>
 <li><p>ratio (float): The virial ratio (<a href="#id2"><span class="problematic" id="id3">|potentialEnergy / kineticEnergy|</span></a>).</p></li>
@@ -283,72 +316,74 @@ potentialEnergy (float): The potential energy of the object.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.chunked_calc_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_calc_boundedness" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_calc_boundedness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the boundedness of a stellar group using chunked processing to reduce memory usage.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>starVel_inGroup (ndarray): Array of star velocities in the group.
-starPos_inGroup (ndarray): Array of star positions in the group.
-starMass_inGroup (ndarray): Array of star masses in the group.
-groupPos (ndarray): Position of the group.
-groupVelocity (ndarray): Velocity of the group.
-boxSize (float): Size of the simulation box for positions.
-boxSizeVel (float): Size of the simulation box for velocities.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy, potential energy, and total stellar mass.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>starVel_inGroup</strong> (<em>ndarray</em>) – Array of star velocities in the group.</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>ndarray</em>) – Array of star positions in the group.</p></li>
+<li><p><strong>starMass_inGroup</strong> (<em>ndarray</em>) – Array of star masses in the group.</p></li>
+<li><p><strong>groupPos</strong> (<em>ndarray</em>) – Position of the group.</p></li>
+<li><p><strong>groupVelocity</strong> (<em>ndarray</em>) – Velocity of the group.</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – Size of the simulation box for positions.</p></li>
+<li><p><strong>boxSizeVel</strong> (<em>float</em>) – Size of the simulation box for velocities.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy, potential energy, and total stellar mass.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.chunked_calc_dm_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_calc_dm_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_calc_dm_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_calc_dm_boundedness" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_calc_dm_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_calc_dm_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_calc_dm_boundedness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the boundedness of a stellar group with dark matter using chunked processing to reduce memory usage.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>energyStars (float): Total energy of the stellar group.
-starVel_inGroup (ndarray): Array of star velocities in the group.
-starPos_inGroup (ndarray): Array of star positions in the group.
-starMass_inGroup (ndarray): Array of star masses in the group.
-groupPos (ndarray): Position of the group.
-groupVelocity (ndarray): Velocity of the group.
-boxSize (float): Size of the simulation box for positions.
-boxSizeVel (float): Size of the simulation box for velocities.
-pDM (ndarray): Array of dark matter particle positions.
-vDM (ndarray): Array of dark matter particle velocities.
-groupRadius (float): Radius of the group.
-atime (float): Scale factor at the snapshot time.
-massDMParticle (float): Mass of a dark matter particle.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Boundedness</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>energyStars</strong> (<em>float</em>) – Total energy of the stellar group.</p></li>
+<li><p><strong>starVel_inGroup</strong> (<em>ndarray</em>) – Array of star velocities in the group.</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>ndarray</em>) – Array of star positions in the group.</p></li>
+<li><p><strong>starMass_inGroup</strong> (<em>ndarray</em>) – Array of star masses in the group.</p></li>
+<li><p><strong>groupPos</strong> (<em>ndarray</em>) – Position of the group.</p></li>
+<li><p><strong>groupVelocity</strong> (<em>ndarray</em>) – Velocity of the group.</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – Size of the simulation box for positions.</p></li>
+<li><p><strong>boxSizeVel</strong> (<em>float</em>) – Size of the simulation box for velocities.</p></li>
+<li><p><strong>pDM</strong> (<em>ndarray</em>) – Array of dark matter particle positions.</p></li>
+<li><p><strong>vDM</strong> (<em>ndarray</em>) – Array of dark matter particle velocities.</p></li>
+<li><p><strong>groupRadius</strong> (<em>float</em>) – Radius of the group.</p></li>
+<li><p><strong>atime</strong> (<em>float</em>) – Scale factor at the snapshot time.</p></li>
+<li><p><strong>massDMParticle</strong> (<em>float</em>) – Mass of a dark matter particle.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boundedness</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.chunked_potential_energy">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.672e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">config.configuration.load_constants.GRAVITY_cgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the total potential energy of a system of particles using pairwise interactions.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>masses</strong> – np.array
 1D array of particle masses.</p></li>
@@ -360,14 +395,14 @@ Size of the periodic box.</p></li>
 Gravitational constant,</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>float</dt><dd><p>Total potential energy of the system.</p>
 </dd>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>total_potential</p>
 </dd>
 </dl>
@@ -375,11 +410,11 @@ Gravitational constant,</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.chunked_potential_energy_between_groups">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy_between_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masses2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.672e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy_between_groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy_between_groups" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy_between_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masses2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">config.configuration.load_constants.GRAVITY_cgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy_between_groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy_between_groups" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the total potential energy between two groups of particles,
 where the first group has the same mass for all particles, and the second group has an array of masses.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mass1</strong> – float
 Mass of each particle in the first group (same for all particles in group 1).</p></li>
@@ -392,51 +427,17 @@ Mass of each particle in the first group (same for all particles in group 1).</p
 <li><p><strong>box_size</strong> – float
 Size of the periodic box.</p></li>
 <li><p><strong>G</strong> – float
-Gravitational constant, defaults to 1.0 for natural units.</p></li>
+Gravitational constant, defaults to cgs units.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>float</dt><dd><p>Total potential energy between the two groups of particles.</p>
 </dd>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>total_potential</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boundedness.chunked_potential_energy_between_sets">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy_between_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masses1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masses2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.672e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy_between_sets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy_between_sets" title="Link to this definition">¶</a></dt>
-<dd><p>Calculate the total potential energy between two different sets of particles using pairwise interactions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>masses1</strong> – np.array
-1D array of particle masses for set 1.</p></li>
-<li><p><strong>positions1</strong> – np.array
-2D array of particle positions for set 1 (shape: N1 x 3).</p></li>
-<li><p><strong>masses2</strong> – np.array
-1D array of particle masses for set 2.</p></li>
-<li><p><strong>positions2</strong> – np.array
-2D array of particle positions for set 2 (shape: N2 x 3).</p></li>
-<li><p><strong>box_size</strong> – float
-Size of the periodic box.</p></li>
-<li><p><strong>G</strong> – float
-Gravitational constant, defaults to 1.0 for natural units.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>float</dt><dd><p>Total potential energy between the two sets of particles.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>total_potential</p>
 </dd>
 </dl>
@@ -444,10 +445,10 @@ Gravitational constant, defaults to 1.0 for natural units.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.chunked_potential_energy_same_mass">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy_same_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.672e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy_same_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy_same_mass" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunked_potential_energy_same_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">config.configuration.load_constants.GRAVITY_cgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunked_potential_energy_same_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunked_potential_energy_same_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the total potential energy of a system of particles with the same mass using pairwise interactions.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mass</strong> – float
 Mass of each particle (same for all particles).</p></li>
@@ -456,17 +457,17 @@ Mass of each particle (same for all particles).</p></li>
 <li><p><strong>box_size</strong> – float
 Size of the periodic box.</p></li>
 <li><p><strong>G</strong> – float
-Gravitational constant, defaults to 1.0 for natural units.</p></li>
+Gravitational constant, defaults to cgs units.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>float</dt><dd><p>Total potential energy of the system.</p>
 </dd>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>total_potential</p>
 </dd>
 </dl>
@@ -474,11 +475,11 @@ Gravitational constant, defaults to 1.0 for natural units.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.chunks">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunks" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#chunks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.chunks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yield successive n-sized chunks from lst.
 Function from chat gpt lol</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lst</strong> (<em>list</em>) – list or array to divide into chunks</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – chunk size</p></li>
@@ -489,142 +490,145 @@ Function from chat gpt lol</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.compute_row">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">compute_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_elem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#compute_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.compute_row" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">compute_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_elem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#compute_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.compute_row" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the distance tensor row for a given particle in a group.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>i_elem (int): Index of the particle for which the distances are computed.
-J (iterable): Iterable of indices of particles to compute distances with respect to.
-starPos_inGroup (ndarray): Array of particle positions within the group.
-boxSize (float): Size of the simulation box.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of distances between the particle <cite>i_elem</cite> and particles in <cite>J</cite>.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i_elem</strong> (<em>int</em>) – Index of the particle for which the distances are computed.</p></li>
+<li><p><strong>J</strong> (<em>iterable</em>) – Iterable of indices of particles to compute distances with respect to.</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>ndarray</em>) – Array of particle positions within the group.</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – Size of the simulation box.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[float]</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of distances between the particle <cite>i_elem</cite> and particles in <cite>J</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.compute_row_2type">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">compute_row_2type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_elem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#compute_row_2type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.compute_row_2type" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">compute_row_2type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i_elem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#compute_row_2type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.compute_row_2type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the distance tensor row for a given particle in a group, with respect to particles of a different type (e.g., dark matter).</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>i_elem (int): Index of the particle for which the distances are computed.
-J (iterable): Iterable of indices of particles to compute distances with respect to.
-starPos_inGroup (ndarray): Array of particle positions within the group.
-pDM (ndarray): Array of positions for the second particle type (e.g., dark matter).
-boxSize (float): Size of the simulation box.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of distances between the particle <cite>i_elem</cite> and particles in <cite>J</cite> from the second particle type.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i_elem</strong> (<em>int</em>) – Index of the particle for which the distances are computed.</p></li>
+<li><p><strong>J</strong> (<em>iterable</em>) – Iterable of indices of particles to compute distances with respect to.</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>ndarray</em>) – Array of particle positions within the group.</p></li>
+<li><p><strong>pDM</strong> (<em>ndarray</em>) – Array of positions for the second particle type (e.g., dark matter).</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – Size of the simulation box.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[float]</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of distances between the particle <cite>i_elem</cite> and particles in <cite>J</cite> from the second particle type.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.dist2_indv">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">dist2_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#dist2_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.dist2_indv" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">dist2_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#dist2_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.dist2_indv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the squared distance between two points with periodic boundary conditions.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>dx (float): The difference in the x-coordinate between the two points.
-dy (float): The difference in the y-coordinate between the two points.
-dz (float): The difference in the z-coordinate between the two points.
-box (float): The size of the simulation box.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The squared distance between the two points, considering periodic boundary conditions.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dx</strong> (<em>float</em>) – The difference in the x-coordinate between the two points.</p></li>
+<li><p><strong>dy</strong> (<em>float</em>) – The difference in the y-coordinate between the two points.</p></li>
+<li><p><strong>dz</strong> (<em>float</em>) – The difference in the z-coordinate between the two points.</p></li>
+<li><p><strong>box</strong> (<em>float</em>) – The size of the simulation box.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The squared distance between the two points, considering periodic boundary conditions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.dx_indv">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">dx_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#dx_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.dx_indv" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">dx_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#dx_indv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.dx_indv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply periodic boundary conditions to a coordinate difference.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>dx (float): The difference in a single coordinate (x, y, or z).
-box (float): The size of the simulation box.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The adjusted coordinate difference, taking into account periodic boundary conditions.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dx</strong> (<em>float</em>) – The difference in a single coordinate (x, y, or z).</p></li>
+<li><p><strong>box</strong> (<em>float</em>) – The size of the simulation box.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The adjusted coordinate difference, taking into account periodic boundary conditions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.get_DMIDs">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_DMIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_DMIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_DMIDs" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_DMIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_DMIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_DMIDs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get particle IDs (groupordered snap)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.get_GroupPos">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupPos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupPos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupPos" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupPos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupPos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupPos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return Group COM</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.get_GroupRadii">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupRadii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupRadii"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupRadii" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupRadii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupRadii"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupRadii" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return Group COM</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.get_GroupVel">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupVel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupVel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupVel" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_GroupVel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_GroupVel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_GroupVel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return Group COM</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.get_allHalos">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_allHalos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_allHalos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_allHalos" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_allHalos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_allHalos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_allHalos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identify all halos containing more than 32 dark matter (DM) particles.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>cat (halo catalog): The catalog containing halo information, including the number of particles per halo.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Indices of halos with more than 32 DM particles.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cat</strong> (<em>halo catalog</em>) – The catalog containing halo information, including the number of particles per halo.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>np.ndarray</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indices of halos with more than 32 DM particles.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.get_starIDs">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_starIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_starIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_starIDs" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">get_starIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#get_starIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.get_starIDs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get particle IDs (groupordered snap)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.iterate_galaxies_chunked_resub_N">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">iterate_galaxies_chunked_resub_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gofilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarMasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#iterate_galaxies_chunked_resub_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.iterate_galaxies_chunked_resub_N" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">iterate_galaxies_chunked_resub_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gofilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarMasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#iterate_galaxies_chunked_resub_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.iterate_galaxies_chunked_resub_N" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over galaxies in chunks, checking for boundedness and virialization, and calculating dark matter mass for each galaxy.
 Saves results for chunks of  objects.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>N</strong> (<em>int</em>) – Index to start iterating over chunks.</p></li>
 <li><p><strong>gofilename</strong> (<em>str</em>) – Path for saving results.</p></li>
@@ -647,10 +651,10 @@ Saves results for chunks of  objects.</p>
 <li><p><strong>dmsnap</strong> (<em>int</em><em> or </em><em>str</em>) – Snapshot number dark matter primary</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Dictionary containing boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>objs (dict)</p>
 </dd>
 </dl>
@@ -658,11 +662,11 @@ Saves results for chunks of  objects.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.iterate_galaxies_chunked_resub_N_saveindv">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">iterate_galaxies_chunked_resub_N_saveindv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gofilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarMasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#iterate_galaxies_chunked_resub_N_saveindv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.iterate_galaxies_chunked_resub_N_saveindv" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">iterate_galaxies_chunked_resub_N_saveindv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gofilename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarMasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#iterate_galaxies_chunked_resub_N_saveindv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.iterate_galaxies_chunked_resub_N_saveindv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over galaxies in chunks, checking for boundedness and virialization, and calculating dark matter mass for each galaxy.
 Saves results for individual objects.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>N</strong> (<em>int</em>) – Index to start iterating over chunks.</p></li>
 <li><p><strong>gofilename</strong> (<em>str</em>) – Path for saving results.</p></li>
@@ -685,10 +689,10 @@ Saves results for individual objects.</p>
 <li><p><strong>dmsnap</strong> (<em>int</em><em> or </em><em>str</em>) – Snapshot number dark matter primary</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Dictionary containing boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>objs (dict)</p>
 </dd>
 </dl>
@@ -696,21 +700,22 @@ Saves results for individual objects.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.nearby_DM">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">nearby_DM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">com</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#nearby_DM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.nearby_DM" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">nearby_DM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">com</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmsnap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#nearby_DM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.nearby_DM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find all halos and their DM particles within a certain distance from a specified center of mass (com).</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>com (np.ndarray): The 3D coordinates of the center of mass (x, y, z).
-halo_positions (np.ndarray): The positions of the halos in the box.
-startAllDM (np.ndarray): Starting indices for DM particles in each halo.
-endAllDM (np.ndarray): Ending indices for DM particles in each halo.
-dmsnap (object): The opened HDF5 snapshot file containing DM data.
-boxSize (float): The size of the simulation box.
-limit (float, optional): The maximum distance (in code units) from the center of mass to search for nearby halos. Defaults to 10.0.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>com</strong> (<em>np.ndarray</em>) – The 3D coordinates of the center of mass (x, y, z).</p></li>
+<li><p><strong>halo_positions</strong> (<em>np.ndarray</em>) – The positions of the halos in the box.</p></li>
+<li><p><strong>startAllDM</strong> (<em>np.ndarray</em>) – Starting indices for DM particles in each halo.</p></li>
+<li><p><strong>endAllDM</strong> (<em>np.ndarray</em>) – Ending indices for DM particles in each halo.</p></li>
+<li><p><strong>dmsnap</strong> (<em>object</em>) – The opened HDF5 snapshot file containing DM data.</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – The size of the simulation box.</p></li>
+<li><p><strong>limit</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum distance (in code units) from the center of mass to search for nearby halos. Defaults to 10.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
 <dt>A tuple containing the following:</dt><dd><ul class="simple">
 <li><p>allnearbyDMPos (np.ndarray): Positions of the DM particles in the nearby halos.</p></li>
 <li><p>allnearbyDMVel (np.ndarray): Velocities of the DM particles in the nearby halos.</p></li>
@@ -719,78 +724,81 @@ limit (float, optional): The maximum distance (in code units) from the center of
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.parallel_calc_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">parallel_calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#parallel_calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.parallel_calc_boundedness" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">parallel_calc_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#parallel_calc_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.parallel_calc_boundedness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the boundedness of a stellar group using parallel processing.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>starVel_inGroup (ndarray): Array of star velocities in the group.
-starPos_inGroup (ndarray): Array of star positions in the group.
-starMass_inGroup (ndarray): Array of star masses in the group.
-groupPos (ndarray): Position of the group.
-groupVelocity (ndarray): Velocity of the group.
-boxSize (float): Size of the simulation box for positions.
-boxSizeVel (float): Velocity for simualtion box hubble flow correction.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy, potential energy, and total stellar mass.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>starVel_inGroup</strong> (<em>ndarray</em>) – Array of star velocities in the group.</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>ndarray</em>) – Array of star positions in the group.</p></li>
+<li><p><strong>starMass_inGroup</strong> (<em>ndarray</em>) – Array of star masses in the group.</p></li>
+<li><p><strong>groupPos</strong> (<em>ndarray</em>) – Position of the group.</p></li>
+<li><p><strong>groupVelocity</strong> (<em>ndarray</em>) – Velocity of the group.</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – Size of the simulation box for positions.</p></li>
+<li><p><strong>boxSizeVel</strong> (<em>float</em>) – Velocity for simualtion box hubble flow correction.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy, potential energy, and total stellar mass.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.parallel_calc_dm_boundedness">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">parallel_calc_dm_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#parallel_calc_dm_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.parallel_calc_dm_boundedness" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">parallel_calc_dm_boundedness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energyStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vDM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massDMParticle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#parallel_calc_dm_boundedness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.parallel_calc_dm_boundedness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the boundedness of a stellar group with dark matter using parallel processing.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>energyStars (float): Total energy of the stellar group.
-starVel_inGroup (ndarray): Array of star velocities in the group.
-starPos_inGroup (ndarray): Array of star positions in the group.
-starMass_inGroup (ndarray): Array of star masses in the group.
-groupPos (ndarray): Position of the group.
-groupVelocity (ndarray): Velocity of the group.
-boxSize (float): Size of the simulation box for positions.
-boxSizeVel (float): Size of the simulation box for velocities.
-pDM (ndarray): Array of dark matter particle positions.
-vDM (ndarray): Array of dark matter particle velocities.
-groupRadius (float): Radius of the group.
-atime (float): Scale factor at the snapshot time.
-massDMParticle (float): Mass of a dark matter particle.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy of dark matter, total potential energy between stars and dark matter, and dark matter mass.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>energyStars</strong> (<em>float</em>) – Total energy of the stellar group.</p></li>
+<li><p><strong>starVel_inGroup</strong> (<em>ndarray</em>) – Array of star velocities in the group.</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>ndarray</em>) – Array of star positions in the group.</p></li>
+<li><p><strong>starMass_inGroup</strong> (<em>ndarray</em>) – Array of star masses in the group.</p></li>
+<li><p><strong>groupPos</strong> (<em>ndarray</em>) – Position of the group.</p></li>
+<li><p><strong>groupVelocity</strong> (<em>ndarray</em>) – Velocity of the group.</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – Size of the simulation box for positions.</p></li>
+<li><p><strong>boxSizeVel</strong> (<em>float</em>) – Size of the simulation box for velocities.</p></li>
+<li><p><strong>pDM</strong> (<em>ndarray</em>) – Array of dark matter particle positions.</p></li>
+<li><p><strong>vDM</strong> (<em>ndarray</em>) – Array of dark matter particle velocities.</p></li>
+<li><p><strong>groupRadius</strong> (<em>float</em>) – Radius of the group.</p></li>
+<li><p><strong>atime</strong> (<em>float</em>) – Scale factor at the snapshot time.</p></li>
+<li><p><strong>massDMParticle</strong> (<em>float</em>) – Mass of a dark matter particle.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boundedness flag (1 if bound, 0 otherwise), total energy, kinetic energy of dark matter, total potential energy between stars and dark matter, and dark matter mass.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.set_up_DM">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">set_up_DM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SV</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#set_up_DM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.set_up_DM" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">set_up_DM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SV</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#set_up_DM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.set_up_DM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up the dark matter (DM) halo catalog from the simulation snapshot.</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>SV (int or str): Simulation version identifier (used for directory/file naming).
-snapnum (int): Snapshot number to retrieve.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SV</strong> (<em>int</em><em> or </em><em>str</em>) – Simulation version identifier (used for directory/file naming).</p></li>
+<li><p><strong>snapnum</strong> (<em>int</em>) – Snapshot number to retrieve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
 <dt>A tuple containing the following:</dt><dd><ul class="simple">
 <li><p>halo100_indices (np.ndarray): Indices of halos with more than 32 DM particles.</p></li>
 <li><p>halo_positions (np.ndarray): Positions of the halos.</p></li>
@@ -802,55 +810,58 @@ snapnum (int): Snapshot number to retrieve.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.tensor_dist">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">tensor_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[0,</span> <span class="pre">0,</span> <span class="pre">0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1776.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#tensor_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.tensor_dist" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">tensor_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1776.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#tensor_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.tensor_dist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the distance between particles i and j</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>i (int): index of particle i
-j (int): index of particle j
-starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
-boxSize (float): The size of the simulation box</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the distance between particle i and j in cm</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>int</em>) – index of particle i</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of particle j</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>np.ndarray</em>) – The positions of the stars in the group (shape: N x 3).</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – The size of the simulation box</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the distance between particle i and j in cm</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="boundedness.tensor_dist_2type">
-<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">tensor_dist_2type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[0,</span> <span class="pre">0,</span> <span class="pre">0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[0,</span> <span class="pre">0,</span> <span class="pre">0]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1776.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#tensor_dist_2type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.tensor_dist_2type" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">boundedness.</span></span><span class="sig-name descname"><span class="pre">tensor_dist_2type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pDM</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1776.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/boundedness.html#tensor_dist_2type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#boundedness.tensor_dist_2type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the distance between particles i and j where i is a DM particle and j is a star particle</p>
-<dl class="simple">
-<dt>Arguments::</dt><dd><p>i (int): index of particle i
-j (int): index of particle j
-starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).
-pDM (np.ndarray): The positions of the dark matter in the group (shape: M x 3).
-boxSize (float): The size of the simulation box.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the distance between particle i and j in cm</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>int</em>) – index of particle i</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of particle j</p></li>
+<li><p><strong>starPos_inGroup</strong> (<em>np.ndarray</em>) – The positions of the stars in the group (shape: N x 3).</p></li>
+<li><p><strong>pDM</strong> (<em>np.ndarray</em>) – The positions of the dark matter in the group (shape: M x 3).</p></li>
+<li><p><strong>boxSize</strong> (<em>float</em>) – The size of the simulation box.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the distance between particle i and j in cm</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
 
+</section>
 </section>
 
 
@@ -874,45 +885,14 @@ boxSize (float): The size of the simulation box.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="fof_process.html">FOF Process</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Boundedness</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.add_bounded_calculation_N"><code class="docutils literal notranslate"><span class="pre">add_bounded_calculation_N()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.add_bounded_calculation_N_indv"><code class="docutils literal notranslate"><span class="pre">add_bounded_calculation_N_indv()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.boundedness_mode"><code class="docutils literal notranslate"><span class="pre">boundedness_mode()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.calc_DM_mass"><code class="docutils literal notranslate"><span class="pre">calc_DM_mass()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.calc_boundedness"><code class="docutils literal notranslate"><span class="pre">calc_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.calc_dm_boundedness"><code class="docutils literal notranslate"><span class="pre">calc_dm_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.calc_max_radius"><code class="docutils literal notranslate"><span class="pre">calc_max_radius()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.calc_virial_radius"><code class="docutils literal notranslate"><span class="pre">calc_virial_radius()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.check_if_exists"><code class="docutils literal notranslate"><span class="pre">check_if_exists()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.check_if_exists_indv"><code class="docutils literal notranslate"><span class="pre">check_if_exists_indv()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.check_virialized"><code class="docutils literal notranslate"><span class="pre">check_virialized()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_calc_boundedness"><code class="docutils literal notranslate"><span class="pre">chunked_calc_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_calc_dm_boundedness"><code class="docutils literal notranslate"><span class="pre">chunked_calc_dm_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_potential_energy"><code class="docutils literal notranslate"><span class="pre">chunked_potential_energy()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_potential_energy_between_groups"><code class="docutils literal notranslate"><span class="pre">chunked_potential_energy_between_groups()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_potential_energy_between_sets"><code class="docutils literal notranslate"><span class="pre">chunked_potential_energy_between_sets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunked_potential_energy_same_mass"><code class="docutils literal notranslate"><span class="pre">chunked_potential_energy_same_mass()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.chunks"><code class="docutils literal notranslate"><span class="pre">chunks()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.compute_row"><code class="docutils literal notranslate"><span class="pre">compute_row()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.compute_row_2type"><code class="docutils literal notranslate"><span class="pre">compute_row_2type()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.dist2_indv"><code class="docutils literal notranslate"><span class="pre">dist2_indv()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.dx_indv"><code class="docutils literal notranslate"><span class="pre">dx_indv()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_DMIDs"><code class="docutils literal notranslate"><span class="pre">get_DMIDs()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_GroupPos"><code class="docutils literal notranslate"><span class="pre">get_GroupPos()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_GroupRadii"><code class="docutils literal notranslate"><span class="pre">get_GroupRadii()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_GroupVel"><code class="docutils literal notranslate"><span class="pre">get_GroupVel()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_allHalos"><code class="docutils literal notranslate"><span class="pre">get_allHalos()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.get_starIDs"><code class="docutils literal notranslate"><span class="pre">get_starIDs()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.iterate_galaxies_chunked_resub_N"><code class="docutils literal notranslate"><span class="pre">iterate_galaxies_chunked_resub_N()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.iterate_galaxies_chunked_resub_N_saveindv"><code class="docutils literal notranslate"><span class="pre">iterate_galaxies_chunked_resub_N_saveindv()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.nearby_DM"><code class="docutils literal notranslate"><span class="pre">nearby_DM()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.parallel_calc_boundedness"><code class="docutils literal notranslate"><span class="pre">parallel_calc_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.parallel_calc_dm_boundedness"><code class="docutils literal notranslate"><span class="pre">parallel_calc_dm_boundedness()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.set_up_DM"><code class="docutils literal notranslate"><span class="pre">set_up_DM()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.tensor_dist"><code class="docutils literal notranslate"><span class="pre">tensor_dist()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boundedness.tensor_dist_2type"><code class="docutils literal notranslate"><span class="pre">tensor_dist_2type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output">Output:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-boundedness">Functions:</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="stellar_rotation.html">Stellar Rotation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concatenateclass.html">processedFOF Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dm_virialization.html">DM virialization</a></li>
 </ul>
 
 <div class="relations">
@@ -933,7 +913,7 @@ boxSize (float): The size of the simulation box.</p>
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -947,11 +927,11 @@ boxSize (float): The size of the simulation box.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Claire Williams.
+      &copy;2024, Claire Williams.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/boundedness.rst.txt"

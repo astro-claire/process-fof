@@ -1,10 +1,19 @@
 import numpy as np
 import numpy as np
 import pickle
-from concatenateclass import processedFOF
 from sys import argv
-from boundedness import get_allHalos, set_up_DM
-from fof_process import dx_wrap, dist2, set_snap_directories, open_hdf5, get_headerprops
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../config'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../modules'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from modules.concatenateclass import processedFOF
+from modules.boundedness import get_allHalos, set_up_DM
+from modules.fof_process import dx_wrap, dist2, set_snap_directories, open_hdf5, get_headerprops
+import config.configuration as config
+
+inputdir = config.set_directories()[0]
 
 def set_up_baryon_fofs(filename, snapnum,sv):
     """
@@ -18,7 +27,7 @@ def set_up_baryon_fofs(filename, snapnum,sv):
         tuple: centers of bounded objs, radii (from boundedness) of bounded objects
 
     """
-    fof = processedFOF(snapnum,filename,sv, path = "/u/home/c/clairewi/project-snaoz/FOF_project") #call processed fof class 
+    fof = processedFOF(snapnum,filename,sv, path = str(inputdir),bounded_path = "bounded3") #call processed fof class 
     fof.chopUnBounded() #remove any unbounded objects 
     if 'recalcRadii' in fof.properties.keys():
         print("using the recalculated radii")
@@ -28,7 +37,7 @@ def set_up_baryon_fofs(filename, snapnum,sv):
     else: 
         print("ERROR: No radii associated with this fof! This should not happen.")
 
-def set_up_dm_fofs(snapnum, sv, path = '/u/home/c/clairewi/project-snaoz/FOF_project/DMP-GS-'):
+def set_up_dm_fofs(snapnum, sv, path =str(inputdir)+'DMP-GS-'):
     """
     Grabs halo data corresponding to DM primary FOF with same snapnum and SV
     Parameters: 
@@ -149,7 +158,7 @@ def dict_calculate(baryon_centers, dm_centers, dmmass, dmradii, boxSize = 1775.)
     objs['closestdm'], objs['closestdm_dist'], objs['closestdm_dmmass'], objs['closestdm_inr200'], objs['num_within10dm'], objs['num_within5dm'] = compare_baryon_dm_fof(baryon_centers, dm_centers, dmmass, dmradii, boxSize = boxSize)
     return objs
 
-def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home/c/clairewi/project-snaoz/FOF_project/'):   
+def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = str(inputdir)):   
     """
     Wrapper function. Currently there are some unused parameters and the 
 
@@ -165,7 +174,7 @@ def wrapper(directory, sv,snapnum, save = True, boxSize = 1775., path = '/u/home
     objs = dict_calculate(baryon_centers, groupPos, groupDMmass, groupRadii, boxSize = boxSize)
     if save ==True: 
         print("Saving output!")
-        with open(str(path)+str(directory)+str(sv)+"/environment_"+str(snapnum)+"_V1.dat",'wb') as f:
+        with open(str(path)+str(directory)+str(sv)+"/environment_"+str(snapnum)+"_V2.dat",'wb') as f:
             pickle.dump(objs, f)
 
 if __name__=="__main__":

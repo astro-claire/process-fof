@@ -1,23 +1,24 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>boundedness &#8212; process-fof 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-
   
-  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
   
@@ -38,24 +39,30 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">concurrent.futures</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/u/home/c/clairewi/project-snaoz/FOF_Testing/process-fof&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">fof_process</span> <span class="kn">import</span> <span class="n">dx_wrap</span><span class="p">,</span> <span class="n">dist2</span><span class="p">,</span> <span class="n">get_DMIDgroups</span><span class="p">,</span> <span class="n">get_starGroups</span><span class="p">,</span> <span class="n">set_snap_directories</span><span class="p">,</span> <span class="n">open_hdf5</span><span class="p">,</span> <span class="n">get_headerprops</span><span class="p">,</span> <span class="n">set_subfind_catalog</span><span class="p">,</span> <span class="n">set_config</span><span class="p">,</span><span class="n">get_gasGroups</span><span class="p">,</span> <span class="n">get_cosmo_props</span><span class="p">,</span><span class="n">get_starIDgroups</span><span class="p">,</span> <span class="n">get_headerprops</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../config&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../modules&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;..&#39;</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">modules.fof_process</span> <span class="kn">import</span> <span class="n">dx_wrap</span><span class="p">,</span> <span class="n">dist2</span><span class="p">,</span> <span class="n">get_DMIDgroups</span><span class="p">,</span> <span class="n">get_starGroups</span><span class="p">,</span> <span class="n">set_snap_directories</span><span class="p">,</span> <span class="n">open_hdf5</span><span class="p">,</span> <span class="n">get_headerprops</span><span class="p">,</span> <span class="n">set_subfind_catalog</span><span class="p">,</span> <span class="n">set_config</span><span class="p">,</span><span class="n">get_gasGroups</span><span class="p">,</span> <span class="n">get_cosmo_props</span><span class="p">,</span><span class="n">get_starIDgroups</span><span class="p">,</span> <span class="n">get_headerprops</span>
+
+<span class="kn">import</span> <span class="nn">config.configuration</span> <span class="k">as</span> <span class="nn">config</span>
 
 <span class="c1">#Set units and parameters</span>
-<span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span>     
-<span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="mf">3.085678e21</span> 
-<span class="n">hubbleparam</span> <span class="o">=</span> <span class="mf">.71</span> <span class="c1">#hubble constant</span>
-<span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="mf">6.672e-8</span>
-<span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="mf">1.0e5</span>
+<span class="n">constants</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">load_constants</span><span class="p">()</span>
+<span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitMass_in_g&#39;</span><span class="p">]</span>     
+<span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitLength_in_cm&#39;</span><span class="p">]</span>
+<span class="n">hubbleparam</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;hubbleparam&#39;</span><span class="p">]</span> <span class="c1">#hubble constant</span>
+<span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;GRAVITY_cgs&#39;</span><span class="p">]</span>
+<span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitVelocity_in_cm_per_s&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="get_allHalos">
-<a class="viewcode-back" href="../boundedness.html#boundedness.get_allHalos">[docs]</a>
-<span class="k">def</span> <span class="nf">get_allHalos</span><span class="p">(</span><span class="n">cat</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_allHalos"><a class="viewcode-back" href="../boundedness.html#boundedness.get_allHalos">[docs]</a><span class="k">def</span> <span class="nf">get_allHalos</span><span class="p">(</span><span class="n">cat</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Identify all halos containing more than 32 dark matter (DM) particles.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        cat (halo catalog): The catalog containing halo information, including the number of particles per halo.</span>
 
 <span class="sd">    Returns:</span>
@@ -66,14 +73,11 @@
 
     <span class="k">return</span> <span class="n">over300idx</span></div>
 
-
-<div class="viewcode-block" id="set_up_DM">
-<a class="viewcode-back" href="../boundedness.html#boundedness.set_up_DM">[docs]</a>
-<span class="k">def</span> <span class="nf">set_up_DM</span><span class="p">(</span><span class="n">SV</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">):</span>   
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="set_up_DM"><a class="viewcode-back" href="../boundedness.html#boundedness.set_up_DM">[docs]</a><span class="k">def</span> <span class="nf">set_up_DM</span><span class="p">(</span><span class="n">SV</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">):</span>   
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set up the dark matter (DM) halo catalog from the simulation snapshot.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        SV (int or str): Simulation version identifier (used for directory/file naming).</span>
 <span class="sd">        snapnum (int): Snapshot number to retrieve.</span>
 
@@ -85,7 +89,9 @@
 <span class="sd">            - endAllDM (np.ndarray): Ending indices for DM particles in each halo.</span>
 <span class="sd">            - dmsnap (h5py snapshot): The opened HDF5 snapshot file containing DM data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">gofilename</span> <span class="o">=</span> <span class="s1">&#39;/u/home/c/clairewi/project-snaoz/FOF_project/DMP-GS-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">SV</span><span class="p">)</span> 
+    <span class="n">inputdir</span><span class="p">,</span> <span class="n">outputdir</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">set_directories</span><span class="p">()</span>
+    <span class="c1"># gofilename = &#39;/u/home/c/clairewi/project-snaoz/FOF_project/DMP-GS-&#39; + str(SV) </span>
+    <span class="n">gofilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">inputdir</span><span class="p">)</span><span class="o">+</span> <span class="s1">&#39;/DMP-GS-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">SV</span><span class="p">)</span> 
     <span class="n">dmgofile</span><span class="p">,</span> <span class="n">dmfoffile</span>  <span class="o">=</span> <span class="n">set_snap_directories</span><span class="p">(</span><span class="n">gofilename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">foffilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">)</span> <span class="p">)</span>
     <span class="n">dmsnap</span><span class="p">,</span> <span class="n">dmfof</span> <span class="o">=</span> <span class="n">open_hdf5</span><span class="p">(</span><span class="n">dmgofile</span><span class="p">,</span> <span class="n">dmfoffile</span><span class="p">)</span>
     <span class="n">cat</span> <span class="o">=</span> <span class="n">set_subfind_catalog</span><span class="p">(</span><span class="n">dmfof</span><span class="p">)</span>
@@ -95,14 +101,11 @@
     <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span> <span class="o">=</span> <span class="n">get_DMIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">dmsnap</span></div>
 
-
-<div class="viewcode-block" id="nearby_DM">
-<a class="viewcode-back" href="../boundedness.html#boundedness.nearby_DM">[docs]</a>
-<span class="k">def</span> <span class="nf">nearby_DM</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span><span class="n">limit</span> <span class="o">=</span><span class="mf">10.</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="nearby_DM"><a class="viewcode-back" href="../boundedness.html#boundedness.nearby_DM">[docs]</a><span class="k">def</span> <span class="nf">nearby_DM</span><span class="p">(</span><span class="n">com</span><span class="p">,</span> <span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span><span class="n">limit</span> <span class="o">=</span><span class="mf">10.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find all halos and their DM particles within a certain distance from a specified center of mass (com).</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        com (np.ndarray): The 3D coordinates of the center of mass (x, y, z).</span>
 <span class="sd">        halo_positions (np.ndarray): The positions of the halos in the box.</span>
 <span class="sd">        startAllDM (np.ndarray): Starting indices for DM particles in each halo.</span>
@@ -138,17 +141,14 @@
         <span class="n">len_counter</span> <span class="o">+=</span> <span class="n">num_dm_particles</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DM pos length is&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">len_counter</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">allnearbyDMPos</span><span class="p">,</span> <span class="n">allnearbyDMVel</span></div>
-
     
 
-<div class="viewcode-block" id="chunks">
-<a class="viewcode-back" href="../boundedness.html#boundedness.chunks">[docs]</a>
-<span class="k">def</span> <span class="nf">chunks</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunks"><a class="viewcode-back" href="../boundedness.html#boundedness.chunks">[docs]</a><span class="k">def</span> <span class="nf">chunks</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Yield successive n-sized chunks from lst.</span>
 <span class="sd">    Function from chat gpt lol</span>
 
-<span class="sd">    Arguments: </span>
+<span class="sd">    Parameters: </span>
 <span class="sd">        lst (list): list or array to divide into chunks</span>
 <span class="sd">        n (int): chunk size</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -156,14 +156,11 @@
         <span class="k">yield</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span></div>
 
 
-
-<div class="viewcode-block" id="dx_indv">
-<a class="viewcode-back" href="../boundedness.html#boundedness.dx_indv">[docs]</a>
-<span class="k">def</span> <span class="nf">dx_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dx_indv"><a class="viewcode-back" href="../boundedness.html#boundedness.dx_indv">[docs]</a><span class="k">def</span> <span class="nf">dx_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply periodic boundary conditions to a coordinate difference.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        dx (float): The difference in a single coordinate (x, y, or z).</span>
 <span class="sd">        box (float): The size of the simulation box.</span>
 
@@ -176,14 +173,11 @@
         <span class="n">dx</span> <span class="o">+=</span> <span class="n">box</span> 
     <span class="k">return</span> <span class="n">dx</span></div>
 
-
-<div class="viewcode-block" id="dist2_indv">
-<a class="viewcode-back" href="../boundedness.html#boundedness.dist2_indv">[docs]</a>
-<span class="k">def</span> <span class="nf">dist2_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="dist2_indv"><a class="viewcode-back" href="../boundedness.html#boundedness.dist2_indv">[docs]</a><span class="k">def</span> <span class="nf">dist2_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the squared distance between two points with periodic boundary conditions.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        dx (float): The difference in the x-coordinate between the two points.</span>
 <span class="sd">        dy (float): The difference in the y-coordinate between the two points.</span>
 <span class="sd">        dz (float): The difference in the z-coordinate between the two points.</span>
@@ -194,38 +188,26 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">dx_indv</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx_indv</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dx_indv</span><span class="p">(</span><span class="n">dz</span><span class="p">,</span><span class="n">box</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span></div>
 
-
-<div class="viewcode-block" id="get_GroupRadii">
-<a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupRadii">[docs]</a>
-<span class="k">def</span> <span class="nf">get_GroupRadii</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_GroupRadii"><a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupRadii">[docs]</a><span class="k">def</span> <span class="nf">get_GroupRadii</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Group COM</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">Group_R_Crit200</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="get_GroupVel">
-<a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupVel">[docs]</a>
-<span class="k">def</span> <span class="nf">get_GroupVel</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_GroupVel"><a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupVel">[docs]</a><span class="k">def</span> <span class="nf">get_GroupVel</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Group COM</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupVel</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="get_GroupPos">
-<a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupPos">[docs]</a>
-<span class="k">def</span> <span class="nf">get_GroupPos</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_GroupPos"><a class="viewcode-back" href="../boundedness.html#boundedness.get_GroupPos">[docs]</a><span class="k">def</span> <span class="nf">get_GroupPos</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return Group COM</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="get_starIDs">
-<a class="viewcode-back" href="../boundedness.html#boundedness.get_starIDs">[docs]</a>
-<span class="k">def</span> <span class="nf">get_starIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_starIDs"><a class="viewcode-back" href="../boundedness.html#boundedness.get_starIDs">[docs]</a><span class="k">def</span> <span class="nf">get_starIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get particle IDs (groupordered snap)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">allStarIDs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/ParticleIDs&#39;</span><span class="p">]</span>
@@ -234,11 +216,8 @@
     <span class="n">allStarVelocities</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/Velocities&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">allStarIDs</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span> <span class="n">allStarVelocities</span></div>
 
-
-<div class="viewcode-block" id="get_DMIDs">
-<a class="viewcode-back" href="../boundedness.html#boundedness.get_DMIDs">[docs]</a>
-<span class="k">def</span> <span class="nf">get_DMIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_DMIDs"><a class="viewcode-back" href="../boundedness.html#boundedness.get_DMIDs">[docs]</a><span class="k">def</span> <span class="nf">get_DMIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Get particle IDs (groupordered snap)</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="n">allDMIDs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType1/ParticleIDs&#39;</span><span class="p">]</span>
@@ -247,14 +226,11 @@
 	
 	<span class="k">return</span> <span class="n">allDMIDs</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">allDMVelocities</span></div>
 
-
-<div class="viewcode-block" id="check_virialized">
-<a class="viewcode-back" href="../boundedness.html#boundedness.check_virialized">[docs]</a>
-<span class="k">def</span> <span class="nf">check_virialized</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="check_virialized"><a class="viewcode-back" href="../boundedness.html#boundedness.check_virialized">[docs]</a><span class="k">def</span> <span class="nf">check_virialized</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if an object is virialized based on its kinetic and potential energy.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        kineticEnergy (float): The kinetic energy of the object.</span>
 <span class="sd">        potentialEnergy (float): The potential energy of the object.</span>
 
@@ -270,14 +246,11 @@
         <span class="n">virialized</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">virialized</span><span class="p">,</span> <span class="n">ratio</span></div>
 
-
-<div class="viewcode-block" id="calc_virial_radius">
-<a class="viewcode-back" href="../boundedness.html#boundedness.calc_virial_radius">[docs]</a>
-<span class="k">def</span> <span class="nf">calc_virial_radius</span><span class="p">(</span><span class="n">potentialEnergy</span><span class="p">,</span> <span class="n">mass</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="calc_virial_radius"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_virial_radius">[docs]</a><span class="k">def</span> <span class="nf">calc_virial_radius</span><span class="p">(</span><span class="n">potentialEnergy</span><span class="p">,</span> <span class="n">mass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the virial radius given the mass and potential energy of an object (in cgs units).</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        potentialEnergy (float): The potential energy of the object.</span>
 <span class="sd">        mass (float): The mass of the object.</span>
 
@@ -286,14 +259,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="o">-</span> <span class="n">GRAVITY_cgs</span> <span class="o">*</span> <span class="n">mass</span> <span class="o">*</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">potentialEnergy</span></div>
 
-
-<div class="viewcode-block" id="calc_max_radius">
-<a class="viewcode-back" href="../boundedness.html#boundedness.calc_max_radius">[docs]</a>
-<span class="k">def</span> <span class="nf">calc_max_radius</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="calc_max_radius"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_max_radius">[docs]</a><span class="k">def</span> <span class="nf">calc_max_radius</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the maximum radial distance between a group of stars and the group&#39;s center.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        starPos_inGroup (np.ndarray): The positions of stars in the group (shape: N x 3).</span>
 <span class="sd">        groupPos (np.ndarray): The position of the group&#39;s center (shape: 3).</span>
 <span class="sd">        boxSize (float): The size of the simulation box.</span>
@@ -306,14 +276,11 @@
     <span class="k">return</span> <span class="n">UnitLength_in_cm</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">maxdist</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="calc_boundedness">
-<a class="viewcode-back" href="../boundedness.html#boundedness.calc_boundedness">[docs]</a>
-<span class="k">def</span> <span class="nf">calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="calc_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_boundedness">[docs]</a><span class="k">def</span> <span class="nf">calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate whether a group of stars is gravitationally bound based on their velocities and positions.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        starVel_inGroup (np.ndarray): The velocities of the stars in the group (shape: N x 3).</span>
 <span class="sd">        starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).</span>
 <span class="sd">        starMass_inGroup (np.ndarray): The masses of the stars in the group (shape: N).</span>
@@ -356,16 +323,13 @@
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">massStars</span></div>
 
-
 <span class="c1">#Functions for parallel tensor creation</span>
 
-<div class="viewcode-block" id="tensor_dist">
-<a class="viewcode-back" href="../boundedness.html#boundedness.tensor_dist">[docs]</a>
-<span class="k">def</span> <span class="nf">tensor_dist</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">boxSize</span><span class="o">=</span><span class="mf">1776.</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="tensor_dist"><a class="viewcode-back" href="../boundedness.html#boundedness.tensor_dist">[docs]</a><span class="k">def</span> <span class="nf">tensor_dist</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">boxSize</span><span class="o">=</span><span class="mf">1776.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the distance between particles i and j</span>
 <span class="sd">    </span>
-<span class="sd">    Arguments:: </span>
+<span class="sd">    Parameters: </span>
 <span class="sd">        i (int): index of particle i</span>
 <span class="sd">        j (int): index of particle j</span>
 <span class="sd">        starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).</span>
@@ -375,14 +339,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">UnitLength_in_cm</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dist2_indv</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">boxSize</span><span class="p">))</span></div>
 
-
-<div class="viewcode-block" id="tensor_dist_2type">
-<a class="viewcode-back" href="../boundedness.html#boundedness.tensor_dist_2type">[docs]</a>
-<span class="k">def</span> <span class="nf">tensor_dist_2type</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">pDM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">boxSize</span><span class="o">=</span><span class="mf">1776.</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="tensor_dist_2type"><a class="viewcode-back" href="../boundedness.html#boundedness.tensor_dist_2type">[docs]</a><span class="k">def</span> <span class="nf">tensor_dist_2type</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span> <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">pDM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">boxSize</span><span class="o">=</span><span class="mf">1776.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the distance between particles i and j where i is a DM particle and j is a star particle</span>
 <span class="sd">    </span>
-<span class="sd">    Arguments:: </span>
+<span class="sd">    Parameters: </span>
 <span class="sd">        i (int): index of particle i</span>
 <span class="sd">        j (int): index of particle j</span>
 <span class="sd">        starPos_inGroup (np.ndarray): The positions of the stars in the group (shape: N x 3).</span>
@@ -394,14 +355,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">UnitLength_in_cm</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dist2_indv</span><span class="p">(</span><span class="n">pDM</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">pDM</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">pDM</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">starPos_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">boxSize</span><span class="p">))</span></div>
 
-
-<div class="viewcode-block" id="compute_row">
-<a class="viewcode-back" href="../boundedness.html#boundedness.compute_row">[docs]</a>
-<span class="k">def</span> <span class="nf">compute_row</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span><span class="n">J</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="compute_row"><a class="viewcode-back" href="../boundedness.html#boundedness.compute_row">[docs]</a><span class="k">def</span> <span class="nf">compute_row</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span><span class="n">J</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the distance tensor row for a given particle in a group.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        i_elem (int): Index of the particle for which the distances are computed.</span>
 <span class="sd">        J (iterable): Iterable of indices of particles to compute distances with respect to.</span>
 <span class="sd">        starPos_inGroup (ndarray): Array of particle positions within the group.</span>
@@ -412,14 +370,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">tensor_dist</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span> <span class="n">j_elem</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="o">=</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">boxSize</span><span class="o">=</span><span class="n">boxSize</span><span class="p">)</span> <span class="k">for</span> <span class="n">j_elem</span> <span class="ow">in</span> <span class="n">J</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="compute_row_2type">
-<a class="viewcode-back" href="../boundedness.html#boundedness.compute_row_2type">[docs]</a>
-<span class="k">def</span> <span class="nf">compute_row_2type</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span><span class="n">J</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">pDM</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="compute_row_2type"><a class="viewcode-back" href="../boundedness.html#boundedness.compute_row_2type">[docs]</a><span class="k">def</span> <span class="nf">compute_row_2type</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span><span class="n">J</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">pDM</span><span class="p">,</span><span class="n">boxSize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the distance tensor row for a given particle in a group, with respect to particles of a different type (e.g., dark matter).</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        i_elem (int): Index of the particle for which the distances are computed.</span>
 <span class="sd">        J (iterable): Iterable of indices of particles to compute distances with respect to.</span>
 <span class="sd">        starPos_inGroup (ndarray): Array of particle positions within the group.</span>
@@ -432,14 +387,11 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">tensor_dist_2type</span><span class="p">(</span><span class="n">i_elem</span><span class="p">,</span> <span class="n">j_elem</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="o">=</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">pDM</span> <span class="o">=</span> <span class="n">pDM</span><span class="p">,</span><span class="n">boxSize</span><span class="o">=</span><span class="n">boxSize</span><span class="p">)</span> <span class="k">for</span> <span class="n">j_elem</span> <span class="ow">in</span> <span class="n">J</span><span class="p">]</span></div>
 
 
-
-<div class="viewcode-block" id="parallel_calc_boundedness">
-<a class="viewcode-back" href="../boundedness.html#boundedness.parallel_calc_boundedness">[docs]</a>
-<span class="k">def</span> <span class="nf">parallel_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="parallel_calc_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.parallel_calc_boundedness">[docs]</a><span class="k">def</span> <span class="nf">parallel_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group using parallel processing.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        starVel_inGroup (ndarray): Array of star velocities in the group.</span>
 <span class="sd">        starPos_inGroup (ndarray): Array of star positions in the group.</span>
 <span class="sd">        starMass_inGroup (ndarray): Array of star masses in the group.</span>
@@ -488,6 +440,7 @@
     <span class="n">tensor_r_ij</span> <span class="o">=</span> <span class="n">result</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;created the tensor&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lengroup</span><span class="p">):</span>
+         <span class="n">r_ij</span> <span class="o">=</span> <span class="mi">0</span>
          <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">lengroup</span><span class="p">):</span>
             <span class="c1">#r_ij = UnitLength_in_cm* np.linalg.norm(starPos_inGroup[i] - starPos_inGroup[j])  # Compute distance between mass i and mass j</span>
             <span class="c1">#r_ij  = UnitLength_in_cm* np.sqrt(dist2_indv(starPos_inGroup[i,0]-starPos_inGroup[j,0],starPos_inGroup[i,1]-starPos_inGroup[j,1],starPos_inGroup[i,2]-starPos_inGroup[j,2],boxSize))</span>
@@ -505,14 +458,11 @@
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">massStars</span></div>
 
-
-<div class="viewcode-block" id="chunked_potential_energy">
-<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy">[docs]</a>
-<span class="k">def</span> <span class="nf">chunked_potential_energy</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunked_potential_energy"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy">[docs]</a><span class="k">def</span> <span class="nf">chunked_potential_energy</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the total potential energy of a system of particles using pairwise interactions.</span>
 <span class="sd">    </span>
-<span class="sd">    Arguments:</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        masses : np.array</span>
 <span class="sd">            1D array of particle masses.</span>
 <span class="sd">        positions : np.array</span>
@@ -527,42 +477,49 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">masses</span><span class="p">)</span>
     <span class="n">total_potential</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">chunk_size</span>  <span class="c1"># Use chunking to avoid excessive memory usage</span>
+    <span class="k">if</span> <span class="n">N</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">:</span> <span class="c1">#no potential energy if no particles in the group</span>
+        <span class="n">total_potential</span> <span class="o">=</span><span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Use chunking to avoid excessive memory usage</span>
+            <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">N</span><span class="o">&gt;</span><span class="mi">20</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">chunk_size</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+            <span class="c1">#print(f&quot;starting potential chunk {i}&quot;)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+                <span class="c1"># Select smaller chunks to handle</span>
+                <span class="n">masses_i</span> <span class="o">=</span> <span class="n">masses</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                <span class="n">masses_j</span> <span class="o">=</span> <span class="n">masses</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                <span class="n">pos_i</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                <span class="n">pos_j</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                
+                <span class="c1"># Calculate pairwise distances between chunks</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">masses_i</span><span class="p">)):</span>
+                    <span class="n">dx</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">dz</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+                    
+                    <span class="n">r2</span> <span class="o">=</span> <span class="n">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box_size</span><span class="p">)</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+                    
+                    <span class="c1"># Avoid division by zero by setting an effective minimum distance</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">r</span> <span class="o">&gt;=</span> <span class="mf">2e-10</span>
+                    <span class="n">valid_r</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+                    <span class="n">valid_masses_j</span> <span class="o">=</span> <span class="n">masses_j</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;starting potential chunk </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-            <span class="c1"># Select smaller chunks to handle</span>
-            <span class="n">masses_i</span> <span class="o">=</span> <span class="n">masses</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">masses_j</span> <span class="o">=</span> <span class="n">masses</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">pos_i</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">pos_j</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            
-            <span class="c1"># Calculate pairwise distances between chunks</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">masses_i</span><span class="p">)):</span>
-                <span class="n">dx</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="n">dy</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-                <span class="n">dz</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
-                
-                <span class="n">r2</span> <span class="o">=</span> <span class="n">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box_size</span><span class="p">)</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
-                
-                <span class="c1"># Avoid division by zero by setting an effective minimum distance</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-                
-                <span class="c1"># Sum up potential energy contributions</span>
-                <span class="n">total_potential</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_i</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_j</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="c1"># Sum up potential energy contributions</span>
+                    <span class="n">total_potential</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_i</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">valid_masses_j</span> <span class="o">/</span> <span class="n">valid_r</span><span class="o">/</span><span class="n">UnitLength_in_cm</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">total_potential</span></div>
 
-
-<div class="viewcode-block" id="chunked_potential_energy_same_mass">
-<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_same_mass">[docs]</a>
-<span class="k">def</span> <span class="nf">chunked_potential_energy_same_mass</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunked_potential_energy_same_mass"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_same_mass">[docs]</a><span class="k">def</span> <span class="nf">chunked_potential_energy_same_mass</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the total potential energy of a system of particles with the same mass using pairwise interactions.</span>
 <span class="sd">    </span>
-<span class="sd">    Arguments:</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        mass : float</span>
 <span class="sd">            Mass of each particle (same for all particles).</span>
 <span class="sd">        positions : np.array</span>
@@ -570,105 +527,116 @@
 <span class="sd">        box_size : float</span>
 <span class="sd">            Size of the periodic box.</span>
 <span class="sd">        G : float</span>
-<span class="sd">            Gravitational constant, defaults to 1.0 for natural units.</span>
+<span class="sd">            Gravitational constant, defaults to cgs units.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        total_potential : float</span>
 <span class="sd">            Total potential energy of the system.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+    <span class="n">masses</span> <span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="n">mass</span>
     <span class="n">total_potential</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># Use chunking to avoid excessive memory usage</span>
+    <span class="k">if</span> <span class="n">N</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">total_potential</span> <span class="o">=</span><span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">3</span><span class="p">):</span> <span class="c1">#errors will occur if the chunks are too large</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Use chunking to avoid excessive memory usage</span>
+            <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">N</span><span class="o">&gt;</span><span class="mi">20</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">chunk_size</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+            <span class="c1">#print(f&quot;starting potential chunk {i}&quot;)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+                <span class="c1"># Select smaller chunks to handle</span>
+                <span class="n">masses_i</span> <span class="o">=</span> <span class="n">masses</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                <span class="n">masses_j</span> <span class="o">=</span> <span class="n">masses</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                <span class="n">pos_i</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                <span class="n">pos_j</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                
+                <span class="c1"># Calculate pairwise distances between chunks</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">masses_i</span><span class="p">)):</span>
+                    <span class="n">dx</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">dz</span> <span class="o">=</span> <span class="n">pos_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_j</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+                    
+                    <span class="n">r2</span> <span class="o">=</span> <span class="n">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box_size</span><span class="p">)</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+                    
+                    <span class="c1"># Avoid division by zero by setting an effective minimum distance</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">r</span> <span class="o">&gt;=</span> <span class="mf">2e-10</span>
+                    <span class="n">valid_r</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+                    <span class="n">valid_masses_j</span> <span class="o">=</span> <span class="n">masses_j</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-            <span class="c1"># Select smaller chunks to handle</span>
-            <span class="n">positions_i</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">positions_j</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            
-            <span class="c1"># Calculate pairwise distances between chunks</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions_i</span><span class="p">)):</span>
-                <span class="n">dx</span> <span class="o">=</span> <span class="n">positions_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions_j</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="n">dy</span> <span class="o">=</span> <span class="n">positions_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions_j</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-                <span class="n">dz</span> <span class="o">=</span> <span class="n">positions_i</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions_j</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
-                
-                <span class="n">r2</span> <span class="o">=</span> <span class="n">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box_size</span><span class="p">)</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
-                
-                <span class="c1"># Avoid division by zero by setting an effective minimum distance</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-                
-                <span class="c1"># Sum up potential energy contributions using the same mass for all particles</span>
-                <span class="n">total_potential</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mass</span> <span class="o">*</span> <span class="n">mass</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="c1"># Sum up potential energy contributions</span>
+                    <span class="n">total_potential</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_i</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">valid_masses_j</span> <span class="o">/</span> <span class="n">valid_r</span><span class="o">/</span><span class="n">UnitLength_in_cm</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">total_potential</span></div>
 
 
-<div class="viewcode-block" id="chunked_potential_energy_between_sets">
-<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_between_sets">[docs]</a>
-<span class="k">def</span> <span class="nf">chunked_potential_energy_between_sets</span><span class="p">(</span><span class="n">masses1</span><span class="p">,</span> <span class="n">positions1</span><span class="p">,</span> <span class="n">masses2</span><span class="p">,</span> <span class="n">positions2</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the total potential energy between two different sets of particles using pairwise interactions.</span>
-<span class="sd">    </span>
-<span class="sd">    Arguments:</span>
-<span class="sd">        masses1 : np.array</span>
-<span class="sd">            1D array of particle masses for set 1.</span>
-<span class="sd">        positions1 : np.array</span>
-<span class="sd">            2D array of particle positions for set 1 (shape: N1 x 3).</span>
-<span class="sd">        masses2 : np.array</span>
-<span class="sd">            1D array of particle masses for set 2.</span>
-<span class="sd">        positions2 : np.array</span>
-<span class="sd">            2D array of particle positions for set 2 (shape: N2 x 3).</span>
-<span class="sd">        box_size : float</span>
-<span class="sd">            Size of the periodic box.</span>
-<span class="sd">        G : float</span>
-<span class="sd">            Gravitational constant, defaults to 1.0 for natural units.</span>
-<span class="sd">    </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        total_potential : float</span>
-<span class="sd">            Total potential energy between the two sets of particles.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">N1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">masses1</span><span class="p">)</span>
-    <span class="n">N2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">masses2</span><span class="p">)</span>
-    <span class="n">total_potential</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># Use chunking to avoid excessive memory usage</span>
+<span class="c1"># def chunked_potential_energy_between_sets(masses1, positions1, masses2, positions2, box_size, G=GRAVITY_cgs, chunk_size = 10000):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Calculate the total potential energy between two different sets of particles using pairwise interactions.</span>
+    
+<span class="c1">#     Parameters:</span>
+<span class="c1">#         masses1 : np.array</span>
+<span class="c1">#             1D array of particle masses for set 1.</span>
+<span class="c1">#         positions1 : np.array</span>
+<span class="c1">#             2D array of particle positions for set 1 (shape: N1 x 3).</span>
+<span class="c1">#         masses2 : np.array</span>
+<span class="c1">#             1D array of particle masses for set 2.</span>
+<span class="c1">#         positions2 : np.array</span>
+<span class="c1">#             2D array of particle positions for set 2 (shape: N2 x 3).</span>
+<span class="c1">#         box_size : float</span>
+<span class="c1">#             Size of the periodic box.</span>
+<span class="c1">#         G : float</span>
+<span class="c1">#             Gravitational constant, defaults to cgs units.</span>
+    
+<span class="c1">#     Returns:</span>
+<span class="c1">#         total_potential : float</span>
+<span class="c1">#             Total potential energy between the two sets of particles.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     N1 = len(masses1)</span>
+<span class="c1">#     N2 = len(masses2)</span>
+<span class="c1">#     total_potential = 0.0</span>
+<span class="c1">#     chunk_size = chunk_size  # Use chunking to avoid excessive memory usage</span>
 
-    <span class="c1"># Loop over the first set of particles in chunks</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-        <span class="c1"># Loop over the second set of particles in chunks</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N2</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-            <span class="c1"># Select chunks of particles</span>
-            <span class="n">masses1_chunk</span> <span class="o">=</span> <span class="n">masses1</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">positions1_chunk</span> <span class="o">=</span> <span class="n">positions1</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">masses2_chunk</span> <span class="o">=</span> <span class="n">masses2</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">positions2_chunk</span> <span class="o">=</span> <span class="n">positions2</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+<span class="c1">#     # Loop over the first set of particles in chunks</span>
+<span class="c1">#     for i in range(0, N1, chunk_size):</span>
+<span class="c1">#         # Loop over the second set of particles in chunks</span>
+<span class="c1">#         for j in range(0, N2, chunk_size):</span>
+<span class="c1">#             # Select chunks of particles</span>
+<span class="c1">#             masses1_chunk = masses1[i:i+chunk_size]</span>
+<span class="c1">#             positions1_chunk = positions1[i:i+chunk_size]</span>
+<span class="c1">#             masses2_chunk = masses2[j:j+chunk_size]</span>
+<span class="c1">#             positions2_chunk = positions2[j:j+chunk_size]</span>
             
-            <span class="c1"># Calculate pairwise distances between the two sets</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">masses1_chunk</span><span class="p">)):</span>
-                <span class="n">dx</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="n">dy</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-                <span class="n">dz</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="c1">#             # Calculate pairwise distances between the two sets</span>
+<span class="c1">#             for k in range(len(masses1_chunk)):</span>
+<span class="c1">#                 dx = positions1_chunk[k, 0] - positions2_chunk[:, 0]</span>
+<span class="c1">#                 dy = positions1_chunk[k, 1] - positions2_chunk[:, 1]</span>
+<span class="c1">#                 dz = positions1_chunk[k, 2] - positions2_chunk[:, 2]</span>
                 
-                <span class="n">r2</span> <span class="o">=</span> <span class="n">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box_size</span><span class="p">)</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+<span class="c1">#                 r2 = dist2(dx, dy, dz, box_size)</span>
+<span class="c1">#                 r = np.sqrt(r2)</span>
                 
-                <span class="c1"># Avoid division by zero by setting an effective minimum distance</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+<span class="c1">#                 # Avoid division by zero by setting an effective minimum distance</span>
+<span class="c1">#                 mask = r &gt;= 1e-10</span>
+<span class="c1">#                 valid_r = r[mask]</span>
+<span class="c1">#                 valid_masses_j = masses2_chunk[mask]</span>
                 
-                <span class="c1"># Sum up potential energy contributions between particles in set 1 and set 2</span>
-                <span class="n">total_potential</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses2_chunk</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
+<span class="c1">#                 # Sum up potential energy contributions between particles in set 1 and set 2</span>
+<span class="c1">#                 total_potential += -G * np.sum(masses1_chunk[k] * valid_masses_j /valid_r /UnitLength_in_cm)</span>
 
-    <span class="k">return</span> <span class="n">total_potential</span></div>
+<span class="c1">#     return total_potential</span>
 
-
-<div class="viewcode-block" id="chunked_potential_energy_between_groups">
-<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_between_groups">[docs]</a>
-<span class="k">def</span> <span class="nf">chunked_potential_energy_between_groups</span><span class="p">(</span><span class="n">mass1</span><span class="p">,</span> <span class="n">positions1</span><span class="p">,</span> <span class="n">masses2</span><span class="p">,</span> <span class="n">positions2</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunked_potential_energy_between_groups"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_potential_energy_between_groups">[docs]</a><span class="k">def</span> <span class="nf">chunked_potential_energy_between_groups</span><span class="p">(</span><span class="n">mass1</span><span class="p">,</span> <span class="n">positions1</span><span class="p">,</span> <span class="n">masses2</span><span class="p">,</span> <span class="n">positions2</span><span class="p">,</span> <span class="n">box_size</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">GRAVITY_cgs</span><span class="p">,</span> <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the total potential energy between two groups of particles, </span>
 <span class="sd">    where the first group has the same mass for all particles, and the second group has an array of masses.</span>
 <span class="sd">    </span>
-<span class="sd">    Arguments:</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        mass1 : float</span>
 <span class="sd">            Mass of each particle in the first group (same for all particles in group 1).</span>
 <span class="sd">        positions1 : np.array</span>
@@ -680,7 +648,7 @@
 <span class="sd">        box_size : float</span>
 <span class="sd">            Size of the periodic box.</span>
 <span class="sd">        G : float</span>
-<span class="sd">            Gravitational constant, defaults to 1.0 for natural units.</span>
+<span class="sd">            Gravitational constant, defaults to cgs units.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        total_potential : float</span>
@@ -689,42 +657,55 @@
     <span class="n">N1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions1</span><span class="p">)</span>
     <span class="n">N2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">masses2</span><span class="p">)</span>
     <span class="n">total_potential</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># Use chunking to avoid excessive memory usage</span>
+    <span class="k">if</span> <span class="n">N1</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">N2</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="c1">#edge case where one set of particles is empty</span>
+        <span class="n">total_potential</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">N1</span><span class="o">/</span><span class="mi">3</span><span class="p">):</span> <span class="c1">#errors will occur if the chunks are too large</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N1</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Use chunking to avoid excessive memory usage</span>
+            <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">N1</span><span class="o">&gt;</span><span class="mi">20</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">N1</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">chunk_size</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">N2</span><span class="o">/</span><span class="mi">3</span><span class="p">):</span> <span class="c1">#errors will occur if the chunks are too large</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N2</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Use chunking to avoid excessive memory usage</span>
+            <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">N2</span><span class="o">&gt;</span><span class="mi">20</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">N2</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">chunk_size</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span><span class="mi">1</span>
+        <span class="c1"># Loop over the first group of particles in chunks</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+            <span class="c1"># Loop over the second group of particles in chunks</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N2</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+                <span class="c1"># Select chunks of particles</span>
+                <span class="n">positions1_chunk</span> <span class="o">=</span> <span class="n">positions1</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                <span class="n">positions2_chunk</span> <span class="o">=</span> <span class="n">positions2</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                <span class="n">masses2_chunk</span> <span class="o">=</span> <span class="n">masses2</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+                
+                <span class="c1"># Calculate pairwise distances between the two groups</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions1_chunk</span><span class="p">)):</span>
+                    <span class="n">dx</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">dz</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+                    
+                    <span class="n">r2</span> <span class="o">=</span> <span class="n">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box_size</span><span class="p">)</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span> 
+                    
+                    <span class="c1"># Avoid division by zero by setting an effective minimum distance</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">r</span> <span class="o">&gt;=</span> <span class="mf">2e-10</span>
+                    <span class="n">valid_r</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+                    <span class="n">valid_masses_j</span> <span class="o">=</span> <span class="n">masses2_chunk</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
 
-    <span class="c1"># Loop over the first group of particles in chunks</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-        <span class="c1"># Loop over the second group of particles in chunks</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N2</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-            <span class="c1"># Select chunks of particles</span>
-            <span class="n">positions1_chunk</span> <span class="o">=</span> <span class="n">positions1</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">positions2_chunk</span> <span class="o">=</span> <span class="n">positions2</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            <span class="n">masses2_chunk</span> <span class="o">=</span> <span class="n">masses2</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
-            
-            <span class="c1"># Calculate pairwise distances between the two groups</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions1_chunk</span><span class="p">)):</span>
-                <span class="n">dx</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="n">dy</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-                <span class="n">dz</span> <span class="o">=</span> <span class="n">positions1_chunk</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">positions2_chunk</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
-                
-                <span class="n">r2</span> <span class="o">=</span> <span class="n">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box_size</span><span class="p">)</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
-                
-                <span class="c1"># Avoid division by zero by setting an effective minimum distance</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-                
-                <span class="c1"># Sum up potential energy contributions</span>
-                <span class="n">total_potential</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mass1</span> <span class="o">*</span> <span class="n">masses2_chunk</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="c1"># Sum up potential energy contributions</span>
+                    <span class="n">total_potential</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mass1</span> <span class="o">*</span> <span class="n">valid_masses_j</span> <span class="o">/</span> <span class="n">valid_r</span> <span class="o">/</span><span class="n">UnitLength_in_cm</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">total_potential</span></div>
 
-
-<div class="viewcode-block" id="chunked_calc_boundedness">
-<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_calc_boundedness">[docs]</a>
-<span class="k">def</span> <span class="nf">chunked_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunked_calc_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_calc_boundedness">[docs]</a><span class="k">def</span> <span class="nf">chunked_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">,</span><span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group using chunked processing to reduce memory usage.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        starVel_inGroup (ndarray): Array of star velocities in the group.</span>
 <span class="sd">        starPos_inGroup (ndarray): Array of star positions in the group.</span>
 <span class="sd">        starMass_inGroup (ndarray): Array of star masses in the group.</span>
@@ -739,6 +720,15 @@
     <span class="n">tempvelstars</span> <span class="o">=</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="o">-</span><span class="n">groupVelocity</span><span class="p">,</span> <span class="n">boxSizeVel</span><span class="p">)</span>
     <span class="n">velMagStars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">tempvelstars</span><span class="o">*</span><span class="n">tempvelstars</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">kineticEnergyStars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">starMass_inGroup</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span><span class="n">velMagStars</span><span class="o">*</span><span class="n">velMagStars</span><span class="o">*</span><span class="n">UnitVelocity_in_cm_per_s</span><span class="o">*</span><span class="n">UnitVelocity_in_cm_per_s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;inf&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">kineticEnergyStars</span><span class="p">):</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">500</span>  <span class="c1"># Process in smaller batches</span>
+        <span class="n">kineticEnergyStars</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1">#doing this way to eliminate infinite error</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">velMagStars</span><span class="p">),</span> <span class="n">chunk_size</span><span class="p">):</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">velMagStars</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">]</span>
+            <span class="n">chunkstarmass</span> <span class="o">=</span> <span class="n">starMass_inGroup</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">]</span>
+            <span class="n">kineticEnergyStars</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">chunkstarmass</span> <span class="o">/</span><span class="n">UnitMass_in_g</span><span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">chunk</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">UnitVelocity_in_cm_per_s</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>   
+        <span class="n">kineticEnergyStars</span> <span class="o">=</span> <span class="n">kineticEnergyStars</span><span class="o">*</span><span class="n">UnitMass_in_g</span> <span class="c1">#add back in the units</span>
     <span class="n">potentialEnergyStars</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">massStars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">starMass_inGroup</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stellarmass is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">massStars</span><span class="p">))</span>
@@ -748,6 +738,7 @@
     <span class="n">energyStars</span> <span class="o">=</span> <span class="n">kineticEnergyStars</span><span class="o">+</span> <span class="n">potentialEnergyStars</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total energy&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">energyStars</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">energyStars</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;object is bound&quot;</span><span class="p">)</span>
          <span class="n">boundedness</span> <span class="o">=</span>  <span class="mi">1</span>
@@ -757,14 +748,11 @@
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergyStars</span><span class="p">,</span> <span class="n">potentialEnergyStars</span><span class="p">,</span> <span class="n">massStars</span></div>
 
 
-
-<div class="viewcode-block" id="parallel_calc_dm_boundedness">
-<a class="viewcode-back" href="../boundedness.html#boundedness.parallel_calc_dm_boundedness">[docs]</a>
-<span class="k">def</span> <span class="nf">parallel_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="parallel_calc_dm_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.parallel_calc_dm_boundedness">[docs]</a><span class="k">def</span> <span class="nf">parallel_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group with dark matter using parallel processing.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        energyStars (float): Total energy of the stellar group.</span>
 <span class="sd">        starVel_inGroup (ndarray): Array of star velocities in the group.</span>
 <span class="sd">        starPos_inGroup (ndarray): Array of star positions in the group.</span>
@@ -811,6 +799,7 @@
     <span class="n">tensor_r_ij</span> <span class="o">=</span> <span class="n">result</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;created the tensor&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lengroup</span><span class="p">):</span>
+            <span class="n">r_ij</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">lengroup</span><span class="p">):</span>
                 <span class="n">r_ij</span> <span class="o">=</span> <span class="n">tensor_r_ij</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">r_ij</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -839,14 +828,11 @@
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span></div>
 
-
-<div class="viewcode-block" id="chunked_calc_dm_boundedness">
-<a class="viewcode-back" href="../boundedness.html#boundedness.chunked_calc_dm_boundedness">[docs]</a>
-<span class="k">def</span> <span class="nf">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="chunked_calc_dm_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.chunked_calc_dm_boundedness">[docs]</a><span class="k">def</span> <span class="nf">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the boundedness of a stellar group with dark matter using chunked processing to reduce memory usage.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        energyStars (float): Total energy of the stellar group.</span>
 <span class="sd">        starVel_inGroup (ndarray): Array of star velocities in the group.</span>
 <span class="sd">        starPos_inGroup (ndarray): Array of star positions in the group.</span>
@@ -880,6 +866,14 @@
     <span class="n">massDM</span> <span class="o">=</span> <span class="n">lengroup</span><span class="o">*</span> <span class="n">massDMParticle</span>
     <span class="c1">#Kinetic energy component</span>
     <span class="n">kineticEnergyDM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">massDMParticle</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span><span class="n">velMagDM</span><span class="o">*</span><span class="n">velMagDM</span><span class="o">*</span><span class="n">UnitVelocity_in_cm_per_s</span><span class="o">*</span><span class="n">UnitVelocity_in_cm_per_s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;inf&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">kineticEnergyDM</span><span class="p">):</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">500</span>  <span class="c1"># Process in smaller batches</span>
+        <span class="n">kineticEnergyDM</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1">#doing this way to elimatine infinite error</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">velMagDM</span><span class="p">),</span> <span class="n">chunk_size</span><span class="p">):</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">velMagDM</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">]</span>
+            <span class="n">kineticEnergyDM</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">massDMParticle</span> <span class="o">/</span><span class="n">UnitMass_in_g</span><span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">chunk</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">UnitVelocity_in_cm_per_s</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>   
+        <span class="n">kineticEnergyDM</span> <span class="o">=</span> <span class="n">kineticEnergyDM</span><span class="o">*</span><span class="n">UnitMass_in_g</span> <span class="c1">#add back in the units</span>
     <span class="n">potentialEnergyDM</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">potentialEnergyStarsDM</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="c1">#DM self potential energy</span>
@@ -895,15 +889,12 @@
          <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;not bound even after DM!&quot;</span><span class="p">)</span>
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span></div>
-
     
-<div class="viewcode-block" id="calc_dm_boundedness">
-<a class="viewcode-back" href="../boundedness.html#boundedness.calc_dm_boundedness">[docs]</a>
-<span class="k">def</span> <span class="nf">calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-<span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="calc_dm_boundedness"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_dm_boundedness">[docs]</a><span class="k">def</span> <span class="nf">calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span> <span class="n">starPos_inGroup</span><span class="p">,</span> <span class="n">starMass_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocity</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     Calculate the boundedness of a stellar group with dark matter without any tricks to reduce memory usage</span>
 
-<span class="sd">     Arguments::</span>
+<span class="sd">     Parameters:</span>
 <span class="sd">        energyStars (float): Total energy of the stellar group.</span>
 <span class="sd">        starVel_inGroup (ndarray): Array of star velocities in the group.</span>
 <span class="sd">        starPos_inGroup (ndarray): Array of star positions in the group.</span>
@@ -944,7 +935,7 @@
             <span class="c1">#r_ij = UnitLength_in_cm* np.linalg.norm(pDM[inGroupDM][i] - pDM[inGroupDM][j])  # Compute distance between mass i and mass j</span>
             <span class="n">r_ij</span>  <span class="o">=</span> <span class="n">UnitLength_in_cm</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dist2_indv</span><span class="p">(</span><span class="n">pDM</span><span class="p">[</span><span class="n">inGroupDM</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">pDM</span><span class="p">[</span><span class="n">inGroupDM</span><span class="p">][</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">pDM</span><span class="p">[</span><span class="n">inGroupDM</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">pDM</span><span class="p">[</span><span class="n">inGroupDM</span><span class="p">][</span><span class="n">j</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">pDM</span><span class="p">[</span><span class="n">inGroupDM</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">pDM</span><span class="p">[</span><span class="n">inGroupDM</span><span class="p">][</span><span class="n">j</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">boxSize</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">r_ij</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                 <span class="n">potentialEnergyDM</span> <span class="o">+=</span> <span class="o">-</span><span class="p">(</span><span class="n">GRAVITY_cgs</span> <span class="o">*</span> <span class="n">massDMParticle</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">r_ij</span>      
+                 <span class="n">potentialEnergyDM</span> <span class="o">+=</span> <span class="o">-</span><span class="p">(</span><span class="n">GRAVITY_cgs</span> <span class="o">*</span> <span class="p">(</span><span class="n">massDMParticle</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">r_ij</span>      
      <span class="n">lenstars</span><span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">starMass_inGroup</span><span class="p">)</span>
      <span class="c1">#potential energy between stars and DM</span>
      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lengroup</span><span class="p">):</span>
@@ -962,14 +953,11 @@
          <span class="n">boundedness</span> <span class="o">=</span> <span class="mi">0</span>
      <span class="k">return</span> <span class="n">boundedness</span><span class="p">,</span> <span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyStarsDM</span> <span class="o">+</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span></div>
 
-
-<div class="viewcode-block" id="calc_DM_mass">
-<a class="viewcode-back" href="../boundedness.html#boundedness.calc_DM_mass">[docs]</a>
-<span class="k">def</span> <span class="nf">calc_DM_mass</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="calc_DM_mass"><a class="viewcode-back" href="../boundedness.html#boundedness.calc_DM_mass">[docs]</a><span class="k">def</span> <span class="nf">calc_DM_mass</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">,</span>  <span class="n">groupPos</span><span class="p">,</span><span class="n">boxSize</span><span class="p">,</span> <span class="n">pDM</span><span class="p">,</span><span class="n">groupRadius</span> <span class="p">,</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the mass of dark matter (DM) within a group.</span>
 
-<span class="sd">    Arguments::</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        starPos_inGroup (ndarray): Positions of stars in the group.</span>
 <span class="sd">        groupPos (ndarray): Position of the center of the group.</span>
 <span class="sd">        boxSize (float): Size of the simulation box for periodic boundary conditions.</span>
@@ -998,20 +986,17 @@
     <span class="k">return</span> <span class="n">massDM</span></div>
 
 
-
-<div class="viewcode-block" id="check_if_exists">
-<a class="viewcode-back" href="../boundedness.html#boundedness.check_if_exists">[docs]</a>
-<span class="k">def</span> <span class="nf">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="check_if_exists"><a class="viewcode-back" href="../boundedness.html#boundedness.check_if_exists">[docs]</a><span class="k">def</span> <span class="nf">check_if_exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a file corresponding to a particular snapshot and chunk exists in the specified directory.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        filepath (str): Path to the directory.</span>
 <span class="sd">        idx (int): Chunk index.</span>
 <span class="sd">        snapnum (int): Snapshot number.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        exists (bool): True if the file exists, False otherwise.</span>
+<span class="sd">        (bool): True if the file exists, False otherwise.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fof_process_name</span> <span class="o">=</span> <span class="s2">&quot;bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span>
     <span class="n">exists</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1023,14 +1008,11 @@
             <span class="n">exists</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="n">exists</span></div>
 
-
-<div class="viewcode-block" id="check_if_exists_indv">
-<a class="viewcode-back" href="../boundedness.html#boundedness.check_if_exists_indv">[docs]</a>
-<span class="k">def</span> <span class="nf">check_if_exists_indv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">obj</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="check_if_exists_indv"><a class="viewcode-back" href="../boundedness.html#boundedness.check_if_exists_indv">[docs]</a><span class="k">def</span> <span class="nf">check_if_exists_indv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span><span class="n">obj</span><span class="p">,</span><span class="n">snapnum</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if an individual file corresponding to a particular snapshot, chunk, and object exists in the specified directory.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        filepath (str): Path to the directory.</span>
 <span class="sd">        idx (int): Chunk index.</span>
 <span class="sd">        obj (int): Object identifier.</span>
@@ -1051,15 +1033,12 @@
 
 
 
-
-<div class="viewcode-block" id="iterate_galaxies_chunked_resub_N_saveindv">
-<a class="viewcode-back" href="../boundedness.html#boundedness.iterate_galaxies_chunked_resub_N_saveindv">[docs]</a>
-<span class="k">def</span> <span class="nf">iterate_galaxies_chunked_resub_N_saveindv</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">groupRadii</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocities</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="iterate_galaxies_chunked_resub_N_saveindv"><a class="viewcode-back" href="../boundedness.html#boundedness.iterate_galaxies_chunked_resub_N_saveindv">[docs]</a><span class="k">def</span> <span class="nf">iterate_galaxies_chunked_resub_N_saveindv</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">groupRadii</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocities</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over galaxies in chunks, checking for boundedness and virialization, and calculating dark matter mass for each galaxy.</span>
 <span class="sd">    Saves results for individual objects.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        N (int): Index to start iterating over chunks.</span>
 <span class="sd">        gofilename (str): Path for saving results.</span>
 <span class="sd">        snapnum (int or str) Snapshot number for the simulation.</span>
@@ -1086,7 +1065,7 @@
     <span class="n">objs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1">#FIX THESE SO THEY AREN&#39;T HARD CODED</span>
     <span class="n">Omega0</span> <span class="o">=</span> <span class="mf">0.27</span>
-    <span class="n">OmegaLambda</span> <span class="o">=</span> <span class="mf">0.71</span>
+    <span class="n">OmegaLambda</span> <span class="o">=</span> <span class="mf">0.73</span>
     <span class="n">groupPos</span> <span class="o">=</span> <span class="n">groupPos</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span> 
     <span class="n">groupVelocities</span> <span class="o">=</span> <span class="n">groupVelocities</span> <span class="o">/</span><span class="n">atime</span> <span class="c1"># convert to physical units</span>
     <span class="c1">#hubble flow correction</span>
@@ -1108,7 +1087,7 @@
     <span class="n">chunked_startAllStars</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
     <span class="n">chunked_endAllStars</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
     <span class="n">chunked_groupVelocities</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-    <span class="n">filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;/bounded2&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;/bounded3&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;checking in the following file&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">chunkidx</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunked_indices</span><span class="p">):</span>
@@ -1205,7 +1184,7 @@
                     <span class="n">indv_objs</span><span class="p">[</span><span class="s1">&#39;virial_ratio&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">virial_ratio</span>
                     <span class="n">indv_objs</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">usedDM</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished processing obj </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2"> in chunk starting with </span><span class="si">{</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, saving progress...&quot;</span><span class="p">)</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gofilename</span><span class="o">+</span><span class="s2">&quot;/bounded2/indv_objs/indv_bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_object&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_startidx&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;_V1.dat&quot;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>   
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gofilename</span><span class="o">+</span><span class="s2">&quot;/bounded3/indv_objs/indv_bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_object&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_startidx&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;_V1.dat&quot;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>   
                         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">indv_objs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
             <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bounded</span><span class="p">)</span>
             <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">virialized</span><span class="p">)</span>
@@ -1220,15 +1199,12 @@
             <span class="c1">#     pickle.dump(objs, f)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 
-
-<div class="viewcode-block" id="iterate_galaxies_chunked_resub_N">
-<a class="viewcode-back" href="../boundedness.html#boundedness.iterate_galaxies_chunked_resub_N">[docs]</a>
-<span class="k">def</span> <span class="nf">iterate_galaxies_chunked_resub_N</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">groupRadii</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocities</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="iterate_galaxies_chunked_resub_N"><a class="viewcode-back" href="../boundedness.html#boundedness.iterate_galaxies_chunked_resub_N">[docs]</a><span class="k">def</span> <span class="nf">iterate_galaxies_chunked_resub_N</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">groupRadii</span><span class="p">,</span><span class="n">groupPos</span><span class="p">,</span> <span class="n">groupVelocities</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterate over galaxies in chunks, checking for boundedness and virialization, and calculating dark matter mass for each galaxy.</span>
 <span class="sd">    Saves results for chunks of  objects.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        N (int): Index to start iterating over chunks.</span>
 <span class="sd">        gofilename (str): Path for saving results.</span>
 <span class="sd">        snapnum (int or str) Snapshot number for the simulation.</span>
@@ -1255,7 +1231,7 @@
     <span class="n">objs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1">#FIX THESE SO THEY AREN&#39;T HARD CODED</span>
     <span class="n">Omega0</span> <span class="o">=</span> <span class="mf">0.27</span>
-    <span class="n">OmegaLambda</span> <span class="o">=</span> <span class="mf">0.71</span>
+    <span class="n">OmegaLambda</span> <span class="o">=</span> <span class="mf">0.73</span>
     <span class="n">groupPos</span> <span class="o">=</span> <span class="n">groupPos</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span> 
     <span class="n">groupVelocities</span> <span class="o">=</span> <span class="n">groupVelocities</span> <span class="o">/</span><span class="n">atime</span> <span class="c1"># convert to physical units</span>
     <span class="c1">#hubble flow correction</span>
@@ -1277,7 +1253,7 @@
     <span class="n">chunked_startAllStars</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
     <span class="n">chunked_endAllStars</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
     <span class="n">chunked_groupVelocities</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-    <span class="n">filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;/bounded2&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;/bounded3&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;checking in the following file&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">chunkidx</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunked_indices</span><span class="p">):</span>
@@ -1317,7 +1293,7 @@
                 <span class="n">starVel_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">atime</span><span class="p">)</span> <span class="c1">#unit conversions on the particle coordinates </span>
                 <span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">)</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span> <span class="n">hubbleparam</span>
                 <span class="c1">#First, check for boundedness and virialization with just the stellar component</span>
-                <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span> <span class="n">parallel_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">groupVelocities</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">)</span>
+                <span class="n">boundedness</span><span class="p">,</span> <span class="n">energyStars</span><span class="p">,</span> <span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span> <span class="n">chunked_calc_boundedness</span><span class="p">(</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">groupVelocities</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">)</span>
                 <span class="n">massStar</span> <span class="o">=</span> <span class="n">mass</span>
                 <span class="n">virialization</span><span class="p">,</span> <span class="n">virial_ratio</span> <span class="o">=</span> <span class="n">check_virialized</span><span class="p">(</span><span class="n">kineticEnergy</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="p">)</span>
                 <span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span> <span class="o">=</span> <span class="n">nearby_DM</span><span class="p">(</span><span class="n">groupPos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">atime</span> <span class="o">*</span><span class="n">hubbleparam</span><span class="p">,</span> <span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span><span class="n">dmsnap</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span><span class="n">limit</span> <span class="o">=</span><span class="mf">10.</span> <span class="p">)</span>
@@ -1332,7 +1308,7 @@
                         <span class="n">kineticEnergyDM</span><span class="o">=</span><span class="mf">0.</span>
                         <span class="n">potentialEnergyDM</span> <span class="o">=</span> <span class="mf">0.</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">boundedness</span><span class="p">,</span><span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span> <span class="o">=</span> <span class="n">parallel_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">groupVelocities</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span><span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadii</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">)</span> 
+                        <span class="n">boundedness</span><span class="p">,</span><span class="n">totEnergy</span><span class="p">,</span> <span class="n">kineticEnergyDM</span><span class="p">,</span> <span class="n">potentialEnergyDM</span><span class="p">,</span> <span class="n">massDM</span> <span class="o">=</span> <span class="n">chunked_calc_dm_boundedness</span><span class="p">(</span><span class="n">energyStars</span><span class="p">,</span><span class="n">starVel_inGroup</span><span class="p">,</span><span class="n">starPos_inGroup</span><span class="p">,</span><span class="n">starMass_inGroup</span><span class="p">,</span> <span class="n">groupPos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">groupVelocities</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">boxSize</span><span class="p">,</span><span class="n">boxSizeVel</span><span class="p">,</span><span class="n">pDM</span><span class="p">,</span> <span class="n">vDM</span><span class="p">,</span><span class="n">groupRadii</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">atime</span><span class="p">,</span><span class="n">massDMParticle</span><span class="p">)</span> 
                     <span class="n">kineticEnergy</span> <span class="o">+=</span> <span class="n">kineticEnergyDM</span>
                     <span class="n">potentialEnergy</span> <span class="o">+=</span> <span class="n">potentialEnergyDM</span>
                     <span class="n">mass</span> <span class="o">+=</span> <span class="n">massDM</span>
@@ -1372,28 +1348,25 @@
             <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">usedDMs</span><span class="p">)</span>
             <span class="n">objs</span><span class="p">[</span><span class="s1">&#39;r200&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">groupRadii</span><span class="p">)</span> <span class="o">*</span><span class="n">atime</span> <span class="o">/</span><span class="n">hubbleparam</span> <span class="o">*</span><span class="n">UnitLength_in_cm</span> <span class="c1">#just for comparison, let&#39;s include the original group radius as calculated by the halo finder</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished processing chunk starting with </span><span class="si">{</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, saving progress...&quot;</span><span class="p">)</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gofilename</span><span class="o">+</span><span class="s2">&quot;/bounded2/bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_startidx&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;_V1.dat&quot;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>   
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gofilename</span><span class="o">+</span><span class="s2">&quot;/bounded3/bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunkidx</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_startidx&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;_V1.dat&quot;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>   
                 <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 
 
 
 
-
-<div class="viewcode-block" id="add_bounded_calculation_N">
-<a class="viewcode-back" href="../boundedness.html#boundedness.add_bounded_calculation_N">[docs]</a>
-<span class="k">def</span> <span class="nf">add_bounded_calculation_N</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="add_bounded_calculation_N"><a class="viewcode-back" href="../boundedness.html#boundedness.add_bounded_calculation_N">[docs]</a><span class="k">def</span> <span class="nf">add_bounded_calculation_N</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper function to calculate boundedness and virialization for galaxy groups.</span>
 <span class="sd">    </span>
-<span class="sd">    Arguments:</span>
-<span class="sd">        filename -- Path to the input files.</span>
-<span class="sd">        N -- Index to start iterating over chunks.</span>
-<span class="sd">        snapnum -- Snapshot number for the simulation.</span>
-<span class="sd">        group -- Group type to calculate boundedness for (&#39;Stars&#39;, &#39;Gas&#39;, or &#39;DM&#39;).</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        filename (str): Path to the input files.</span>
+<span class="sd">        N (int): Index to start iterating over chunks.</span>
+<span class="sd">        snapnum (int or str): Snapshot number for the simulation.</span>
+<span class="sd">        group (str): Group type to calculate boundedness for (&#39;Stars&#39;, &#39;Gas&#39;, or &#39;DM&#39;).</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        objs -- Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.</span>
+<span class="sd">        dict: Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;opening files&#39;</span><span class="p">)</span>
     <span class="n">gofilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -1428,21 +1401,18 @@
     <span class="n">objs</span> <span class="o">=</span> <span class="n">iterate_galaxies_chunked_resub_N</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">atime</span><span class="p">,</span> <span class="n">boxSize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span><span class="n">allStarVelocities</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">halo100_rad</span><span class="p">,</span><span class="n">halo100_pos</span><span class="p">,</span> <span class="n">halo100_vel</span><span class="p">,</span><span class="n">massDMParticle</span><span class="o">*</span> <span class="n">UnitMass_in_g</span> <span class="o">/</span> <span class="n">hubbleparam</span><span class="p">,</span><span class="n">halo_positions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span><span class="p">,</span> <span class="n">dmsnap</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 
-
-<div class="viewcode-block" id="add_bounded_calculation_N_indv">
-<a class="viewcode-back" href="../boundedness.html#boundedness.add_bounded_calculation_N_indv">[docs]</a>
-<span class="k">def</span> <span class="nf">add_bounded_calculation_N_indv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="add_bounded_calculation_N_indv"><a class="viewcode-back" href="../boundedness.html#boundedness.add_bounded_calculation_N_indv">[docs]</a><span class="k">def</span> <span class="nf">add_bounded_calculation_N_indv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper function to calculate boundedness and virialization and save individual galaxy groups.</span>
 <span class="sd">    </span>
-<span class="sd">    Arguments:</span>
-<span class="sd">    filename -- Path to the input files.</span>
-<span class="sd">    N -- Index to start iterating over chunks.</span>
-<span class="sd">    snapnum -- Snapshot number for the simulation.</span>
-<span class="sd">    group -- Group type to calculate boundedness for (&#39;Stars&#39;, &#39;Gas&#39;, or &#39;DM&#39;).</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        filename (str): Path to the input files.</span>
+<span class="sd">        N (int): Index to start iterating over chunks.</span>
+<span class="sd">        snapnum (int or str): Snapshot number for the simulation.</span>
+<span class="sd">        group (str): Group type to calculate boundedness for (&#39;Stars&#39;, &#39;Gas&#39;, or &#39;DM&#39;).</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
-<span class="sd">    objs -- Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.</span>
+<span class="sd">        dict: Dictionary containing the boundedness, virialization status, dark matter mass, star mass, recalculated radii, and virial ratios for each galaxy group.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;opening files&#39;</span><span class="p">)</span>
     <span class="n">gofilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -1478,21 +1448,18 @@
     <span class="k">return</span> <span class="n">objs</span></div>
 
 
-
-<div class="viewcode-block" id="boundedness_mode">
-<a class="viewcode-back" href="../boundedness.html#boundedness.boundedness_mode">[docs]</a>
-<span class="k">def</span> <span class="nf">boundedness_mode</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="boundedness_mode"><a class="viewcode-back" href="../boundedness.html#boundedness.boundedness_mode">[docs]</a><span class="k">def</span> <span class="nf">boundedness_mode</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">N</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;Stars&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Starts full boundedness calculation for either save as group or individual</span>
 
-<span class="sd">    Arguments: </span>
+<span class="sd">    Parameters: </span>
 <span class="sd">        filename (str): path to FOF files</span>
 <span class="sd">        N (int): chunk at which to start the calculation</span>
 <span class="sd">        snapnum (int or str): hdf5 snap number</span>
 <span class="sd">        mode (str): mode for saving output</span>
 <span class="sd">            Options: </span>
 <span class="sd">                Default: &quot;group&quot; - saves the group in chunks</span>
-<span class="sd">                &quot;indv&quot;: saves each individual object. Requires a directory named &quot;indv_objs&quot; in bounded2 directory. </span>
+<span class="sd">                &quot;indv&quot;: saves each individual object. Requires a directory named &quot;indv_objs&quot; in bounded directory. </span>
 <span class="sd">    </span>
 <span class="sd">    Returns :</span>
 <span class="sd">        dict: all object properties. </span>
@@ -1509,12 +1476,11 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ModeError: mode </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> is unsupported, sorry.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">objs</span></div>
 
-
 <span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Routine if running as a script</span>
 
-<span class="sd">    Arguments: </span>
+<span class="sd">    Parameters: </span>
 <span class="sd">        gofilename path to directory containing groupordered file + fof table</span>
 <span class="sd">        # foffilename </span>
 <span class="sd">        snapnum (float)</span>
@@ -1556,6 +1522,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../fof_process.html">FOF Process</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../boundedness.html">Boundedness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../stellar_rotation.html">Stellar Rotation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concatenateclass.html">processedFOF Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dm_virialization.html">DM virialization</a></li>
 </ul>
 
 <div class="relations">
@@ -1576,7 +1545,7 @@
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -1590,11 +1559,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Claire Williams.
+      &copy;2024, Claire Williams.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

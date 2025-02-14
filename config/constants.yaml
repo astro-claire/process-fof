@@ -1,0 +1,7 @@
+#Define constants to be used by the simulation
+constants:
+  UnitMass_in_g: 1.989e43
+  UnitLength_in_cm: 3.085678e21
+  hubbleparam: 0.71
+  GRAVITY_cgs: 6.672e-8
+  UnitVelocity_in_cm_per_s: 1.0e5
