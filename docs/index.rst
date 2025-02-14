@@ -128,7 +128,7 @@ Once this has run, the setup is complete. You can check to ensure the setup is c
 
 Run the Code
 ------------
-You can now run the scripts in the `scripts` and `modules` directory!
+You can now run the scripts in the `scripts` and `modules` directory! Coming soon: a guide to the various scripts/how to use! 
 
 
 .. Contributing
