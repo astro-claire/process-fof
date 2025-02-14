@@ -16,6 +16,7 @@ This section will guide you through the steps to set up and start using the repo
 Prerequisites
 -------------
 Before you begin, ensure you have the following installed:
+
 - Python 3.x
 - Git
 
