@@ -48,8 +48,6 @@ Install the required dependencies using `pip`:
 
     pip install -r requirements.txt
 
-`Note that this file doesn't exist yet!`
-
 Configuration
 -------------
 You will need two configuration files to run the scripts. ``config.yaml`` provides information about the simulation settings and directories for I/O. ``constants.yaml`` contains the cgs values of the units used in your simulation. Copy the example configuration files and edit with your settings:
@@ -68,6 +66,7 @@ New Stars
 For some scripts, the code requires a database of new star particles at each snapshot. 
 This will need to be generated to use the SFR/ Muv functionality for those scripts. 
 The location of the newstars files should be specified in ``config.yaml``. 
+Coming soon: code to generate this file! 
 
 FOF Algorithms
 --------------
@@ -126,16 +125,15 @@ The file strucutre should look like this:
 Once this has run, the setup is complete. You can check to ensure the setup is correct by running `` python test_setup.py``. 
 
 
-`Note that the setup files don't exist yet!`
-
 
 Run the Code
 ------------
-You can now run the scripts in the `scripts` directory. For example, to run `dm_virialization.py`:
+You can now run the scripts in the `scripts` and `modules` directory!
+.. You can now run the scripts in the `scripts` directory. For example, to run `dm_virialization.py`:
 
-.. code-block:: bash
+.. .. code-block:: bash
 
-    python scripts/dm_virialization.py
+..     python scripts/dm_virialization.py
 
 .. Running Tests
 .. -------------
