@@ -5,8 +5,8 @@ Post processing scripts for AREPO friends-of-friends output.
 
 Overview:
 ---------
-process-fof is a set of python scripts to post-process AREPO FOF runs. 
-Instructions for getting started are currently a template--do not actually use them! 
+process-fof is a set of python scripts to post-process AREPO FOF runs. Original paper: `Williams et al (2025)`.
+Public version is still somewhat in development. Reach out to Claire (clairewilliams@astro.ucla.edu) for help. 
 
 Getting Started
 ===============
