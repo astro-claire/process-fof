@@ -52,9 +52,9 @@ You will need two configuration files to run the scripts. ``config.yaml`` provid
 
 .. code-block:: bash
 
-    cp config/example_config.yaml config/config.yaml
+    cp examples/example_config.yaml config/config.yaml
     # Edit config/config.yaml with your settings
-    cp config/example_constants.yaml config/constants.yaml
+    cp examples/example_constants.yaml config/constants.yaml
     # Edit config/config.yaml with your settings
 
 `Note that these files don't exist yet! Make a file explaining the config parameters as well.`
