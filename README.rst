@@ -1,5 +1,6 @@
-# process-fof
-Post processing script for AREPO friends-of-friends output. 
+process-fof
+-----------
+Post processing scripts for AREPO friends-of-friends output. 
 
 
 Overview:
