@@ -26,8 +26,8 @@ First, clone the repository to your machine using Git:
 
 .. code-block:: bash
 
-    git clone https://github.com/your-username/your-repo.git
-    cd your-repo
+    git clone https://github.com/astro-claire/process-fof.git
+    cd process-fof
 
 .. Create a Virtual Environment
 .. ----------------------------
