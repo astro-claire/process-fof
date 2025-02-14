@@ -10,13 +10,13 @@ Output:
 
 Creates chunked bounded files located at: 
 ::
-   USER_PATH/bounded2
+   input_dir/bounded3
 
 If individual mode is used, individual object files are created at:
 ::
-   USER_PATH/bounded2/indv_objs
+   input_dir/bounded3/indv_objs
 
-Note that these directories must be created by the user before running the script.
+Note that these directories must be created by the user before running the script (see the setup instructions).
 
 Functions: 
 ----------

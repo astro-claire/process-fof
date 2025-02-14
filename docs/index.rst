@@ -8,8 +8,8 @@ Welcome to process-fof's documentation!
 
 Overview:
 ---------
-process-fof is a set of python scripts to post-process AREPO FOF runs. 
-Instructions for getting started are currently a template--do not actually use them! 
+process-fof is a set of python scripts to post-process AREPO FOF runs. Original paper: `Williams et al (2025)`.
+Public version is still somewhat in development. Reach out to Claire (clairewilliams@astro.ucla.edu) for help. 
 
 Getting Started
 ===============
@@ -19,6 +19,7 @@ This section will guide you through the steps to set up and start using the repo
 Prerequisites
 -------------
 Before you begin, ensure you have the following installed:
+
 - Python 3.x
 - Git
 
@@ -54,12 +55,11 @@ You will need two configuration files to run the scripts. ``config.yaml`` provid
 
 .. code-block:: bash
 
-    cp config/example_config.yaml config/config.yaml
+    cp examples/example_config.yaml config/config.yaml
     # Edit config/config.yaml with your settings
-    cp config/example_constants.yaml config/constants.yaml
+    cp examples/example_constants.yaml config/constants.yaml
     # Edit config/config.yaml with your settings
 
-`Note that these files don't exist yet! Make a file explaining the config parameters as well.`
 
 New Stars
 ---------
@@ -129,19 +129,6 @@ Once this has run, the setup is complete. You can check to ensure the setup is c
 Run the Code
 ------------
 You can now run the scripts in the `scripts` and `modules` directory!
-.. You can now run the scripts in the `scripts` directory. For example, to run `dm_virialization.py`:
-
-.. .. code-block:: bash
-
-..     python scripts/dm_virialization.py
-
-.. Running Tests
-.. -------------
-.. To ensure everything is set up correctly, run the tests:
-
-.. .. code-block:: bash
-
-..     pytest tests/
 
 
 .. Contributing
