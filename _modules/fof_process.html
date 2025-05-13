@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fof_process &#8212; process-fof 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for fof_process</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sys</span><span class="w"> </span><span class="kn">import</span> <span class="n">argv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../config&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;..&#39;</span><span class="p">))</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">config.configuration</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">config</span>
+
+
+
+<div class="viewcode-block" id="dx_wrap">
+<a class="viewcode-back" href="../fof_process.html#fof_process.dx_wrap">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dx_wrap</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wraps distances using periodic boundary conditions in a vectorized way.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># </span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dx</span> <span class="o">&gt;</span> <span class="n">box</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">dx</span> <span class="o">-</span> <span class="n">box</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">box</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">dx</span> <span class="o">+</span> <span class="n">box</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dx</span></div>
+
+
+<div class="viewcode-block" id="dist2">
+<a class="viewcode-back" href="../fof_process.html#fof_process.dist2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dist2</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates squared distance considering periodic boundary conditions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">dx_wrap</span><span class="p">(</span><span class="n">dz</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dz</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="set_snap_directories">
+<a class="viewcode-back" href="../fof_process.html#fof_process.set_snap_directories">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_snap_directories</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Sets paths HDF5 from directory</span>
+<span class="sd">	</span>
+<span class="sd">	Parameters: </span>
+<span class="sd">		filename (str): directory of snap-groupordered file</span>
+<span class="sd">		snapnum (float): Snap file number</span>
+<span class="sd">		foffilename (str, Optional): path to directory containing fof_subhalo_tab file. </span>
+<span class="sd">			Default: same directory as snap-groupordered</span>
+<span class="sd">	</span>
+<span class="sd">	Returns:</span>
+<span class="sd">        (tuple): path to groupordered file, path to fof file</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">gofilename</span> <span class="o">=</span> <span class="n">filename</span>  <span class="o">+</span> <span class="s2">&quot;/snap-groupordered_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;foffilename&#39;</span><span class="p">]:</span>
+		<span class="n">foffile</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;foffilename&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;/fof_subhalo_tab_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span> 
+		<span class="n">foffile</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;/fof_subhalo_tab_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">gofilename</span><span class="p">,</span> <span class="n">foffile</span></div>
+
+
+<div class="viewcode-block" id="open_hdf5">
+<a class="viewcode-back" href="../fof_process.html#fof_process.open_hdf5">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_hdf5</span><span class="p">(</span><span class="n">gofilename</span><span class="p">,</span> <span class="n">foffilename</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Opens hdf5 files with h5py given paths as defined in set_snap_directories</span>
+<span class="sd">	</span>
+<span class="sd">	Parameters: </span>
+<span class="sd">		gofilename (str): directory of snap-groupordered file</span>
+<span class="sd">		goffilename (str): directory of fof table file</span>
+<span class="sd">	Returns:</span>
+<span class="sd">		(tuple): snap-groupordered hdf5, fof table hdf5</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">snap</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">gofilename</span><span class="o">+</span><span class="s1">&#39;.hdf5&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+	<span class="n">fof</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">foffilename</span><span class="o">+</span><span class="s1">&#39;.hdf5&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">snap</span><span class="p">,</span> <span class="n">fof</span></div>
+
+
+<div class="viewcode-block" id="get_headerprops">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_headerprops">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_headerprops</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="sd">	extract header properties from hdf5file</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">		f (snap): snap Hdf5 file with header</span>
+<span class="sd">	Returns:</span>
+<span class="sd">		(list): boxsize, redshift, massDMParticle</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;BoxSize&#39;</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Redshift&#39;</span><span class="p">],</span>  <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;MassTable&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_cosmo_props">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_cosmo_props">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_cosmo_props</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Create dictionary of cosmological parameters based on snapfile header. </span>
+<span class="sd">	</span>
+<span class="sd">	Returns: </span>
+<span class="sd">		dict: dictionary of cosmological parameters. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">cos</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="n">G</span> <span class="o">=</span> <span class="mf">6.672e-8</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;H0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;HubbleParam&#39;</span><span class="p">]</span><span class="o">*</span> <span class="mi">100</span> <span class="c1"># hubble constant</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span>   <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="c1">#scale factor @ z of snap</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;Om0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Omega0&#39;</span><span class="p">]</span> <span class="c1">#z=0 matter fraction</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;OL0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;OmegaLambda&#39;</span><span class="p">]</span> <span class="c1">#z=0 DE fraction</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;OL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">[</span><span class="s1">&#39;OL0&#39;</span><span class="p">]</span> <span class="c1"># DE fraction at z of snap</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;H2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">[</span><span class="s1">&#39;H0&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">cos</span><span class="p">[</span><span class="s1">&#39;Om0&#39;</span><span class="p">]</span><span class="o">*</span> <span class="p">(</span><span class="n">cos</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">))</span><span class="o">+</span><span class="n">cos</span><span class="p">[</span><span class="s1">&#39;OL&#39;</span><span class="p">]</span> <span class="p">)</span> <span class="c1">#Hubble parameter at z of snap</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;Om&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">[</span><span class="s1">&#39;Om0&#39;</span><span class="p">]</span><span class="o">*</span> <span class="p">(</span><span class="n">cos</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">3.</span><span class="p">))</span> <span class="o">*</span><span class="p">(</span><span class="n">cos</span><span class="p">[</span><span class="s1">&#39;H0&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">cos</span><span class="p">[</span><span class="s1">&#39;H2&#39;</span><span class="p">])</span><span class="c1"># matter fraction at z of snap</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;rhocrit0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">cos</span><span class="p">[</span><span class="s1">&#39;H0&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span> <span class="n">G</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="p">((</span><span class="mf">3.086e19</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># unit conversion to g/cm^3</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;rhocrit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">cos</span><span class="p">[</span><span class="s1">&#39;H2&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span> <span class="n">G</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="p">((</span><span class="mf">3.086e19</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># unit conversion to g/cm^3</span>
+	<span class="n">cos</span><span class="p">[</span><span class="s1">&#39;rhom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">[</span><span class="s1">&#39;Om&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">cos</span><span class="p">[</span><span class="s1">&#39;rhocrit&#39;</span><span class="p">]</span> 
+	<span class="k">return</span> <span class="n">cos</span></div>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">subfindGroup</span><span class="p">():</span>
+	<span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">f</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		initializes the subfind structure</span>
+<span class="sd">		Parameters: </span>
+<span class="sd">			f (HDF5 file): fof table snap file </span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">GroupCM</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group/GroupCM&#39;</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">GroupLen</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group/GroupLen&#39;</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">GroupLenType</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group/GroupLenType&#39;</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">GroupPos</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group/GroupPos&#39;</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">Group_R_Crit200</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group/Group_R_Crit200&#39;</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">GroupVel</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group/GroupVel&#39;</span><span class="p">]</span>
+		
+		
+<span class="k">def</span><span class="w"> </span><span class="nf">print_group_properties</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Group properties&quot;</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;subhalo properties&quot;</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;Subhalo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+		
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_subfind_catalog</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+	<span class="k">return</span> <span class="n">subfindGroup</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_config</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+	<span class="n">conf</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Config&#39;</span><span class="p">]</span>
+	<span class="n">prim_type</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;FOF_PRIMARY_LINK_TYPES&#39;</span><span class="p">]</span> 
+	<span class="k">if</span> <span class="n">prim_type</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> 
+		<span class="n">prim</span> <span class="o">=</span> <span class="s2">&quot;gas&quot;</span>
+	<span class="k">elif</span> <span class="n">prim_type</span> <span class="o">==</span><span class="mi">2</span><span class="p">:</span> 
+		<span class="n">prim</span> <span class="o">=</span> <span class="s2">&quot;DM&quot;</span>
+	<span class="k">elif</span> <span class="n">prim_type</span> <span class="o">==</span><span class="mi">16</span><span class="p">:</span> 
+		<span class="n">prim</span> <span class="o">=</span> <span class="s2">&quot;stars&quot;</span>
+	<span class="k">elif</span> <span class="n">prim_type</span> <span class="o">==</span> <span class="mi">17</span><span class="p">:</span> 
+		<span class="n">prim</span> <span class="o">=</span> <span class="s2">&quot;stars+gas&quot;</span>
+	<span class="k">elif</span> <span class="n">prim_type</span> <span class="o">==</span> <span class="mi">19</span><span class="p">:</span>
+		<span class="n">prim</span> <span class="o">=</span> <span class="s2">&quot;stars+gas+DM&quot;</span>
+	<span class="k">else</span><span class="p">:</span> 
+		<span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Unknown Primary FOF type. Add support for your FOF!&quot;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="s1">&#39;FOF_SECONDARY_LINK_TYPES&#39;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+		<span class="n">sec_type</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;FOF_SECONDARY_LINK_TYPES&#39;</span><span class="p">]</span> 
+		<span class="k">if</span> <span class="n">sec_type</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> 
+			<span class="n">sec</span> <span class="o">=</span> <span class="s2">&quot;gas&quot;</span>
+		<span class="k">elif</span> <span class="n">sec_type</span> <span class="o">==</span><span class="mi">16</span><span class="p">:</span>
+			<span class="n">sec</span> <span class="o">=</span> <span class="s2">&quot;stars&quot;</span>
+		<span class="k">elif</span> <span class="n">sec_type</span> <span class="o">==</span><span class="mi">17</span><span class="p">:</span> 
+			<span class="n">sec</span> <span class="o">=</span><span class="s2">&quot;stars+gas&quot;</span>
+		<span class="k">elif</span> <span class="n">sec_type</span> <span class="o">==</span><span class="mi">2</span><span class="p">:</span> 
+			<span class="n">sec</span> <span class="o">=</span> <span class="s2">&quot;DM&quot;</span>
+		<span class="k">else</span><span class="p">:</span> 
+			<span class="n">sec</span> <span class="o">=</span> <span class="s2">&quot;stars+gas&quot;</span> 
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;defaulted to secondary stars + gas although it was unknown &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sec_type</span><span class="p">))</span>
+			<span class="c1">#raise AttributeError(&quot;Unknown Secondary FOF type. Add support for your FOF!&quot;)</span>
+	<span class="k">else</span><span class="p">:</span> 
+		<span class="n">sec</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
+	<span class="k">return</span> <span class="n">prim</span><span class="p">,</span> <span class="n">sec</span>
+
+<div class="viewcode-block" id="get_Halos">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_Halos">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_Halos</span><span class="p">(</span><span class="n">cat</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	halos of greater than 300 particles AND nonzero virial radius</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">over300idx</span><span class="p">,</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="mi">300</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">Group_R_Crit200</span><span class="p">,</span><span class="mf">0.</span><span class="p">)))</span>
+
+	<span class="k">return</span> <span class="n">over300idx</span></div>
+
+
+<div class="viewcode-block" id="get_gasGroups">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_gasGroups">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_gasGroups</span><span class="p">(</span><span class="n">cat</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Gas clumps with greater than 100 particles</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">halo100_indices</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span><span class="mi">100</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+	<span class="k">return</span> <span class="n">halo100_indices</span></div>
+
+
+
+<div class="viewcode-block" id="get_starGroups">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_starGroups">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_starGroups</span><span class="p">(</span><span class="n">cat</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="sd">	Star clumps with greater than 100 particles</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">halo100_indices</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span> <span class="o">&gt;</span><span class="mi">100</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>		
+	<span class="k">return</span> <span class="n">halo100_indices</span></div>
+
+
+<div class="viewcode-block" id="get_gasIDgroups">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_gasIDgroups">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_gasIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	given a list of indices, return the beginning and end of the grourp in gas indices</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">startAllGas</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">endAllGas</span>   <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">halo100_indices</span><span class="p">:</span>
+		<span class="n">startAllGas</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[:</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">])]</span>
+		<span class="n">endAllGas</span>   <span class="o">+=</span> <span class="p">[</span><span class="n">startAllGas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+
+	<span class="k">return</span> <span class="n">startAllGas</span><span class="p">,</span> <span class="n">endAllGas</span></div>
+
+
+<div class="viewcode-block" id="get_starIDgroups">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_starIDgroups">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_starIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	given a list of indices, return the beginning and end of the grourp in gas indices</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">startAllStars</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">endAllStars</span>   <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">halo100_indices</span><span class="p">:</span>
+		<span class="n">startAllStars</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[:</span><span class="n">i</span><span class="p">,</span><span class="mi">4</span><span class="p">])]</span>
+		<span class="n">endAllStars</span>   <span class="o">+=</span> <span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">4</span><span class="p">]]</span>
+
+	<span class="k">return</span> <span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span></div>
+
+
+<div class="viewcode-block" id="get_DMIDgroups">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_DMIDgroups">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_DMIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	given a list of indices, return the beginning and end of the grourp in gas indices</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">startAllDM</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">endAllDM</span>   <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">halo100_indices</span><span class="p">:</span>
+		<span class="n">startAllDM</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[:</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])]</span>
+		<span class="n">endAllDM</span>   <span class="o">+=</span> <span class="p">[</span><span class="n">startAllDM</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+
+	<span class="k">return</span> <span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span></div>
+
+
+
+<div class="viewcode-block" id="get_starIDs">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_starIDs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_starIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Get particle IDs (groupordered snap)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">allStarIDs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/ParticleIDs&#39;</span><span class="p">]</span>
+	<span class="n">allStarMasses</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/Masses&#39;</span><span class="p">]</span>
+	<span class="n">allStarPositions</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType4/Coordinates&#39;</span><span class="p">]</span>
+
+	<span class="k">return</span> <span class="n">allStarIDs</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span></div>
+
+
+<div class="viewcode-block" id="get_gasIDs">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_gasIDs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_gasIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Get particle IDs (groupordered snap)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">allGasIDs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType0/ParticleIDs&#39;</span><span class="p">]</span>
+	<span class="n">allGasMasses</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType0/Masses&#39;</span><span class="p">]</span>
+	<span class="n">allGasPositions</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType0/Coordinates&#39;</span><span class="p">]</span>
+
+	<span class="k">return</span> <span class="n">allGasIDs</span><span class="p">,</span> <span class="n">allGasMasses</span><span class="p">,</span> <span class="n">allGasPositions</span></div>
+
+
+
+<div class="viewcode-block" id="get_DMIDs">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_DMIDs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_DMIDs</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Get particle IDs (groupordered snap)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">allDMIDs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType1/ParticleIDs&#39;</span><span class="p">]</span>
+	<span class="n">allDMPositions</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType1/Coordinates&#39;</span><span class="p">]</span>
+	
+	<span class="k">return</span> <span class="n">allDMIDs</span><span class="p">,</span> <span class="n">allDMPositions</span></div>
+
+	
+<div class="viewcode-block" id="get_obj_properties">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_obj_properties">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_obj_properties</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">boxsize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarIDs</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">r200</span> <span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">Gas</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Find all the star particles in each object within r200 and sums to give the mass</span>
+<span class="sd">	Parameters: </span>
+<span class="sd">		cat</span>
+<span class="sd">		boxsize</span>
+<span class="sd">		halo100_indices</span>
+<span class="sd">		r200 (bool): whether or not to check whether particles lie inside r200 or not</span>
+<span class="sd">		Gas (bool): function can also be used for gas. If True, adds &quot;gasMass&quot; and &quot;gasIndices&quot; to dict instead of star keys. </span>
+<span class="sd">					Make sure to use gas positions, indices, etc as inputs instead. </span>
+<span class="sd">			Default: False</span>
+
+<span class="sd">	Returns: </span>
+<span class="sd">		(dict): dictionary containing star IDs in each group and stellar Mass</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">starIDs_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+	<span class="n">mStars_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+	<span class="n">mStar_Group</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">))</span>
+	<span class="c1">#print(&quot;In testing mode! - not the full set&quot;)</span>
+	<span class="n">Stars</span> <span class="o">=</span> <span class="kc">True</span>
+	<span class="k">if</span> <span class="n">Gas</span><span class="p">:</span>
+		<span class="n">Stars</span> <span class="o">=</span> <span class="kc">False</span>
+	<span class="k">if</span> <span class="n">r200</span><span class="p">:</span>  <span class="c1">#Check whether the stars are located inside r200 or not</span>
+		<span class="n">r_200</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">Group_R_Crit200</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">):</span> <span class="c1">#0-10 for testing mode only!</span>
+			<span class="c1"># starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]]</span>
+			<span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">allStarPositions</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+			<span class="n">goodStars</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span> <span class="n">boxsize</span><span class="p">)</span><span class="o">&lt;</span><span class="n">r_200</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">allStarIDs</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">goodStars</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">Stars</span><span class="p">:</span> <span class="c1">#only need mass of each star particle for SFR</span>
+				<span class="n">mStars_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">allStarMasses</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">goodStars</span><span class="p">]</span> 
+			<span class="n">mStar_Group</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">allStarMasses</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">goodStars</span><span class="p">])</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">):</span> <span class="c1">#0-10 for testing mode only!</span>
+					<span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">allStarPositions</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+					<span class="c1">#dont include the R200 condition</span>
+					<span class="c1">#goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize))[0]</span>
+					<span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">allStarIDs</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+					<span class="k">if</span> <span class="n">Stars</span><span class="p">:</span> 
+						<span class="n">mStars_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">allStarMasses</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+					<span class="n">mStar_Group</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">allStarMasses</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+	<span class="n">objs</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="k">if</span> <span class="n">Gas</span><span class="p">:</span> 
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;gasIDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">])</span>
+		<span class="c1">#objs[&#39;gasMasses&#39;]= np.array(mStars_inGroup[halo100_indices]) # the masses of each star particle in the group</span>
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;gasMass&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mStar_Group</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">])</span> <span class="c1"># total stellar mass in the group</span>
+	<span class="k">else</span><span class="p">:</span> 
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;starIDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">])</span>
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;starMasses&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mStars_inGroup</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">])</span> <span class="c1"># the masses of each star particle in the group</span>
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;stellarMass&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mStar_Group</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">])</span> <span class="c1"># total stellar mass in the group</span>
+	<span class="k">return</span> <span class="n">objs</span></div>
+
+
+<div class="viewcode-block" id="get_DM">
+<a class="viewcode-back" href="../fof_process.html#fof_process.get_DM">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_DM</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">boxsize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">massDMParticle</span><span class="p">,</span><span class="n">allStarIDs</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">r200</span> <span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Find all the DM particles in each object within r200 and sums to give the mass</span>
+<span class="sd">	SORRY THAT EVERYTHING SAYS STARS</span>
+<span class="sd">	Parameters: </span>
+<span class="sd">		cat</span>
+<span class="sd">		boxsize</span>
+<span class="sd">		halo100_indices</span>
+<span class="sd">		r200 (bool): whether or not to check whether particles lie inside r200 or not</span>
+<span class="sd">		</span>
+<span class="sd">	Returns: </span>
+<span class="sd">		(dict): dictionary containing DM IDs in each group and DM Mass</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">starIDs_inGroup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+	<span class="c1"># mStars_inGroup = np.empty(np.size(cat.GroupLenType),dtype=list)</span>
+	<span class="n">mDM_Group</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">GroupLenType</span><span class="p">))</span>
+	<span class="c1">#print(&quot;In testing mode! - not the full set&quot;)</span>
+	<span class="k">if</span> <span class="n">r200</span><span class="p">:</span>  <span class="c1">#Check whether the stars are located inside r200 or not</span>
+		<span class="n">r_200</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">Group_R_Crit200</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">):</span> <span class="c1">#0-10 for testing mode only!</span>
+			<span class="c1"># starIDs_inGroup[j] = allStarIDs[startAllStars[i]:endAllStars[i]]</span>
+			<span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">allStarPositions</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+			<span class="n">goodStars</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starPos_inGroup</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span> <span class="n">cat</span><span class="o">.</span><span class="n">GroupPos</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span> <span class="n">boxsize</span><span class="p">)</span><span class="o">&lt;</span><span class="n">r_200</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">allStarIDs</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">goodStars</span><span class="p">]</span>
+			<span class="n">mDM_Group</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="o">*</span><span class="n">massDMParticle</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">halo100_indices</span><span class="p">):</span> <span class="c1">#0-10 for testing mode only!</span>
+			<span class="n">starPos_inGroup</span> <span class="o">=</span> <span class="n">allStarPositions</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+			<span class="c1">#dont include the R200 condition</span>
+			<span class="c1">#goodStars  = np.where(dist2(np.array(starPos_inGroup[:,0]- cat.GroupPos[j][0]),np.array(starPos_inGroup[:,1]- cat.GroupPos[j][1]),np.array(starPos_inGroup[:,2]- cat.GroupPos[j][2]), boxsize))[0]</span>
+			<span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">allStarIDs</span><span class="p">[</span><span class="n">startAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">endAllStars</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+			<span class="n">mDM_Group</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="o">*</span><span class="n">massDMParticle</span>
+	<span class="n">objs</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;DMIDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">starIDs_inGroup</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">])</span>
+	<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;DMMass&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mDM_Group</span><span class="p">[</span><span class="n">halo100_indices</span><span class="p">])</span> <span class="c1"># total stellar mass in the group</span>
+	<span class="k">return</span> <span class="n">objs</span></div>
+
+
+<div class="viewcode-block" id="find_newStars">
+<a class="viewcode-back" href="../fof_process.html#fof_process.find_newStars">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_newStars</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span><span class="n">newstars</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Compare IDs in each object to the new stars and see which stars are new</span>
+<span class="sd">	Parameters: </span>
+<span class="sd">		objs (dict): dictionary containing the star IDs and stellar mass of each group</span>
+<span class="sd">		newstars (dict): dictionary containing the new stars in each snap</span>
+<span class="sd">		snapnum (float, str, or int): HDF5 snap number</span>
+<span class="sd">	Returns: </span>
+<span class="sd">		dict: dictionary containing the stellar mass, particle IDs, and new stellar mass of each object</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">newmStar_Group</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="s1">&#39;stellarMass&#39;</span><span class="p">]))</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="s1">&#39;stellarMass&#39;</span><span class="p">])):</span> <span class="c1"># should be len of the objs list</span>
+		<span class="n">zipped</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">objs</span><span class="p">[</span><span class="s1">&#39;starIDs&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">objs</span><span class="p">[</span><span class="s1">&#39;starMasses&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span> <span class="c1">#Stars particles and their masses in each object</span>
+		<span class="n">zipped_IDsMasses</span> <span class="o">=</span> <span class="n">zipped</span><span class="p">[</span><span class="n">zipped</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">()]</span> <span class="c1">#sort by the IDs in the 0th column</span>
+		<span class="n">newstars_inSnap</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">newstars</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">snapnum</span><span class="p">)])</span> <span class="c1">#these were already sorted in the saved file. If you don&#39;t save them as sorted they need to get sorted before here</span>
+		<span class="n">IDs</span> <span class="o">=</span> <span class="n">zipped_IDsMasses</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#only the IDs</span>
+		<span class="n">ind_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">IDs</span><span class="p">))</span>
+		<span class="n">masses</span> <span class="o">=</span> <span class="n">zipped_IDsMasses</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#only the masses</span>
+		<span class="n">newIDs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">IDs</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">newstars_inSnap</span><span class="p">)</span>
+		<span class="n">newstaridx</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">newIDs</span><span class="p">]</span>
+		<span class="n">newmStar_Group</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">masses</span><span class="p">[</span><span class="n">newstaridx</span><span class="p">])</span>
+	<span class="k">return</span> <span class="n">newmStar_Group</span></div>
+
+
+<div class="viewcode-block" id="calc_all_stellarprops">
+<a class="viewcode-back" href="../fof_process.html#fof_process.calc_all_stellarprops">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_all_stellarprops</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">newstars</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">&quot;Stars&quot;</span><span class="p">,</span> <span class="n">SFR</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">r200</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Routine to do everything</span>
+<span class="sd">	Parameters: </span>
+<span class="sd">		group (str): which group to use for halos. Stars = at least 100 star particles, gas = at least 100 gas cells, DM = at least 300 DM particles. </span>
+<span class="sd">			Default: &quot;Stars&quot;</span>
+<span class="sd">			Options: &quot;Stars&quot;, &quot;Gas&quot;, &quot;DM&quot;</span>
+<span class="sd">		SFR (bool): whether or not to calculate the new stars </span>
+<span class="sd">			Default: True  </span>
+<span class="sd">		r200 (bool): whether or not to calculate material inside r200</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;opening files&#39;</span><span class="p">)</span>
+	<span class="n">gofilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+	<span class="n">gofilename</span><span class="p">,</span> <span class="n">foffilename</span> <span class="o">=</span> <span class="n">set_snap_directories</span><span class="p">(</span><span class="n">gofilename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">foffilename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">))</span>
+	<span class="n">snap</span><span class="p">,</span> <span class="n">fof</span> <span class="o">=</span> <span class="n">open_hdf5</span><span class="p">(</span><span class="n">gofilename</span><span class="p">,</span> <span class="n">foffilename</span><span class="p">)</span>
+	<span class="n">boxsize</span><span class="p">,</span> <span class="n">redshift</span><span class="p">,</span> <span class="n">massDMParticle</span> <span class="o">=</span> <span class="n">get_headerprops</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;redshift is &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">redshift</span><span class="p">))</span>
+	<span class="n">cat</span> <span class="o">=</span> <span class="n">set_subfind_catalog</span><span class="p">(</span><span class="n">fof</span><span class="p">)</span>
+	<span class="n">prim</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="n">set_config</span><span class="p">(</span><span class="n">fof</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I detected that the FOF has &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">prim</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; primary and &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; secondary.&quot;</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;getting fof groups&quot;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;Stars&quot;</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;used groups of 100 or more stars&quot;</span><span class="p">)</span>
+		<span class="n">halo100_indices</span><span class="o">=</span><span class="n">get_starGroups</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+	<span class="k">elif</span> <span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;Gas&quot;</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;used groups of 100 or more gas&quot;</span><span class="p">)</span>
+		<span class="n">halo100_indices</span><span class="o">=</span><span class="n">get_gasGroups</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+	<span class="k">elif</span> <span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;DM&quot;</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;used groups of 300 or more DM&quot;</span><span class="p">)</span>
+		<span class="n">halo100_indices</span><span class="o">=</span><span class="n">get_Halos</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+	<span class="c1"># TESTING MODE ONLY: Uncomment next line</span>
+	<span class="c1">#halo100_indices = halo100_indices[0:3]</span>
+	<span class="n">objs</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="k">if</span> <span class="n">prim</span> <span class="o">==</span> <span class="s2">&quot;stars&quot;</span> <span class="ow">or</span> <span class="n">prim</span> <span class="o">==</span> <span class="s2">&quot;stars+gas&quot;</span> <span class="ow">or</span> <span class="n">prim</span> <span class="o">==</span> <span class="s2">&quot;stars+gas+DM&quot;</span> <span class="ow">or</span> <span class="n">sec</span> <span class="o">==</span> <span class="s2">&quot;stars&quot;</span> <span class="ow">or</span> <span class="n">sec</span> <span class="o">==</span> <span class="s2">&quot;stars+gas&quot;</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;have stars, calculating the stellar properties&quot;</span><span class="p">)</span>
+		<span class="n">allStarIDs</span><span class="p">,</span> <span class="n">allStarMasses</span><span class="p">,</span><span class="n">allStarPositions</span> <span class="o">=</span> <span class="n">get_starIDs</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+		<span class="n">startAllStars</span><span class="p">,</span> <span class="n">endAllStars</span> <span class="o">=</span> <span class="n">get_starIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="n">halo100_indices</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;calculating stellar mass&quot;</span><span class="p">)</span>
+		<span class="n">objs</span> <span class="o">=</span> <span class="n">get_obj_properties</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">boxsize</span> <span class="p">,</span><span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allStarIDs</span><span class="p">,</span><span class="n">allStarMasses</span><span class="p">,</span> <span class="n">allStarPositions</span><span class="p">,</span> <span class="n">startAllStars</span><span class="p">,</span><span class="n">endAllStars</span><span class="p">,</span> <span class="n">r200</span><span class="o">=</span><span class="n">r200</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;determining new star formation&quot;</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">SFR</span><span class="p">:</span> 
+			<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;new_mStar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">find_newStars</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span><span class="n">newstars</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span> 
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: SFR is off. Not calculating new stars&quot;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span> 
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: no stars found. I will not calculate SFRs&quot;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">prim</span> <span class="o">==</span> <span class="s2">&quot;gas&quot;</span> <span class="ow">or</span> <span class="n">prim</span> <span class="o">==</span> <span class="s2">&quot;stars+gas&quot;</span> <span class="ow">or</span> <span class="n">prim</span> <span class="o">==</span> <span class="s2">&quot;stars+gas+DM&quot;</span> <span class="ow">or</span> <span class="n">sec</span> <span class="o">==</span><span class="s2">&quot;gas&quot;</span> <span class="ow">or</span> <span class="n">sec</span> <span class="o">==</span><span class="s2">&quot;stars+gas&quot;</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;have gas, calculating the gas properties&quot;</span><span class="p">)</span>
+		<span class="n">allGasIDs</span><span class="p">,</span> <span class="n">allGasMasses</span><span class="p">,</span> <span class="n">allGasPositions</span> <span class="o">=</span> <span class="n">get_gasIDs</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+		<span class="n">startAllGas</span><span class="p">,</span> <span class="n">endAllGas</span> <span class="o">=</span> <span class="n">get_gasIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="n">halo100_indices</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;calculating gas mass&quot;</span><span class="p">)</span>
+		<span class="n">gasobjs</span> <span class="o">=</span> <span class="n">get_obj_properties</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">boxsize</span> <span class="p">,</span><span class="n">halo100_indices</span><span class="p">,</span> <span class="n">allGasIDs</span><span class="p">,</span><span class="n">allGasMasses</span><span class="p">,</span> <span class="n">allGasPositions</span><span class="p">,</span> <span class="n">startAllGas</span><span class="p">,</span><span class="n">endAllGas</span><span class="p">,</span> <span class="n">Gas</span> <span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">r200</span><span class="o">=</span><span class="n">r200</span><span class="p">)</span>
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;gasIDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gasobjs</span><span class="p">[</span><span class="s1">&#39;gasIDs&#39;</span><span class="p">]</span>
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;gasMass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gasobjs</span><span class="p">[</span><span class="s1">&#39;gasMass&#39;</span><span class="p">]</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: no gas found. I will not calculate gas properties&quot;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">prim</span> <span class="o">==</span><span class="s2">&quot;DM&quot;</span> <span class="ow">or</span> <span class="n">sec</span> <span class="o">==</span><span class="s2">&quot;DM&quot;</span> <span class="ow">or</span> <span class="n">prim</span> <span class="o">==</span> <span class="s2">&quot;stars+gas+DM&quot;</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;have DM, calculating the DM properties&quot;</span><span class="p">)</span>
+		<span class="n">allDMIDs</span><span class="p">,</span> <span class="n">allDMPositions</span> <span class="o">=</span> <span class="n">get_DMIDs</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+		<span class="n">startAllDM</span><span class="p">,</span> <span class="n">endAllDM</span> <span class="o">=</span> <span class="n">get_DMIDgroups</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="n">halo100_indices</span><span class="p">)</span>
+		<span class="n">dmobjs</span> <span class="o">=</span> <span class="n">get_DM</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="n">boxsize</span><span class="p">,</span> <span class="n">halo100_indices</span><span class="p">,</span> <span class="n">massDMParticle</span><span class="p">,</span><span class="n">allDMIDs</span><span class="p">,</span> <span class="n">allDMPositions</span><span class="p">,</span> <span class="n">startAllDM</span><span class="p">,</span><span class="n">endAllDM</span><span class="p">,</span> <span class="n">r200</span> <span class="o">=</span><span class="n">r200</span><span class="p">)</span>
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;DMMass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dmobjs</span><span class="p">[</span><span class="s1">&#39;DMMass&#39;</span><span class="p">]</span>
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;DMIDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dmobjs</span><span class="p">[</span><span class="s1">&#39;DMIDs&#39;</span><span class="p">]</span>
+		<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;r200&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">Group_R_Crit200</span><span class="p">)[</span><span class="n">halo100_indices</span><span class="p">]</span>
+	<span class="k">else</span><span class="p">:</span> 
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: No DM found. I will not calculate any halo properties&quot;</span><span class="p">)</span>
+	<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;prim&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prim</span>
+	<span class="n">objs</span><span class="p">[</span><span class="s1">&#39;sec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sec</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">objs</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Routine if running as a script</span>
+
+<span class="sd">	Parameters: </span>
+<span class="sd">		gofilename path to directory containing groupordered file + fof table</span>
+<span class="sd">		# foffilename </span>
+<span class="sd">		snapnum (float)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">script</span><span class="p">,</span> <span class="n">gofilename</span><span class="p">,</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">SV</span> <span class="o">=</span> <span class="n">argv</span>
+	<span class="n">newstarssig0</span><span class="p">,</span> <span class="n">newstarssig2</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get_newstarsfile</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">SV</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span> 
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Two sigma stream velocity&quot;</span><span class="p">)</span>
+		<span class="c1"># with open(&quot;/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat&quot;,&#39;rb&#39;) as f:</span>
+		<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">newstarssig2</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="n">newstars</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;latin1&quot;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">SV</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No stream velocity&quot;</span><span class="p">)</span>
+		<span class="c1"># with open(&quot;/u/home/c/clairewi/project-snaoz/SF_MolSig0/newstars_Sig0_25Mpc.dat&quot;,&#39;rb&#39;) as f:</span>
+		<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">newstarssig0</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="n">newstars</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;latin1&quot;</span><span class="p">)</span>		
+	<span class="n">objs</span> <span class="o">=</span> <span class="n">calc_all_stellarprops</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">gofilename</span><span class="p">),</span> <span class="n">snapnum</span><span class="p">,</span> <span class="n">newstars</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">&quot;DM&quot;</span><span class="p">,</span> <span class="n">SFR</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">r200</span> <span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">objs</span><span class="p">[</span><span class="s1">&#39;new_mStar&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">*</span><span class="mf">10.</span><span class="o">**</span><span class="mi">10</span><span class="o">/</span><span class="mf">0.71</span><span class="o">/</span><span class="mf">3e7</span><span class="p">)</span>
+	<span class="c1"># gofilename = str(gofilename)</span>
+	<span class="c1"># #foffilename = str(gofilename)</span>
+	<span class="c1"># gofilename, foffilename = set_snap_directories(gofilename, snapnum, foffilename = str(gofilename))</span>
+	<span class="c1"># snap, fof = open_hdf5(gofilename, foffilename)</span>
+	<span class="c1"># boxsize, redshift, massDMParticle = get_headerprops(snap)</span>
+	<span class="c1"># cat = set_subfind_catalog(fof)</span>
+	<span class="c1"># prim, sec = set_config(fof)</span>
+	<span class="c1"># #print(cat.Group_R_Crit200[0])</span>
+	<span class="c1"># halo100_indices=get_starGroups(cat)</span>
+	<span class="c1"># # allStarIDs, allStarMasses,allStarPositions = get_starIDs(snap, prim, sec)</span>
+	<span class="c1"># with open(&quot;/u/home/c/clairewi/project-snaoz/SF_MolSig2/newstars_Sig2_25Mpc.dat&quot;,&#39;rb&#39;) as f:</span>
+	<span class="c1"># 	newstars = pickle.load(f,encoding = &quot;latin1&quot;)</span>
+	<span class="c1"># allStarIDs, allStarMasses,allStarPositions = get_starIDs(snap, prim, sec)</span>
+	<span class="c1"># startAllStars, endAllStars = get_starIDgroups(cat,halo100_indices)</span>
+	<span class="c1"># objs = get_obj_properties(cat, boxsize ,halo100_indices, allStarIDs,allStarMasses, allStarPositions, startAllStars,endAllStars)</span>
+	<span class="c1"># #print(objs[&#39;stellarMass&#39;][0:10]*1e10)</span>
+	<span class="c1"># new_ones = find_newStars(objs,newstars, snapnum)</span>
+	<span class="c1"># print(new_ones[0:10]*1e10)</span>
+
+
+	
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">process-fof</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fof_process.html">FOF Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../boundedness.html">Boundedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concatenateclass.html">processedFOF Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dm_virialization.html">DM virialization</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Claire Williams.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

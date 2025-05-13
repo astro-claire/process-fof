@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>concatenateclass &#8212; process-fof 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for concatenateclass</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">un</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">c</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.cosmology</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlatLambdaCDM</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../config&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../modules&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;..&#39;</span><span class="p">))</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">config.configuration</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">config</span>
+
+<span class="c1">#Set units and parameters</span>
+<span class="n">constants</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">load_constants</span><span class="p">()</span>
+<span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitMass_in_g&#39;</span><span class="p">]</span>     
+<span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitLength_in_cm&#39;</span><span class="p">]</span>
+<span class="n">hubbleparam</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;hubbleparam&#39;</span><span class="p">]</span> <span class="c1">#hubble constant</span>
+<span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;GRAVITY_cgs&#39;</span><span class="p">]</span>
+<span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="n">constants</span><span class="p">[</span><span class="s1">&#39;UnitVelocity_in_cm_per_s&#39;</span><span class="p">]</span>
+
+
+
+<div class="viewcode-block" id="processedFOF">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">processedFOF</span><span class="p">():</span> 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">snapnum</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;../../FOF_project&#39;</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">maxidx</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes fof post processing  concatenator</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters: </span>
+<span class="sd">            snapnum (int): snapshot number</span>
+<span class="sd">            directory (str): directory where files are located inside path (minus the stream velocity part)</span>
+<span class="sd">            sv (str): stream velocity value for the run</span>
+<span class="sd">            path (str): location of all post processing files</span>
+<span class="sd">            verbose (bool): whether or not you want output to be printed </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span> <span class="o">=</span> <span class="n">snapnum</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv</span> <span class="o">=</span> <span class="n">sv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxidx</span> <span class="o">=</span> <span class="n">maxidx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;extra_path&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;extra_path&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bounded_path</span> <span class="o">=</span> <span class="s2">&quot;bounded2&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;bounded_path&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bounded_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;bounded_path&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setGroup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_findFOF</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_findRotation</span><span class="p">()</span> 
+        <span class="c1">### TO DO : convert these to numpy arrays for easier plotting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;centers&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;fofradii&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;fofvel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getFOFData</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_properties_notBounded</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span><span class="o">=</span><span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span><span class="p">[]</span>
+        <span class="k">if</span> <span class="s1">&#39;DM&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;prim&#39;</span><span class="p">]:</span>  
+            <span class="bp">self</span><span class="o">.</span><span class="n">_findDMBounded</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounded_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_findBounded</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounded_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="s1">&#39;prim&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span><span class="p">:</span> <span class="c1">#remove non array properties for the unfinished/unbounded remover to work</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;prim&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;sec&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;sec&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;bounded&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;bounded&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">goodidx</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1">#self.chopUnfinished()</span>
+        <span class="c1">#self.chopUnBounded()</span>
+        <span class="c1"># self.setupCosmo()</span>
+        
+    <span class="k">def</span><span class="w"> </span><span class="nf">_findFOF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens fof_postprocess file and load in the objects</span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">            dict: properties of the objects for the fof script located at self.path for snapnum self.snapnum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> 
+        <span class="n">fof_process_name</span> <span class="o">=</span> <span class="s2">&quot;fof_postprocess_&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sv</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">fof_process_name</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                        <span class="n">fof_process_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>      
+        <span class="k">if</span> <span class="s1">&#39;fof_process_path&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span> 
+                    <span class="nb">print</span><span class="p">(</span><span class="n">fof_process_path</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fof_process_path</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
+                    <span class="n">objs</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+                <span class="n">properties</span> <span class="o">=</span> <span class="n">objs</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;prim&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;DM&#39;</span> <span class="c1">#set default to DM primary FOF </span>
+        <span class="k">return</span> <span class="n">properties</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets which type of particle was used for groups in the fof postprocessing</span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">            str: &quot;stars&quot; if star particles, &quot;DM&quot; if DM particles, or &quot;gas&quot; if gas particles</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">==</span> <span class="s2">&quot;SGP-&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">==</span> <span class="s2">&quot;SP-&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;stars&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">==</span><span class="s2">&quot;DMP-GS-&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">==</span> <span class="s2">&quot;SGDMP-&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;DM&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">==</span><span class="s2">&quot;GP-SS-&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">==</span> <span class="s2">&quot;GP-&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;gas&quot;</span>
+        
+    <span class="k">def</span><span class="w"> </span><span class="nf">_getFOFData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the centers of mass and R_crit_200 derived by fof </span>
+
+<span class="sd">        Attributes: </span>
+<span class="sd">            groupnum (int): threshhold number of particles required to return a group</span>
+<span class="sd">                300 if DM </span>
+<span class="sd">                100 if stars or gas</span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">            Numpy.ndarray  (centers of mass), Numpy.ndarray (radii)</span>
+<span class="sd">        </span>
+<span class="sd">        Sets: </span>
+<span class="sd">            properties[&#39;maxradii&#39;]: if file exists, adds array of max radii to properties dictionary </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/fof_subhalo_tab_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.hdf5&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fofradii</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">groupnum</span>  <span class="o">=</span><span class="mi">100</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;gas&quot;</span><span class="p">:</span>
+            <span class="n">grouptype</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">==</span> <span class="s2">&quot;stars&quot;</span><span class="p">:</span>
+            <span class="n">grouptype</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;DM&quot;</span><span class="p">:</span>
+            <span class="n">grouptype</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">groupnum</span> <span class="o">=</span> <span class="mi">300</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;defaulting to DM grouptype&quot;</span><span class="p">)</span>
+            <span class="n">grouptype</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">groupnum</span> <span class="o">=</span> <span class="mi">300</span>
+        <span class="c1"># Convert relevant data to NumPy arrays if they aren&#39;t already</span>
+        <span class="n">group_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group&#39;</span><span class="p">][</span><span class="s1">&#39;GroupPos&#39;</span><span class="p">])</span>
+        <span class="n">group_len_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group&#39;</span><span class="p">][</span><span class="s1">&#39;GroupLenType&#39;</span><span class="p">])</span>
+        <span class="n">group_r_crit200</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group&#39;</span><span class="p">][</span><span class="s1">&#39;Group_R_Crit200&#39;</span><span class="p">])</span>
+        <span class="n">group_vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s1">&#39;Group&#39;</span><span class="p">][</span><span class="s1">&#39;GroupVel&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atime</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">omegaLambda</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;OmegaLambda&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">H0</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;HubbleParam&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">omegaMatter0</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Omega0&#39;</span><span class="p">]</span>
+        <span class="c1"># Apply a mask to filter groups based on &#39;grouptype&#39; and &#39;groupnum&#39;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">group_len_type</span><span class="p">[:,</span> <span class="n">grouptype</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">groupnum</span>
+        <span class="c1"># Use the mask to select the centers and radii directly</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">group_pos</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">fofradii</span> <span class="o">=</span> <span class="n">group_r_crit200</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">fofvel</span> <span class="o">=</span> <span class="n">group_vel</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;DM&quot;</span><span class="p">:</span>
+            <span class="n">mask2</span> <span class="o">=</span> <span class="n">fofradii</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="n">centers</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
+            <span class="n">fofradii</span> <span class="o">=</span> <span class="n">fofradii</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
+            <span class="n">fofvel</span> <span class="o">=</span> <span class="n">fofvel</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
+        <span class="n">maxradname</span> <span class="o">=</span> <span class="s2">&quot;maxradii_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_V3.dat&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> 
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="c1"># Check if the file exists in that directory</span>
+            <span class="k">if</span> <span class="n">maxradname</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="n">max_rad_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>
+        <span class="k">if</span> <span class="s1">&#39;max_rad_path&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="n">max_rad_path</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">max_rad_path</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
+                <span class="n">maxrad</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;maxradii&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">maxrad</span><span class="p">[</span><span class="s1">&#39;maxradii&#39;</span><span class="p">]</span>
+        <span class="n">halfradname</span> <span class="o">=</span> <span class="s2">&quot;hmradii_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_V2.dat&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> 
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="c1"># Check if the file exists in that directory</span>
+            <span class="k">if</span> <span class="n">halfradname</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="n">half_rad_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>
+        <span class="k">if</span> <span class="s1">&#39;half_rad_path&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="n">half_rad_path</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">half_rad_path</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
+                <span class="n">halfrad</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;hmradii&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">halfrad</span><span class="p">[</span><span class="s1">&#39;hmradii&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">centers</span><span class="p">,</span> <span class="n">fofradii</span><span class="p">,</span><span class="n">fofvel</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_findRotation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens the stellar rotation output file and adds rotational properties to self.properties dictionary</span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> 
+        <span class="n">star_rot_name</span> <span class="o">=</span> <span class="s2">&quot;stellar_rotation_&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sv</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">+</span><span class="s2">&quot;_v5&quot;</span>  
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="c1"># Check if the file exists in that directory</span>
+            <span class="k">if</span> <span class="n">star_rot_name</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="n">star_rot_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>
+        <span class="c1">#Now, also get the gas rotation file if it exists: </span>
+        <span class="c1">#NOTE WE ARE SPECIFYING VERSION NUMBER HERE</span>
+        <span class="n">gas_rot_name</span> <span class="o">=</span> <span class="s2">&quot;gas_rotation_&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sv</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">+</span><span class="s2">&quot;_v5&quot;</span>  
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="c1"># Check if the file exists in that directory</span>
+            <span class="k">if</span> <span class="n">gas_rot_name</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="n">gas_rot_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>
+        <span class="k">if</span> <span class="s1">&#39;star_rot_path&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="n">star_rot_path</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">star_rot_path</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
+                <span class="n">starrot</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rms&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rms&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;rotation_curve_turb&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;rotation_curve_turb&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rot&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rot&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rad&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rad&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;v_rms&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;v_rms&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;v_rad&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;v_rad&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;v_rot&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;v_rot&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;v_turb&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;v_turb&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;avg_stellarMass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;avg_mass&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;nstarsgroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;ngroup&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;star_rot_radii&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">starrot</span><span class="p">[</span><span class="s1">&#39;rot_radii&#39;</span><span class="p">]</span>                                              
+        <span class="k">if</span> <span class="s1">&#39;gas_rot_path&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">gas_rot_path</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">gas_rot_path</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
+                <span class="n">gasrot</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_rotation_curve_rms&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rms&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_rotation_curve_turb&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;rotation_curve_turb&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_rotation_curve_rot&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rot&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_rotation_curve_rad&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;rotation_curve_rad&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_v_rms&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;v_rms&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_v_rad&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;v_rad&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_v_rot&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;v_rot&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_v_turb&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;v_turb&#39;</span><span class="p">]</span>   
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_rot_radii&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;rot_radii&#39;</span><span class="p">]</span>  
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;avg_gasMass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;avg_mass&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;ngasgroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gasrot</span><span class="p">[</span><span class="s1">&#39;ngroup&#39;</span><span class="p">]</span>
+        <span class="c1">#Can check the print statements to make sure the expected files have loaded. </span>
+        
+    <span class="k">def</span><span class="w"> </span><span class="nf">_findDMBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;bounded2&quot;</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens bounded chunk files, concatenates, and adds their properties to the properties dict. </span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">700</span><span class="p">))</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span>
+            <span class="n">indexexists</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+                <span class="n">fof_process_name</span> <span class="o">=</span> <span class="s2">&quot;bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+                    <span class="c1"># Check if the file exists in that directory</span>
+                    <span class="k">if</span> <span class="n">fof_process_name</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">indexexists</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+                            <span class="n">biggestchunkfile</span> <span class="o">=</span> <span class="n">filename</span>
+                            <span class="n">indexexists</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">fof_process_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>
+                    <span class="c1">#if &#39;fof_process_path&#39; in locals():</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fof_process_path</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
+                            <span class="n">chunk</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">biggestchunkfile</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">biggestchunkfile</span><span class="p">[</span><span class="o">-</span><span class="mi">9</span><span class="p">:</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">biggestchunkfile</span><span class="p">[</span><span class="o">-</span><span class="mi">8</span><span class="p">:</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;highest bounded calculated is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;no bounded exists for this snap file&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_findBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;bounded2&quot;</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens bounded chunk files, concatenates, and adds their properties to the properties dict. </span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxidx</span><span class="p">))</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;massDM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;massStars&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;recalcRadii&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span>
+            <span class="n">indexexists</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+                <span class="n">fof_process_name</span> <span class="o">=</span> <span class="s2">&quot;bounded_portion_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_chunk&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+                    <span class="c1"># Check if the file exists in that directory</span>
+                    <span class="k">if</span> <span class="n">fof_process_name</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">indexexists</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+                            <span class="n">biggestchunkfile</span> <span class="o">=</span> <span class="n">filename</span>
+                            <span class="n">indexexists</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">fof_process_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>
+                    <span class="c1">#if &#39;fof_process_path&#39; in locals():</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fof_process_path</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
+                            <span class="n">chunk</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;massDM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;massDM&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;massDM&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;massStars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;massStars&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;massStars&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;recalcRadii&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;recalcRadii&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;recalcRadii&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">&#39;usedDM&#39;</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">biggestchunkfile</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">biggestchunkfile</span><span class="p">[</span><span class="o">-</span><span class="mi">9</span><span class="p">:</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">biggestchunkfile</span><span class="p">[</span><span class="o">-</span><span class="mi">8</span><span class="p">:</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;highest bounded calculated is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;no bounded exists for this snap file&quot;</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="processedFOF.accessBoundedComplete">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.accessBoundedComplete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accessBoundedComplete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function can be used when the chunking hasn&#39;t finished running to ensure that only systems with a known bounded calculation are being used</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments: </span>
+<span class="sd">            arr (Numpy.ndarray): array to crop</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Numpy.ndarray: array with only the bounded completed indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">arr</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">boundedidx</span><span class="p">:]</span></div>
+
+    
+<div class="viewcode-block" id="processedFOF.accessBounded">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.accessBounded">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accessBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns the array but only of systems which are bounded</span>
+
+<span class="sd">        Arguments: </span>
+<span class="sd">            arr (Numpy.ndarray): array to crop</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Numpy.ndarray: array with only the bounded indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">arr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="processedFOF.chopUnfinished">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopUnfinished">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chopUnfinished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For all the parameters not calculated in the bounded script, removes the indices of the objects which do not have a bounded calculation. </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties_notBounded</span><span class="p">:</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accessBoundedComplete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="processedFOF.chopUnBounded">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopUnBounded">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chopUnBounded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For all the parameters in self.properties, removes all unbounded objects</span>
+
+<span class="sd">        Returns: </span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">boundedidx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;bounded&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">])[</span><span class="n">boundedidx</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">],</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)[</span><span class="n">boundedidx</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">+</span> <span class="s2">&quot; is not the right length&quot;</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="processedFOF.chopResolutionHalos">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.chopResolutionHalos">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chopResolutionHalos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">=</span> <span class="mi">300</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        if the list contains DM halos beyond the resolution limit, chop them off</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#TODO: Claire: rerun the rotations with correct DM group and then remove </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonRotationKeys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allKeys</span>
+        <span class="k">if</span> <span class="s1">&#39;SFR&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nonRotationKeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SFR&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;centers&#39;</span><span class="p">,</span><span class="s1">&#39;fofradii&#39;</span><span class="p">,</span><span class="s1">&#39;fofvel&#39;</span><span class="p">,</span><span class="s1">&#39;rotation_curve_rms&#39;</span><span class="p">,</span><span class="s1">&#39;rotation_curve_turb&#39;</span><span class="p">,</span><span class="s1">&#39;rotation_curve_rot&#39;</span><span class="p">,</span> <span class="s1">&#39;rotation_curve_rad&#39;</span><span class="p">,</span> <span class="s1">&#39;v_rms&#39;</span><span class="p">,</span><span class="s1">&#39;v_rad&#39;</span><span class="p">,</span><span class="s1">&#39;v_rot&#39;</span><span class="p">,</span><span class="s1">&#39;v_turb&#39;</span><span class="p">,</span><span class="s1">&#39;star_rot_radii&#39;</span><span class="p">,</span><span class="s1">&#39;gas_rot_radii&#39;</span><span class="p">,</span><span class="s1">&#39;gas_rotation_curve_rms&#39;</span><span class="p">,</span><span class="s1">&#39;gas_rotation_curve_turb&#39;</span><span class="p">,</span><span class="s1">&#39;gas_rotation_curve_rot&#39;</span><span class="p">,</span> <span class="s1">&#39;gas_rotation_curve_rad&#39;</span><span class="p">,</span> <span class="s1">&#39;gas_v_rms&#39;</span><span class="p">,</span><span class="s1">&#39;gas_v_rad&#39;</span><span class="p">,</span><span class="s1">&#39;gas_v_rot&#39;</span><span class="p">,</span><span class="s1">&#39;gas_v_turb&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonRotationKeys</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_nonRotationKeys</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;DM&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;prim&#39;</span><span class="p">]:</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/snap-groupordered_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.hdf5&quot;</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="n">resolution</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;MassTable&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">cutoff</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;DMMass&#39;</span><span class="p">]</span> <span class="o">&gt;</span><span class="n">resolution</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonRotationKeys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">])</span><span class="o">&gt;</span><span class="mf">1.</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">])[</span><span class="n">mask</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">],</span><span class="n">dtype</span> <span class="o">=</span> <span class="nb">object</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is not the right length&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="processedFOF.addEnvironment">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.addEnvironment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addEnvironment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search for environment output and add to properties. Must be run post bounded! Only available for baryonic primaries. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> 
+        <span class="n">env_name</span> <span class="o">=</span> <span class="s2">&quot;environment_&quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snapnum</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_V2&quot;</span>  
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="c1"># Check if the file exists in that directory</span>
+            <span class="k">if</span> <span class="n">env_name</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+               <span class="n">env_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>
+        <span class="c1">#Now, also get the gas rotation file if it exists: </span>
+        <span class="c1">#NOTE WE ARE SPECIFYING VERSION NUMBER HERE</span>
+        <span class="k">if</span> <span class="s1">&#39;env_path&#39;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="n">env_path</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">env_path</span><span class="p">),</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
+                <span class="n">envdict</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;closestb&#39;</span><span class="p">])</span><span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;virialized&#39;</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;closestb&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;closestb&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;closestb_dist&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;closestb_dist&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;num_within10b&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;num_within10b&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;num_within5b&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;num_within5b&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;closestdm&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;closestdm&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;closestdm_dist&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;closestdm_dist&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;closestdm_dmmass&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;closestdm_dmmass&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;closestdm_inr200&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;closestdm_inr200&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;num_within10dm&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;num_within10dm&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;num_within5dm&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">envdict</span><span class="p">[</span><span class="s1">&#39;num_within5dm&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: number of objects in environment directory doesn&#39;t match number of objects in FOF bounded. &quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="processedFOF.setupCosmo">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.setupCosmo">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setupCosmo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates relevant cosmology properties. ASSUMES SNAPS ARE SEPARATED BY 1 redshift!!!!!!</span>
+<span class="sd">        </span>
+<span class="sd">        Sets: </span>
+<span class="sd">            self.deltat (float): elapsed time since last snapshot in years</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redshift</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">atime</span> <span class="o">-</span><span class="mf">1.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;creating flat LCDM cosmology with hubble param = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">H0</span><span class="si">}</span><span class="s2">  and omega_m0 = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">omegaMatter0</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="p">)</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">FlatLambdaCDM</span><span class="p">(</span><span class="n">H0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">H0</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">Om0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">omegaMatter0</span><span class="p">,</span> <span class="n">Ob0</span><span class="o">=</span><span class="mf">0.044</span><span class="p">)</span>
+        <span class="n">t1</span><span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">age</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redshift</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
+        <span class="n">t2</span><span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">age</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redshift</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deltat</span> <span class="o">=</span> <span class="p">((</span><span class="n">t1</span><span class="o">-</span><span class="n">t2</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;yr&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">value</span>  <span class="c1">#</span></div>
+
+    
+<div class="viewcode-block" id="processedFOF.calcMUV">
+<a class="viewcode-back" href="../concatenateclass.html#concatenateclass.processedFOF.calcMUV">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcMUV</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates absolute uv magnitude</span>
+<span class="sd">        </span>
+<span class="sd">        Sets: </span>
+<span class="sd">            self.parameters[&#39;SFR&#39;] (arr): star formation rates</span>
+<span class="sd">            self.M_uv</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupCosmo</span><span class="p">()</span>
+        <span class="n">K_uv</span> <span class="o">=</span> <span class="mf">1.15</span><span class="o">*</span><span class="mf">10.</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">28.</span><span class="p">)</span> <span class="c1"># kappa uv literature value</span>
+        <span class="k">if</span> <span class="s1">&#39;new_mStar&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;SFR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;new_mStar&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1e10</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">H0</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">deltat</span> <span class="c1"># star formation rate in solar masses per eyar</span>
+            <span class="n">L_uv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;SFR&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">K_uv</span>
+            <span class="n">nonzero_Luv</span> <span class="o">=</span><span class="n">L_uv</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">L_uv</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">M_uv</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">nonzero_Luv</span><span class="p">)</span><span class="o">+</span><span class="mf">51.6</span>  
+            <span class="k">if</span> <span class="s1">&#39;DM&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;prim&#39;</span><span class="p">]:</span> <span class="c1">#Need a DM mass indicator if you&#39;re going to correct for number densities</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">DMMass_Muv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;DMMass&#39;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">L_uv</span><span class="p">)]</span><span class="o">*</span><span class="mf">1e10</span> <span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">H0</span>
+            <span class="k">elif</span> <span class="s1">&#39;closestdm_dmmass&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">DMMass_Muv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;closestdm_dmmass&#39;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">L_uv</span><span class="p">)]</span><span class="o">*</span><span class="mf">1e10</span> <span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">H0</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No suitable DM key for Muv DM masses. Skipping it.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;stellarMass&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stellarMass_Muv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;stellarMass&#39;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">L_uv</span><span class="p">)]</span><span class="o">*</span><span class="mf">1e10</span> <span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">H0</span></div>
+
+            <span class="c1"># note this is a different length than most arrays because we&#39;ve removed nonzero luminosity. </span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcTRelax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radiuskey</span> <span class="o">=</span> <span class="s1">&#39;maxradii&#39;</span><span class="p">,</span> <span class="n">radiusfactor</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">):</span>
+        <span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="mf">1.0e5</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">cm</span> <span class="o">/</span> <span class="n">un</span><span class="o">.</span><span class="n">s</span>
+        <span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="mf">3.085678e21</span> <span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">cm</span>
+        <span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">cgs</span>
+        <span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">g</span>
+        <span class="k">if</span> <span class="s1">&#39;nstarsgroup&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;relaxation timescale for stars (per coulomb logarithm)&quot;</span><span class="p">)</span>
+            <span class="n">vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;v_rms&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitVelocity_in_cm_per_s</span>
+            <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;avg_stellarMass&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span>
+            <span class="n">N</span> <span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;nstarsgroup&#39;</span><span class="p">]</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">radiuskey</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitLength_in_cm</span> <span class="o">*</span> <span class="n">radiusfactor</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">vel</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">GRAVITY_cgs</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">mass</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="mf">3.</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r</span><span class="o">**</span><span class="mi">3</span> <span class="p">))))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcTRelaxGas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radiuskey</span> <span class="o">=</span> <span class="s1">&#39;maxradii&#39;</span><span class="p">,</span> <span class="n">radiusfactor</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">):</span>
+        <span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="mf">1.0e5</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">cm</span> <span class="o">/</span> <span class="n">un</span><span class="o">.</span><span class="n">s</span>
+        <span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="mf">3.085678e21</span> <span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">cm</span>
+        <span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">cgs</span>
+        <span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">g</span>
+        <span class="k">if</span> <span class="s1">&#39;ngasgroup&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;relaxation timescale for gas (per coulomb logarithm)&quot;</span><span class="p">)</span>
+            <span class="n">vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_v_rms&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitVelocity_in_cm_per_s</span>
+            <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;avg_gasMass&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span>
+            <span class="n">N</span> <span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;ngasgroup&#39;</span><span class="p">]</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">radiuskey</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitLength_in_cm</span> <span class="o">*</span> <span class="n">radiusfactor</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">vel</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">GRAVITY_cgs</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">mass</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="mf">3.</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r</span><span class="o">**</span><span class="mi">3</span> <span class="p">))))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcTSFR</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">g</span>
+        <span class="k">if</span> <span class="s1">&#39;SFR&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;SFRpermass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;SFR&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">Msun</span><span class="o">/</span><span class="n">un</span><span class="o">.</span><span class="n">yr</span><span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;stellarMass&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">H0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;SFRpermass&#39;</span><span class="p">]</span> <span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcTdyn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radiuskey</span> <span class="o">=</span> <span class="s1">&#39;maxradii&#39;</span><span class="p">,</span> <span class="n">radiusfactor</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">):</span>
+        <span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="mf">1.0e5</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">cm</span> <span class="o">/</span> <span class="n">un</span><span class="o">.</span><span class="n">s</span>
+        <span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="mf">3.085678e21</span> <span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">cm</span>
+        <span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">cgs</span>
+        <span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">g</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">radiuskey</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitLength_in_cm</span> <span class="o">*</span> <span class="n">radiusfactor</span>
+        <span class="n">vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;v_rms&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitVelocity_in_cm_per_s</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">r</span><span class="o">/</span><span class="n">vel</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcTdynGas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radiuskey</span> <span class="o">=</span> <span class="s1">&#39;maxradii&#39;</span><span class="p">,</span> <span class="n">radiusfactor</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">):</span>
+        <span class="n">UnitVelocity_in_cm_per_s</span> <span class="o">=</span> <span class="mf">1.0e5</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">cm</span> <span class="o">/</span> <span class="n">un</span><span class="o">.</span><span class="n">s</span>
+        <span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="mf">3.085678e21</span> <span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">cm</span>
+        <span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">cgs</span>
+        <span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">g</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">radiuskey</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitLength_in_cm</span> <span class="o">*</span> <span class="n">radiusfactor</span>
+        <span class="n">vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gas_v_rms&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitVelocity_in_cm_per_s</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">r</span><span class="o">/</span><span class="n">vel</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcTCollapse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radiuskey</span> <span class="o">=</span> <span class="s1">&#39;maxradii&#39;</span><span class="p">,</span> <span class="n">radiusfactor</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">):</span>
+        <span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="mf">3.085678e21</span> <span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">cm</span>
+        <span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">cgs</span>
+        <span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">g</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;estimating mass from baryonic mass&quot;</span><span class="p">)</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;stellarMass&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gasMass&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">radiuskey</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitLength_in_cm</span> <span class="o">*</span> <span class="n">radiusfactor</span>
+        <span class="n">rhotot</span> <span class="o">=</span> <span class="n">mass</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="mf">3.</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">((</span><span class="n">GRAVITY_cgs</span> <span class="o">*</span> <span class="n">rhotot</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mf">2.</span><span class="p">)))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Myr&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">estGasDensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radiuskey</span> <span class="o">=</span> <span class="s1">&#39;maxradii&#39;</span><span class="p">,</span> <span class="n">radiusfactor</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">):</span>
+        <span class="n">UnitLength_in_cm</span> <span class="o">=</span> <span class="mf">3.085678e21</span> <span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">cm</span>
+        <span class="n">GRAVITY_cgs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">cgs</span>
+        <span class="n">UnitMass_in_g</span> <span class="o">=</span> <span class="mf">1.989e43</span> <span class="o">*</span> <span class="n">un</span><span class="o">.</span><span class="n">g</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;estimating mass from baryonic mass&quot;</span><span class="p">)</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gasMass&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span>
+        <span class="n">massbaryons</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;stellarMass&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;gasMass&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">UnitMass_in_g</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">radiuskey</span><span class="p">]</span> <span class="o">*</span> <span class="n">UnitLength_in_cm</span> <span class="o">*</span> <span class="n">radiusfactor</span>
+        <span class="n">rhogas</span> <span class="o">=</span> <span class="n">mass</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="mf">3.</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">rhobaryons</span> <span class="o">=</span> <span class="n">massbaryons</span><span class="o">/</span><span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="mf">3.</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rhogas</span><span class="p">,</span> <span class="n">rhobaryons</span></div>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">process-fof</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fof_process.html">FOF Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../boundedness.html">Boundedness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concatenateclass.html">processedFOF Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dm_virialization.html">DM virialization</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Claire Williams.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

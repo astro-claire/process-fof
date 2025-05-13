@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Stellar Rotation &#8212; process-fof 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="processedFOF Class" href="concatenateclass.html" />
+    <link rel="prev" title="Boundedness" href="boundedness.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="stellar-rotation">
+<span id="id1"></span><h1>Stellar Rotation<a class="headerlink" href="#stellar-rotation" title="Permalink to this headline">¶</a></h1>
+<p>Functions to calculate rotational parameters for groups containing gas or star particles.</p>
+<section id="module-stellar_rotation">
+<span id="functions"></span><h2>Functions:<a class="headerlink" href="#module-stellar_rotation" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="stellar_rotation.add_rotation_curves">
+<span class="sig-prename descclassname"><span class="pre">stellar_rotation.</span></span><span class="sig-name descname"><span class="pre">add_rotation_curves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stellar_rotation.html#add_rotation_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stellar_rotation.add_rotation_curves" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stellar_rotation.add_rotation_curves_gas">
+<span class="sig-prename descclassname"><span class="pre">stellar_rotation.</span></span><span class="sig-name descname"><span class="pre">add_rotation_curves_gas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Stars'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stellar_rotation.html#add_rotation_curves_gas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stellar_rotation.add_rotation_curves_gas" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper function - gas verison!!!!!!!! calculates for gas!!</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stellar_rotation.calc_stellar_rotation">
+<span class="sig-prename descclassname"><span class="pre">stellar_rotation.</span></span><span class="sig-name descname"><span class="pre">calc_stellar_rotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starMass_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starVel_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starPos_inGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSizeVel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stellar_rotation.html#calc_stellar_rotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stellar_rotation.calc_stellar_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate rotation curve of stellar component - 25 steps</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stellar_rotation.get_gasIDs">
+<span class="sig-prename descclassname"><span class="pre">stellar_rotation.</span></span><span class="sig-name descname"><span class="pre">get_gasIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stellar_rotation.html#get_gasIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stellar_rotation.get_gasIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get particle IDs (groupordered snap)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stellar_rotation.iterate_galaxies">
+<span class="sig-prename descclassname"><span class="pre">stellar_rotation.</span></span><span class="sig-name descname"><span class="pre">iterate_galaxies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">halo100_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarMasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarPositions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allStarVelocities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endAllStars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupRadii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupPos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupVelocities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stellar_rotation.html#iterate_galaxies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stellar_rotation.iterate_galaxies" title="Permalink to this definition">¶</a></dt>
+<dd><p>iterate all the galaxies in the FOF and find their rotation curves.
+Perform all the unit conversions.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">process-fof</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="fof_process.html">FOF Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="boundedness.html">Boundedness</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Stellar Rotation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-stellar_rotation">Functions:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="concatenateclass.html">processedFOF Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dm_virialization.html">DM virialization</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="boundedness.html" title="previous chapter">Boundedness</a></li>
+      <li>Next: <a href="concatenateclass.html" title="next chapter">processedFOF Class</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, Claire Williams.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/stellar_rotation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
