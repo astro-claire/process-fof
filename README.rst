@@ -68,7 +68,7 @@ Coming soon: code to generate this file!
 FOF Algorithms
 --------------
 The scripts contained here are designed to post-process outputs from multiple FOF alorithm types in AREPO. 
-In Williams et al (in prep), we compare the results of baryon-focused FOF algorithms to dark-matter focused algorithms.
+In Williams et al (2025), we compare the results of baryon-focused FOF algorithms to dark-matter focused algorithms.
 Currently, four versions are supported: 
 
 * `DMP-GS` - Dark Matter Primary, Gas and Stars secondary (standard)
