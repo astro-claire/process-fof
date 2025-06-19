@@ -1,3 +1,6 @@
+.. image:: https://zenodo.org/badge/782623936.svg
+  :target: https://doi.org/10.5281/zenodo.15701630
+
 process-fof
 -----------
 Post processing scripts for AREPO friends-of-friends output. 
@@ -126,3 +129,13 @@ Once this has run, the setup is complete. You can check to ensure the setup is c
 Run the Code
 ------------
 You can now run the scripts in the `scripts` and `modules` directory!
+
+
+Citation 
+--------
+
+.. image:: https://zenodo.org/badge/782623936.svg
+  :target: https://doi.org/10.5281/zenodo.15701630
+
+.. image:: https://img.shields.io/badge/arXiv-2502.17561-b31b1b.svg
+  :target: https://arxiv.org/abs/2502.17561
